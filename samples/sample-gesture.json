@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0.0",
+  "gesture_id": "rsl-sample-privet",
+  "word": "привет",
+  "language": "rsl",
+  "duration": 1,
+  "fps": 30,
+  "metadata": {
+    "source_video": "sample",
+    "capture": "synthetic",
+    "filter_name": "none",
+    "created_at": "2026-06-07T00:00:00Z",
+    "extra": {}
+  },
+  "normalization": {
+    "origin": "shoulder_center",
+    "scale": "shoulder_width",
+    "coordinate_system": "x_right_y_up_z_forward"
+  },
+  "tracks": {
+    "pose": [],
+    "left_hand": [],
+    "right_hand": [],
+    "face": []
+  },
+  "features": {
+    "left_hand": [],
+    "right_hand": [],
+    "face": [],
+    "head": []
+  },
+  "compression": {
+    "mode": "none",
+    "epsilon": 0,
+    "original_frame_count": 0,
+    "stored_frame_count": 0
+  }
+}
