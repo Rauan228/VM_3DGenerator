@@ -1,0 +1,20 @@
+{
+  "armature_name": "Armature",
+  "pose": {
+    "left_shoulder": { "landmark": 11, "bone": "LeftArm" },
+    "left_elbow": { "landmark": 13, "bone": "LeftForeArm" },
+    "left_wrist": { "landmark": 15, "bone": "LeftHand" },
+    "right_shoulder": { "landmark": 12, "bone": "RightArm" },
+    "right_elbow": { "landmark": 14, "bone": "RightForeArm" },
+    "right_wrist": { "landmark": 16, "bone": "RightHand" },
+    "head": { "landmark": 0, "bone": "Head" }
+  },
+  "hands": {
+    "right_index_1": { "hand": "right_hand", "angle_key": "index_mcp", "bone": "RightHandIndex1" },
+    "right_index_2": { "hand": "right_hand", "angle_key": "index_pip", "bone": "RightHandIndex2" },
+    "right_index_3": { "hand": "right_hand", "angle_key": "index_dip", "bone": "RightHandIndex3" },
+    "left_index_1": { "hand": "left_hand", "angle_key": "index_mcp", "bone": "LeftHandIndex1" },
+    "left_index_2": { "hand": "left_hand", "angle_key": "index_pip", "bone": "LeftHandIndex2" },
+    "left_index_3": { "hand": "left_hand", "angle_key": "index_dip", "bone": "LeftHandIndex3" }
+  }
+}
