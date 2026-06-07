@@ -1,0 +1,193 @@
+{
+  "schema_version": "1.0.0",
+  "gesture_id": "rsl-sample-privet",
+  "word": "привет",
+  "language": "rsl",
+  "duration": 2,
+  "fps": 30,
+  "metadata": {
+    "source_video": "sample",
+    "capture": "synthetic",
+    "filter_name": "none",
+    "created_at": "2026-06-07T00:00:00Z",
+    "extra": {}
+  },
+  "normalization": {
+    "origin": "shoulder_center",
+    "scale": "shoulder_width",
+    "coordinate_system": "x_right_y_up_z_forward"
+  },
+  "tracks": {
+    "pose": [
+      {
+        "frame": 0,
+        "timestamp": 0,
+        "landmarks": [
+          { "x": 0, "y": 0.72, "z": 0, "visibility": 1 },
+          { "x": 0, "y": 0, "z": 0, "visibility": 0 },
+          { "x": 0, "y": 0, "z": 0, "visibility": 0 },
+          { "x": 0, "y": 0, "z": 0, "visibility": 0 },
+          { "x": 0, "y": 0, "z": 0, "visibility": 0 },
+          { "x": 0, "y": 0, "z": 0, "visibility": 0 },
+          { "x": 0, "y": 0, "z": 0, "visibility": 0 },
+          { "x": -0.22, "y": 0.7, "z": 0, "visibility": 1 },
+          { "x": 0.22, "y": 0.7, "z": 0, "visibility": 1 },
+          { "x": 0, "y": 0, "z": 0, "visibility": 0 },
+          { "x": 0, "y": 0, "z": 0, "visibility": 0 },
+          { "x": -0.5, "y": 0.25, "z": 0, "visibility": 1 },
+          { "x": 0.5, "y": 0.25, "z": 0, "visibility": 1 },
+          { "x": -0.78, "y": -0.18, "z": 0.02, "visibility": 1 },
+          { "x": 0.72, "y": -0.08, "z": 0.02, "visibility": 1 },
+          { "x": -0.86, "y": -0.55, "z": 0.06, "visibility": 1 },
+          { "x": 0.58, "y": 0.42, "z": 0.02, "visibility": 1 },
+          { "x": 0, "y": 0, "z": 0, "visibility": 0 },
+          { "x": 0, "y": 0, "z": 0, "visibility": 0 },
+          { "x": 0, "y": 0, "z": 0, "visibility": 0 },
+          { "x": 0, "y": 0, "z": 0, "visibility": 0 },
+          { "x": 0, "y": 0, "z": 0, "visibility": 0 },
+          { "x": 0, "y": 0, "z": 0, "visibility": 0 },
+          { "x": -0.36, "y": -0.72, "z": 0, "visibility": 1 },
+          { "x": 0.36, "y": -0.72, "z": 0, "visibility": 1 },
+          { "x": -0.36, "y": -1.2, "z": 0, "visibility": 1 },
+          { "x": 0.36, "y": -1.2, "z": 0, "visibility": 1 },
+          { "x": -0.36, "y": -1.72, "z": 0, "visibility": 1 },
+          { "x": 0.36, "y": -1.72, "z": 0, "visibility": 1 }
+        ]
+      },
+      {
+        "frame": 30,
+        "timestamp": 1,
+        "landmarks": [
+          { "x": 0, "y": 0.72, "z": 0, "visibility": 1 },
+          { "x": 0, "y": 0, "z": 0, "visibility": 0 },
+          { "x": 0, "y": 0, "z": 0, "visibility": 0 },
+          { "x": 0, "y": 0, "z": 0, "visibility": 0 },
+          { "x": 0, "y": 0, "z": 0, "visibility": 0 },
+          { "x": 0, "y": 0, "z": 0, "visibility": 0 },
+          { "x": 0, "y": 0, "z": 0, "visibility": 0 },
+          { "x": -0.22, "y": 0.7, "z": 0, "visibility": 1 },
+          { "x": 0.22, "y": 0.7, "z": 0, "visibility": 1 },
+          { "x": 0, "y": 0, "z": 0, "visibility": 0 },
+          { "x": 0, "y": 0, "z": 0, "visibility": 0 },
+          { "x": -0.5, "y": 0.25, "z": 0, "visibility": 1 },
+          { "x": 0.5, "y": 0.25, "z": 0, "visibility": 1 },
+          { "x": -0.78, "y": -0.18, "z": 0.02, "visibility": 1 },
+          { "x": 0.68, "y": 0.14, "z": 0.02, "visibility": 1 },
+          { "x": -0.86, "y": -0.55, "z": 0.06, "visibility": 1 },
+          { "x": 0.78, "y": 0.78, "z": 0.02, "visibility": 1 },
+          { "x": 0, "y": 0, "z": 0, "visibility": 0 },
+          { "x": 0, "y": 0, "z": 0, "visibility": 0 },
+          { "x": 0, "y": 0, "z": 0, "visibility": 0 },
+          { "x": 0, "y": 0, "z": 0, "visibility": 0 },
+          { "x": 0, "y": 0, "z": 0, "visibility": 0 },
+          { "x": 0, "y": 0, "z": 0, "visibility": 0 },
+          { "x": -0.36, "y": -0.72, "z": 0, "visibility": 1 },
+          { "x": 0.36, "y": -0.72, "z": 0, "visibility": 1 },
+          { "x": -0.36, "y": -1.2, "z": 0, "visibility": 1 },
+          { "x": 0.36, "y": -1.2, "z": 0, "visibility": 1 },
+          { "x": -0.36, "y": -1.72, "z": 0, "visibility": 1 },
+          { "x": 0.36, "y": -1.72, "z": 0, "visibility": 1 }
+        ]
+      }
+    ],
+    "left_hand": [
+      { "frame": 0, "timestamp": 0, "landmarks": [] },
+      { "frame": 30, "timestamp": 1, "landmarks": [] }
+    ],
+    "right_hand": [
+      {
+        "frame": 0,
+        "timestamp": 0,
+        "landmarks": [
+          { "x": 0.58, "y": 0.42, "z": 0.02, "visibility": 1 },
+          { "x": 0.54, "y": 0.47, "z": 0.02, "visibility": 1 },
+          { "x": 0.5, "y": 0.52, "z": 0.02, "visibility": 1 },
+          { "x": 0.47, "y": 0.56, "z": 0.02, "visibility": 1 },
+          { "x": 0.44, "y": 0.59, "z": 0.02, "visibility": 1 },
+          { "x": 0.59, "y": 0.5, "z": 0.01, "visibility": 1 },
+          { "x": 0.6, "y": 0.58, "z": 0.01, "visibility": 1 },
+          { "x": 0.6, "y": 0.66, "z": 0.01, "visibility": 1 },
+          { "x": 0.6, "y": 0.74, "z": 0.01, "visibility": 1 },
+          { "x": 0.64, "y": 0.49, "z": 0.01, "visibility": 1 },
+          { "x": 0.66, "y": 0.58, "z": 0.01, "visibility": 1 },
+          { "x": 0.67, "y": 0.67, "z": 0.01, "visibility": 1 },
+          { "x": 0.68, "y": 0.76, "z": 0.01, "visibility": 1 },
+          { "x": 0.69, "y": 0.47, "z": 0.01, "visibility": 1 },
+          { "x": 0.72, "y": 0.54, "z": 0.01, "visibility": 1 },
+          { "x": 0.74, "y": 0.61, "z": 0.01, "visibility": 1 },
+          { "x": 0.76, "y": 0.69, "z": 0.01, "visibility": 1 },
+          { "x": 0.73, "y": 0.45, "z": 0.01, "visibility": 1 },
+          { "x": 0.77, "y": 0.5, "z": 0.01, "visibility": 1 },
+          { "x": 0.8, "y": 0.55, "z": 0.01, "visibility": 1 },
+          { "x": 0.83, "y": 0.6, "z": 0.01, "visibility": 1 }
+        ]
+      },
+      {
+        "frame": 30,
+        "timestamp": 1,
+        "landmarks": [
+          { "x": 0.78, "y": 0.78, "z": 0.02, "visibility": 1 },
+          { "x": 0.73, "y": 0.81, "z": 0.02, "visibility": 1 },
+          { "x": 0.68, "y": 0.84, "z": 0.02, "visibility": 1 },
+          { "x": 0.64, "y": 0.87, "z": 0.02, "visibility": 1 },
+          { "x": 0.6, "y": 0.9, "z": 0.02, "visibility": 1 },
+          { "x": 0.79, "y": 0.86, "z": 0.01, "visibility": 1 },
+          { "x": 0.8, "y": 0.94, "z": 0.01, "visibility": 1 },
+          { "x": 0.8, "y": 1.02, "z": 0.01, "visibility": 1 },
+          { "x": 0.8, "y": 1.1, "z": 0.01, "visibility": 1 },
+          { "x": 0.84, "y": 0.85, "z": 0.01, "visibility": 1 },
+          { "x": 0.86, "y": 0.94, "z": 0.01, "visibility": 1 },
+          { "x": 0.87, "y": 1.03, "z": 0.01, "visibility": 1 },
+          { "x": 0.88, "y": 1.12, "z": 0.01, "visibility": 1 },
+          { "x": 0.89, "y": 0.83, "z": 0.01, "visibility": 1 },
+          { "x": 0.92, "y": 0.9, "z": 0.01, "visibility": 1 },
+          { "x": 0.94, "y": 0.97, "z": 0.01, "visibility": 1 },
+          { "x": 0.96, "y": 1.05, "z": 0.01, "visibility": 1 },
+          { "x": 0.93, "y": 0.81, "z": 0.01, "visibility": 1 },
+          { "x": 0.97, "y": 0.86, "z": 0.01, "visibility": 1 },
+          { "x": 1, "y": 0.91, "z": 0.01, "visibility": 1 },
+          { "x": 1.03, "y": 0.96, "z": 0.01, "visibility": 1 }
+        ]
+      }
+    ],
+    "face": [
+      { "frame": 0, "timestamp": 0, "landmarks": [] },
+      { "frame": 30, "timestamp": 1, "landmarks": [] }
+    ]
+  },
+  "features": {
+    "left_hand": [
+      { "frame": 0, "timestamp": 0, "finger_flexion": { "thumb": 0, "index": 0, "middle": 0, "ring": 0, "pinky": 0 }, "joint_angles": {}, "palm_openness": 0, "palm_orientation": null }
+    ],
+    "right_hand": [
+      {
+        "frame": 0,
+        "timestamp": 0,
+        "finger_flexion": { "thumb": 0.08, "index": 0.18, "middle": 0.15, "ring": 0.12, "pinky": 0.1 },
+        "joint_angles": { "index_mcp": 18, "index_pip": 12, "index_dip": 8 },
+        "palm_openness": 0.35,
+        "palm_orientation": { "normal": [0.1, 0.95, -0.2], "yaw": 12, "pitch": -16, "roll": 8 }
+      },
+      {
+        "frame": 30,
+        "timestamp": 1,
+        "finger_flexion": { "thumb": 0.12, "index": 0.12, "middle": 0.1, "ring": 0.08, "pinky": 0.08 },
+        "joint_angles": { "index_mcp": 14, "index_pip": 10, "index_dip": 6 },
+        "palm_openness": 0.42,
+        "palm_orientation": { "normal": [0.25, 0.86, -0.32], "yaw": 20, "pitch": -24, "roll": 11 }
+      }
+    ],
+    "face": [
+      { "frame": 0, "timestamp": 0, "mouth_openness": 0.015, "eyebrow_raise": 0.02, "gaze_direction": [0, 0, 1] }
+    ],
+    "head": [
+      { "frame": 0, "timestamp": 0, "nose_direction": [0, 0.1, 0.99], "head_center": [0, 0.7, 0] }
+    ]
+  },
+  "compression": {
+    "mode": "keyframes",
+    "epsilon": 0.003,
+    "original_frame_count": 60,
+    "stored_frame_count": 2
+  }
+}

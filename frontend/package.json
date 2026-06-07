@@ -1,24 +1,26 @@
 {
-  "name": "visualmind-player",
-  "private": true,
+  "name": "visualmind-rsl-player",
   "version": "0.1.0",
+  "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "test": "node --experimental-loader ./tests/loader.mjs tests/retarget.test.mjs && node --experimental-loader ./tests/loader.mjs tests/real_rig.test.mjs"
+    "dev": "vite --host 0.0.0.0 --port 5173",
+    "build": "tsc && vite build",
+    "preview": "vite preview --host 0.0.0.0 --port 5173"
   },
   "dependencies": {
-    "@pixiv/three-vrm": "^3.5.3",
-    "@react-three/drei": "^9.114.0",
-    "@react-three/fiber": "^8.17.0",
+    "@react-three/drei": "^9.120.5",
+    "@react-three/fiber": "^8.17.10",
+    "three": "^0.171.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "three": "^0.169.0"
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^4.3.0",
-    "vite": "^5.4.0"
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@types/three": "^0.171.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.7"
   }
 }
