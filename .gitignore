@@ -1,0 +1,15 @@
+node_modules/
+dist/
+__pycache__/
+*.py[cod]
+*.db
+data/
+uploads/
+exports/
+.env
+.venv/
+venv/
+.DS_Store
+.playwright-mcp/
+debug_frames/
+*.mp4

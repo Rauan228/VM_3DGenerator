@@ -1,0 +1,25 @@
+services:
+  backend:
+    build: { context: ., dockerfile: backend/Dockerfile }
+    volumes: [ "vm_data:/data" ]
+    environment:
+      - DATABASE_URL=postgresql+psycopg2://vm:vm@db:5432/visualmind
+    depends_on: [ db ]
+    ports: [ "8000:8000" ]
+
+  frontend:
+    build: { context: ./frontend }
+    ports: [ "80:80" ]
+    depends_on: [ backend ]
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: vm
+      POSTGRES_PASSWORD: vm
+      POSTGRES_DB: visualmind
+    volumes: [ "vm_pg:/var/lib/postgresql/data" ]
+
+volumes:
+  vm_data:
+  vm_pg:
