@@ -89,6 +89,7 @@ export default function App() {
   }
 
   const pose = gesture ? interpolateFrame(gesture.tracks.pose, time) : undefined;
+  const poseWorld = gesture?.tracks.pose_world ? interpolateFrame(gesture.tracks.pose_world, time) : undefined;
   const leftHand = gesture ? interpolateTrackedFrame(gesture.tracks.left_hand, time) : undefined;
   const rightHand = gesture ? interpolateTrackedFrame(gesture.tracks.right_hand, time) : undefined;
   const face = gesture ? interpolateFrame(gesture.tracks.face, time) : undefined;
@@ -160,7 +161,7 @@ export default function App() {
 
       <section className="stage">
         <div className="viewport">
-          <GestureScene pose={pose} leftHand={leftHand} rightHand={rightHand} face={face} leftTrail={leftTrail} rightTrail={rightTrail} aspect={aspect} showDebug={showDebug} />
+          <GestureScene pose={pose} poseWorld={poseWorld} leftHand={leftHand} rightHand={rightHand} face={face} leftTrail={leftTrail} rightTrail={rightTrail} aspect={aspect} showDebug={showDebug} />
         </div>
         {gesture && <FeaturePanel leftHand={leftFeature} rightHand={rightFeature} face={featureAt(gesture.features.face, time)} head={featureAt(gesture.features.head, time)} />}
       </section>

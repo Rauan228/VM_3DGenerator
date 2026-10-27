@@ -68,7 +68,10 @@ export type GestureJson = {
   fps: number;
   metadata?: GestureMetadata;
   normalization?: NormalizationInfo;
-  tracks: Record<"pose" | "left_hand" | "right_hand" | "face", LandmarkFrame[]>;
+  tracks: Record<"pose" | "left_hand" | "right_hand" | "face", LandmarkFrame[]> & {
+    /** Metric body landmarks with usable depth. Absent in gestures extracted before it existed. */
+    pose_world?: LandmarkFrame[];
+  };
   features: {
     left_hand: HandFeatureFrame[];
     right_hand: HandFeatureFrame[];

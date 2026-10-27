@@ -6,6 +6,9 @@ import type { Landmark, LandmarkFrame } from "../types";
 import { HAND_CONNECTIONS, POSE_CONNECTIONS } from "../gesture-utils";
 import { AvatarRig } from "./AvatarRig";
 
+/** Each avatar stands 0.85 off-centre; this turns it back toward a camera 3.3 away on the centre line. */
+const AVATAR_YAW = Math.atan2(0.85, 3.3);
+
 const LEFT_WRIST = 15;
 const RIGHT_WRIST = 16;
 const FINGER_TIPS = new Set([4, 8, 12, 16, 20]);
@@ -175,6 +178,7 @@ function SceneRig({
 
 export function GestureScene({
   pose,
+  poseWorld,
   leftHand,
   rightHand,
   face,
@@ -184,6 +188,7 @@ export function GestureScene({
   showDebug,
 }: {
   pose?: LandmarkFrame;
+  poseWorld?: LandmarkFrame;
   leftHand?: LandmarkFrame;
   rightHand?: LandmarkFrame;
   face?: LandmarkFrame;
@@ -194,16 +199,16 @@ export function GestureScene({
   showDebug: boolean;
 }) {
   return (
-    <Canvas camera={{ position: [0, 0.35, 4.4], fov: 38 }} shadows>
+    <Canvas camera={{ position: [0, 0.45, 3.3], fov: 38 }} shadows>
       <color attach="background" args={["#07120f"]} />
       <ambientLight intensity={0.72} />
       <directionalLight position={[2.4, 3.2, 2.2]} intensity={2.35} castShadow />
       <directionalLight position={[-2.2, 1.4, -1.2]} intensity={0.55} />
       <gridHelper args={[6, 24, "#31584b", "#19362f"]} position={[0, -1.15, 0]} />
-      <AvatarRig url="/models/visualmind-male.glb" position={[-1.15, -1.12, 0]} pose={pose} leftHand={leftHand} rightHand={rightHand} aspect={aspect} />
-      <AvatarRig url="/models/visualmind-female.glb" position={[1.15, -1.12, 0]} pose={pose} leftHand={leftHand} rightHand={rightHand} aspect={aspect} />
+      <AvatarRig url="/models/visualmind-male.glb" position={[-0.85, -1.12, 0]} yaw={AVATAR_YAW} pose={pose} poseWorld={poseWorld} leftHand={leftHand} rightHand={rightHand} aspect={aspect} />
+      <AvatarRig url="/models/visualmind-female.glb" position={[0.85, -1.12, 0]} yaw={-AVATAR_YAW} pose={pose} poseWorld={poseWorld} leftHand={leftHand} rightHand={rightHand} aspect={aspect} />
       {showDebug && <SceneRig pose={pose} leftHand={leftHand} rightHand={rightHand} face={face} leftTrail={leftTrail} rightTrail={rightTrail} compact={false} />}
-      <OrbitControls makeDefault enableDamping target={[0, 0.2, 0]} />
+      <OrbitControls makeDefault enableDamping target={[0, 0.4, 0]} />
     </Canvas>
   );
 }
