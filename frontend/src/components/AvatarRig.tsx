@@ -7,6 +7,9 @@ import { buildArmRig, relaxArm, solveArm, type ArmRig, type ArmSide } from "../a
 import { buildHandRig, relaxHand, solveHand, type HandRig, type SolveOptions } from "../hand-solver";
 import type { Landmark, LandmarkFrame } from "../types";
 
+/** Uniform scale of the avatar group; the skeleton overlay is sized against it. */
+export const AVATAR_SCALE = 1.05;
+
 /**
  * Image-space pose depth is only trustworthy as a hint: MediaPipe can place a wrist several
  * shoulder widths in front of the body. Gestures that predate the metric `pose_world` track
@@ -102,7 +105,7 @@ export function AvatarRig({
   // The rig's native forward axis (+z) is the signer's forward in gesture space, so with no
   // rotation the avatar faces the viewer exactly like the signer faces the camera in the clip.
   return (
-    <group ref={group} position={position} rotation={[0, yaw, 0]} scale={1.05}>
+    <group ref={group} position={position} rotation={[0, yaw, 0]} scale={AVATAR_SCALE}>
       <primitive object={scene} />
     </group>
   );
