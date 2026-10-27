@@ -10,6 +10,13 @@ RIGHT_SHOULDER = 12
 # so the arm solver reads this track; it is normalized by its own shoulders.
 WORLD_TRACK = "pose_world"
 
+# Metric hand landmarks, centred on the hand. Far steadier than the image-space hands, so they drive
+# the fingers; they are expressed in the same shoulder-width units as everything else.
+HAND_WORLD_TRACKS = ("left_hand_world", "right_hand_world")
+
+_METRIC_TRACKS = {WORLD_TRACK, *HAND_WORLD_TRACKS}
+_HAND_ORIGIN = Landmark(x=0.0, y=0.0, z=0.0, visibility=1.0)
+
 
 def _missing_frame(frame: LandmarkFrame) -> bool:
     return not frame.landmarks
@@ -61,7 +68,7 @@ def normalize_tracks(
 ) -> dict[str, list[LandmarkFrame]]:
     normalized = {name: [] for name in tracks}
     aspect = _aspect(video_width, video_height)
-    image_tracks = {name: frames for name, frames in tracks.items() if name != WORLD_TRACK}
+    image_tracks = {name: frames for name, frames in tracks.items() if name not in _METRIC_TRACKS}
 
     for index, pose_frame in enumerate(tracks.get("pose", [])):
         shoulders = None if _missing_frame(pose_frame) else _shoulder_frame(pose_frame.landmarks, aspect)
@@ -82,12 +89,15 @@ def normalize_tracks(
             )
 
     # World landmarks are already metric (aspect 1) and carry their own shoulders.
+    world_scales: list[float | None] = []
     for source in tracks.get(WORLD_TRACK, []):
         shoulders = None if _missing_frame(source) else _shoulder_frame(source.landmarks, 1.0)
         if shoulders is None:
+            world_scales.append(None)
             normalized[WORLD_TRACK].append(source.model_copy(update={"landmarks": []}))
             continue
         origin, scale = shoulders
+        world_scales.append(scale)
         normalized[WORLD_TRACK].append(
             LandmarkFrame(
                 frame=source.frame,
@@ -95,5 +105,20 @@ def normalize_tracks(
                 landmarks=[_normalize_point(point, origin, scale, 1.0) for point in source.landmarks],
             )
         )
+
+    # Hand landmarks are centred on the hand, so only the unit changes: the frame's shoulder width.
+    for name in HAND_WORLD_TRACKS:
+        for index, source in enumerate(tracks.get(name, [])):
+            scale = world_scales[index] if index < len(world_scales) else None
+            if scale is None or _missing_frame(source):
+                normalized[name].append(source.model_copy(update={"landmarks": []}))
+                continue
+            normalized[name].append(
+                LandmarkFrame(
+                    frame=source.frame,
+                    timestamp=source.timestamp,
+                    landmarks=[_normalize_point(point, _HAND_ORIGIN, scale, 1.0) for point in source.landmarks],
+                )
+            )
 
     return normalized
