@@ -41,6 +41,8 @@ The format is optimized for storage at dictionary scale and playback on avatars.
 }
 ```
 
+`pose_world` holds MediaPipe's metric body landmarks, normalized around the shoulder centre like every other track. Its depth is reliable, unlike the image-space `pose` track whose `z` can place a wrist several shoulder widths in front of the body, so the player drives the arms from `pose_world` and falls back to `pose` only for older files that lack it.
+
 ## Landmark Point
 
 Each point is stored as:
