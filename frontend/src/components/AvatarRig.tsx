@@ -62,6 +62,7 @@ export function AvatarRig({
   );
 
   const toWorld = useMemo(() => new THREE.Quaternion(), []);
+  useEffect(() => { (window as unknown as { __vmScene?: THREE.Object3D }).__vmScene = scene; }, [scene]); // TEMP-DEBUG
 
   useEffect(() => {
     scene.traverse((object) => {
