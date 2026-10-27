@@ -38,7 +38,7 @@ class MediaPipeHolisticExtractor:
         fps = float(capture.get(cv2.CAP_PROP_FPS) or 30.0)
         width = int(capture.get(cv2.CAP_PROP_FRAME_WIDTH) or 0)
         height = int(capture.get(cv2.CAP_PROP_FRAME_HEIGHT) or 0)
-        tracks: dict[str, list[LandmarkFrame]] = {"pose": [], "left_hand": [], "right_hand": [], "face": []}
+        tracks: dict[str, list[LandmarkFrame]] = {"pose": [], "pose_world": [], "left_hand": [], "right_hand": [], "face": []}
 
         with mp.solutions.holistic.Holistic(
             static_image_mode=False,
@@ -56,6 +56,7 @@ class MediaPipeHolisticExtractor:
                 results = holistic.process(rgb)
                 timestamp = frame_index / fps
                 tracks["pose"].append(LandmarkFrame(frame=frame_index, timestamp=timestamp, landmarks=_to_landmarks(results.pose_landmarks)))
+                tracks["pose_world"].append(LandmarkFrame(frame=frame_index, timestamp=timestamp, landmarks=_to_landmarks(results.pose_world_landmarks)))
                 tracks["left_hand"].append(LandmarkFrame(frame=frame_index, timestamp=timestamp, landmarks=_to_landmarks(results.left_hand_landmarks)))
                 tracks["right_hand"].append(LandmarkFrame(frame=frame_index, timestamp=timestamp, landmarks=_to_landmarks(results.right_hand_landmarks)))
                 tracks["face"].append(LandmarkFrame(frame=frame_index, timestamp=timestamp, landmarks=_to_landmarks(results.face_landmarks)))

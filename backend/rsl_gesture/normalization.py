@@ -6,6 +6,10 @@ from rsl_gesture.models import Landmark, LandmarkFrame
 LEFT_SHOULDER = 11
 RIGHT_SHOULDER = 12
 
+# Metric (metres) body landmarks. Unlike the image-space "pose" track their depth is usable,
+# so the arm solver reads this track; it is normalized by its own shoulders.
+WORLD_TRACK = "pose_world"
+
 
 def _missing_frame(frame: LandmarkFrame) -> bool:
     return not frame.landmarks
@@ -31,6 +35,25 @@ def _aspect(width: int | None, height: int | None) -> float:
     return height / width
 
 
+def _shoulder_frame(landmarks: list[Landmark], aspect: float) -> tuple[Landmark, float] | None:
+    if len(landmarks) <= RIGHT_SHOULDER:
+        return None
+    left = landmarks[LEFT_SHOULDER]
+    right = landmarks[RIGHT_SHOULDER]
+    origin = Landmark(
+        x=(left.x + right.x) / 2,
+        y=(left.y + right.y) / 2,
+        z=(left.z + right.z) / 2,
+        visibility=1.0,
+    )
+    # Measured on aspect-corrected axes so the unit stays the same across clip formats.
+    scale = distance(
+        Landmark(x=left.x, y=left.y * aspect, z=left.z),
+        Landmark(x=right.x, y=right.y * aspect, z=right.z),
+    )
+    return origin, scale
+
+
 def normalize_tracks(
     tracks: dict[str, list[LandmarkFrame]],
     video_width: int | None = None,
@@ -38,29 +61,17 @@ def normalize_tracks(
 ) -> dict[str, list[LandmarkFrame]]:
     normalized = {name: [] for name in tracks}
     aspect = _aspect(video_width, video_height)
+    image_tracks = {name: frames for name, frames in tracks.items() if name != WORLD_TRACK}
 
     for index, pose_frame in enumerate(tracks.get("pose", [])):
-        if _missing_frame(pose_frame) or len(pose_frame.landmarks) <= RIGHT_SHOULDER:
-            for name, frames in tracks.items():
-                source = frames[index]
-                normalized[name].append(source.model_copy(update={"landmarks": []}))
+        shoulders = None if _missing_frame(pose_frame) else _shoulder_frame(pose_frame.landmarks, aspect)
+        if shoulders is None:
+            for name, frames in image_tracks.items():
+                normalized[name].append(frames[index].model_copy(update={"landmarks": []}))
             continue
 
-        left = pose_frame.landmarks[LEFT_SHOULDER]
-        right = pose_frame.landmarks[RIGHT_SHOULDER]
-        origin = Landmark(
-            x=(left.x + right.x) / 2,
-            y=(left.y + right.y) / 2,
-            z=(left.z + right.z) / 2,
-            visibility=1.0,
-        )
-        # Measured on aspect-corrected axes so the unit stays the same across clip formats.
-        scale = distance(
-            Landmark(x=left.x, y=left.y * aspect, z=left.z),
-            Landmark(x=right.x, y=right.y * aspect, z=right.z),
-        )
-
-        for name, frames in tracks.items():
+        origin, scale = shoulders
+        for name, frames in image_tracks.items():
             source = frames[index]
             normalized[name].append(
                 LandmarkFrame(
@@ -69,5 +80,20 @@ def normalize_tracks(
                     landmarks=[_normalize_point(point, origin, scale, aspect) for point in source.landmarks],
                 )
             )
+
+    # World landmarks are already metric (aspect 1) and carry their own shoulders.
+    for source in tracks.get(WORLD_TRACK, []):
+        shoulders = None if _missing_frame(source) else _shoulder_frame(source.landmarks, 1.0)
+        if shoulders is None:
+            normalized[WORLD_TRACK].append(source.model_copy(update={"landmarks": []}))
+            continue
+        origin, scale = shoulders
+        normalized[WORLD_TRACK].append(
+            LandmarkFrame(
+                frame=source.frame,
+                timestamp=source.timestamp,
+                landmarks=[_normalize_point(point, origin, scale, 1.0) for point in source.landmarks],
+            )
+        )
 
     return normalized
