@@ -1,15 +1,18 @@
-"""Removes single-frame tracker glitches from the hand tracks without smoothing real motion.
+"""Removes tracker glitches from the hand tracks without smoothing real motion.
 
 A finger cannot flip 100 degrees and back inside two frames, but the tracker sometimes does. A running
 median with a MAD threshold (a Hampel filter) pulls such frames back to their neighbours and leaves genuine,
 sustained movement alone, unlike a low-pass filter which would also blur fast finger wiggles.
+
+Motion blur causes longer glitches: for a handful of frames the model folds several fingers further than any
+hand can bend. Those frames, and the blurred ones around them, are replaced by a blend of the last and next
+trustworthy frames. A pose that is impossible for a long stretch is a noisy fist, not a glitch, and is kept.
 """
 from __future__ import annotations
 
 import numpy as np
 
 from rsl_gesture.models import Landmark, LandmarkFrame
-from rsl_gesture.normalization import HAND_WORLD_TRACKS
 
 HAMPEL_HALF_WINDOW = 3
 HAMPEL_SIGMAS = 3.0
@@ -17,6 +20,22 @@ HAMPEL_SIGMAS = 3.0
 MIN_SCALE = 0.01
 # A hand lost for longer than this really is out of view, so it is left empty rather than invented.
 MAX_FILLED_GAP = 3
+
+HAND_TRACKS = ("left_hand", "right_hand")
+
+# Beyond these joint bends (degrees) a finger pose cannot be real: the middle joint tops out near 110 and the last one
+# near 90, and the last joint cannot fold far past the middle one.
+IMPOSSIBLE_MIDDLE_BEND = 120.0
+IMPOSSIBLE_TIP_BEND = 100.0
+IMPOSSIBLE_TIP_OVER_MIDDLE = 60.0
+# A frame is a glitch when this many of the four fingers are impossible at once.
+GLITCH_FINGERS = 2
+# Longer impossible stretches are left alone; the frames next to a glitch are blurred too, so they go with it.
+MAX_GLITCH_RUN = 5
+GLITCH_MARGINS = (2, 1, 0)
+
+HAND_LANDMARKS = 21
+FINGER_CHAINS = ((5, 6, 7, 8), (9, 10, 11, 12), (13, 14, 15, 16), (17, 18, 19, 20))
 
 _MAD_TO_SIGMA = 1.4826
 
@@ -39,6 +58,50 @@ def fill_short_gaps(values: np.ndarray, present: np.ndarray, max_gap: int = MAX_
                 filled[frame] = values[start - 1] * (1 - blend) + values[index] * blend
                 now_present[frame] = True
     return filled, now_present
+
+
+def _bend(first: np.ndarray, second: np.ndarray) -> float:
+    norm = np.linalg.norm(first) * np.linalg.norm(second)
+    if norm < 1e-9:
+        return 0.0
+    return float(np.degrees(np.arccos(np.clip(first @ second / norm, -1.0, 1.0))))
+
+
+def impossible_fingers(points: np.ndarray) -> int:
+    """How many of the four fingers of a (21, 3) hand are bent further than a real finger can be."""
+    count = 0
+    for mcp, pip, dip, tip in FINGER_CHAINS:
+        middle = _bend(points[pip] - points[mcp], points[dip] - points[pip])
+        last = _bend(points[dip] - points[pip], points[tip] - points[dip])
+        if middle > IMPOSSIBLE_MIDDLE_BEND or last > IMPOSSIBLE_TIP_BEND or last > middle + IMPOSSIBLE_TIP_OVER_MIDDLE:
+            count += 1
+    return count
+
+
+def replace_glitch_runs(values: np.ndarray, present: np.ndarray) -> np.ndarray:
+    """Blends over short runs of impossible hand poses, using the nearest trustworthy frames on both sides."""
+    cleaned = values.copy()
+    frame_count = len(values)
+    if values.shape[1] != HAND_LANDMARKS * 3:
+        return cleaned
+    glitch = np.array(
+        [bool(present[index]) and impossible_fingers(values[index].reshape(-1, 3)) >= GLITCH_FINGERS for index in range(frame_count)]
+    )
+    for start, end in _segments(glitch):
+        if end - start > MAX_GLITCH_RUN:
+            continue
+        for margin in GLITCH_MARGINS:
+            first, last = start - margin, end + margin  # frames to replace: [first, last)
+            before, after = first - 1, last
+            if before < 0 or after >= frame_count or not present[before:after + 1].all():
+                continue
+            if glitch[before] or glitch[after]:
+                continue
+            for step, frame in enumerate(range(first, last), start=1):
+                blend = step / (last - first + 1)
+                cleaned[frame] = values[before] * (1 - blend) + values[after] * blend
+            break
+    return cleaned
 
 
 def hampel(values: np.ndarray, half_window: int = HAMPEL_HALF_WINDOW, sigmas: float = HAMPEL_SIGMAS) -> np.ndarray:
@@ -80,6 +143,7 @@ def clean_hand_track(frames: list[LandmarkFrame]) -> list[LandmarkFrame]:
 
     values, present = fill_short_gaps(values, present)
     for start, end in _segments(present):
+        values[start:end] = replace_glitch_runs(values[start:end], present[start:end])
         values[start:end] = hampel(values[start:end])
 
     cleaned = []
@@ -103,4 +167,4 @@ def clean_hand_track(frames: list[LandmarkFrame]) -> list[LandmarkFrame]:
 
 
 def clean_hand_tracks(tracks: dict[str, list[LandmarkFrame]]) -> dict[str, list[LandmarkFrame]]:
-    return {name: clean_hand_track(frames) if name in HAND_WORLD_TRACKS else frames for name, frames in tracks.items()}
+    return {name: clean_hand_track(frames) if name in HAND_TRACKS else frames for name, frames in tracks.items()}
