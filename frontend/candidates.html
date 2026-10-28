@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Кандидаты аватаров</title>
+    <style>
+      :root { --bg: #15112b; --panel: #1f1940; --line: #352c66; --text: #ece9ff; --muted: #a59fd0; --good: #5fd69a; --bad: #ff7d8a; --accent: #8b6cff; }
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: Inter, system-ui, sans-serif; background: var(--bg); color: var(--text); }
+      header { padding: 16px 20px; border-bottom: 1px solid var(--line); }
+      h1 { margin: 0 0 4px; font-size: 20px; }
+      header p { margin: 0; color: var(--muted); font-size: 14px; }
+      .layout { display: grid; grid-template-columns: 340px 1fr; height: calc(100vh - 70px); }
+      .list { overflow-y: auto; border-right: 1px solid var(--line); }
+      .item { padding: 10px 14px; border-bottom: 1px solid var(--line); cursor: pointer; }
+      .item:hover { background: var(--panel); }
+      .item.active { background: var(--panel); box-shadow: inset 3px 0 var(--accent); }
+      .item b { display: block; font-size: 15px; }
+      .item small { color: var(--muted); }
+      .tags { margin-top: 4px; display: flex; flex-wrap: wrap; gap: 4px; }
+      .tag { font-size: 11px; padding: 2px 6px; border-radius: 4px; background: #2a2354; }
+      .tag.good { color: var(--good); } .tag.bad { color: var(--bad); }
+      .stage { position: relative; }
+      canvas { display: block; width: 100%; height: 100%; }
+      .info { position: absolute; left: 16px; top: 16px; max-width: 420px; background: rgba(21,17,43,.85); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; font-size: 13px; line-height: 1.5; }
+      .info h2 { margin: 0 0 6px; font-size: 17px; }
+      .controls { position: absolute; right: 16px; top: 16px; display: flex; flex-direction: column; gap: 6px; }
+      button { background: var(--panel); color: var(--text); border: 1px solid var(--line); border-radius: 6px; padding: 8px 12px; cursor: pointer; font: inherit; font-size: 13px; }
+      button:hover { border-color: var(--accent); }
+      .loading { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); pointer-events: none; }
+      @media (max-width: 800px) { .layout { grid-template-columns: 1fr; grid-template-rows: 40vh 1fr; } .list { border-right: 0; border-bottom: 1px solid var(--line); } .info { max-width: calc(100% - 32px); } }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Кандидаты аватаров для Visual Mind</h1>
+      <p>Выберите модель слева. Мышь: вращать, колесо: приблизить. Кнопки справа: вид лица и тест мимики/пальцев.</p>
+    </header>
+    <div class="layout">
+      <div class="list" id="list"></div>
+      <div class="stage" id="stage">
+        <div class="info" id="info"></div>
+        <div class="controls">
+          <button id="full">Во весь рост</button>
+          <button id="face">Лицо крупно</button>
+          <button id="hands">Руки крупно</button>
+          <button id="expr">Тест мимики</button>
+          <button id="fist">Тест: кулак</button>
+        </div>
+        <div class="loading" id="loading"></div>
+      </div>
+    </div>
+    <script type="module" src="/src/candidates.ts"></script>
+  </body>
+</html>
