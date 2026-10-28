@@ -2,6 +2,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 
 type Candidate = {
   file: string;
@@ -15,6 +16,10 @@ type Candidate = {
 };
 
 const CANDIDATES: Candidate[] = [
+  { file: "tripo-v3-male.glb", name: "Tripo v3.1: парень в стиле RPM (с ригом)", gender: "М", source: "Tripo API: реф перерисован в стиль RPM + A-поза, модель v3.1, риг v3.0 Mixamo", license: "твоя генерация", commercial: true, note: "Отдельные пальцы, полный скелет Mixamo с пальцами. Мимики пока нет — добавлю переносом форм лица." },
+  { file: "rpm-male.glb", name: "RPM-пара: парень (фиолетовый верх)", gender: "М", source: "Ready Player Me, перекрашен под Visual Mind", license: "Ready Player Me", commercial: false, note: "Стиль старой модели. Мимика ARKit, пальцы. Одежда перекрашена, сглажена." },
+  { file: "rpm-female.glb", name: "RPM-пара: девушка (розовый верх)", gender: "Ж", source: "Ready Player Me (брюнетка из TalkingHead), перекрашена", license: "CC BY-NC 4.0", commercial: false, note: "Настоящее женское тело RPM, мимика ARKit, пальцы. Очки убраны." },
+  { file: "tripo-male.glb", name: "Tripo: парень по твоим фото (без рига)", gender: "М", source: "Tripo API, multiview v2.5", license: "твоя генерация", commercial: true, note: "Сгенерирован по 4 видам из твоего листа. Пальцы слиты, скелета пока нет (риг ещё 25 кредитов)." },
   { file: "rb-male-adult-10.glb", name: "Rocketbox: парень (азиат), олимпийка", gender: "М", source: "Microsoft Rocketbox", license: "MIT", commercial: true, note: "Реалистичный, одежда смоделирована. Свои формы лица (FACS/визем), не ARKit: имена нужно сопоставить." },
   { file: "rb-male-adult-17.glb", name: "Rocketbox: парень, худи", gender: "М", source: "Microsoft Rocketbox", license: "MIT", commercial: true, note: "Худи с молнией, джинсы. Лицевые формы FACS." },
   { file: "rb-male-adult-18.glb", name: "Rocketbox: парень, серое худи", gender: "М", source: "Microsoft Rocketbox", license: "MIT", commercial: true, note: "Худи с капюшоном на голове." },
@@ -75,7 +80,7 @@ function resize() {
 }
 new ResizeObserver(resize).observe(stage);
 
-const loader = new GLTFLoader();
+const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
 let current: THREE.Object3D | undefined;
 let box = new THREE.Box3();
 let morphMeshes: THREE.Mesh[] = [];
@@ -91,7 +96,7 @@ function frame(view: "full" | "face" | "hands") {
   let dist = h * 1.9;
   if (view === "face") {
     target = new THREE.Vector3(center.x, box.max.y - h * 0.065, center.z);
-    dist = h * 0.28;
+    dist = h * 0.42;
   } else if (view === "hands") {
     const hand = findBone(/(^|:)RightHand$|hand_r$|R Hand$/i);
     if (hand) hand.getWorldPosition(target);
@@ -100,6 +105,15 @@ function frame(view: "full" | "face" | "hands") {
   controls.target.copy(target);
   camera.position.set(target.x + dist * 0.25, target.y + dist * 0.05, target.z + dist);
   controls.update();
+}
+
+function visibleBox(root: THREE.Object3D): THREE.Box3 {
+  const out = new THREE.Box3();
+  root.updateMatrixWorld(true);
+  root.traverseVisible((o) => {
+    if ((o as THREE.Mesh).isMesh) out.union(new THREE.Box3().setFromObject(o, true));
+  });
+  return out;
 }
 
 function findBone(re: RegExp): THREE.Object3D | undefined {
@@ -129,21 +143,31 @@ async function show(index: number) {
   const url = `/candidates/${c.file}`;
   const response = await fetch(url, { method: "HEAD" });
   const bytes = Number(response.headers.get("content-length") ?? 0);
-  const gltf = await loader.loadAsync(url);
+  let gltf;
+  try {
+    gltf = await loader.loadAsync(url);
+  } catch (error) {
+    loading.textContent = `Не удалось загрузить: ${error}`;
+    return;
+  }
   if (current) scene.remove(current);
   current = gltf.scene;
+  // The old Ready Player Me export carries a backdrop plane.
+  current.traverse((o) => {
+    if (o.name === "Plane") o.visible = false;
+  });
 
   // Normalise height to 1.75 m, feet on the grid.
   current.updateMatrixWorld(true);
-  box = new THREE.Box3().setFromObject(current, true);
+  box = visibleBox(current);
   const scale = 1.75 / Math.max(box.getSize(new THREE.Vector3()).y, 1e-3);
   current.scale.multiplyScalar(scale);
   current.updateMatrixWorld(true);
-  box = new THREE.Box3().setFromObject(current, true);
+  box = visibleBox(current);
   current.position.y -= box.min.y;
   current.position.x -= (box.min.x + box.max.x) / 2;
   current.updateMatrixWorld(true);
-  box = new THREE.Box3().setFromObject(current, true);
+  box = visibleBox(current);
   scene.add(current);
 
   morphMeshes = [];
