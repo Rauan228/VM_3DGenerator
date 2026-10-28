@@ -2,7 +2,7 @@ import { Loader, OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { useMemo } from "react";
 import * as THREE from "three";
-import type { Landmark, LandmarkFrame } from "../types";
+import type { GestureJson, Landmark, LandmarkFrame } from "../types";
 import { HAND_CONNECTIONS, POSE_CONNECTIONS } from "../gesture-utils";
 import { AVATAR_SCALE, AvatarRig } from "./AvatarRig";
 
@@ -15,6 +15,11 @@ const PAIR_YAW = Math.atan2(PAIR_OFFSET, CAMERA_DISTANCE);
 /** Camera distance when a single avatar fills the panel, and the height the camera looks at (chest). */
 const SOLO_DISTANCE = 2.3;
 const FRAME_CENTER_Y = 0.3;
+/**
+ * Closest the wheel can bring the camera, as a share of its starting distance. Closer than this the head leaves the
+ * frame and perspective swells whatever is held toward the camera, hands first.
+ */
+const MIN_ZOOM_SHARE = 0.72;
 const FLOOR_Y = -1.12;
 
 /** Avatar rig measurements (model units): shoulder height above the feet and shoulder width. */
@@ -158,6 +163,8 @@ function SkeletonOverlay({
 }
 
 export function GestureScene({
+  gesture,
+  time,
   pose,
   poseWorld,
   leftHand,
@@ -167,6 +174,9 @@ export function GestureScene({
   avatars,
   showSkeleton,
 }: {
+  gesture?: GestureJson;
+  /** Playback position in seconds. */
+  time: number;
   pose?: LandmarkFrame;
   poseWorld?: LandmarkFrame;
   leftHand?: LandmarkFrame;
@@ -186,7 +196,15 @@ export function GestureScene({
       <Canvas camera={{ position: [0, FRAME_CENTER_Y + 0.05, cameraZ], fov: 38 }} shadows>
         <color attach="background" args={["#15112b"]} />
         <ambientLight intensity={0.78} />
-        <directionalLight position={[2.4, 3.2, 2.2]} intensity={2.3} castShadow />
+        {/* The bias keeps smooth, untextured surfaces (the clothes) from shadowing themselves in stripes. */}
+        <directionalLight
+          position={[2.4, 3.2, 2.2]}
+          intensity={2.3}
+          castShadow
+          shadow-mapSize={[2048, 2048]}
+          shadow-bias={-0.0004}
+          shadow-normalBias={0.02}
+        />
         <directionalLight position={[-2.2, 1.4, -1.2]} intensity={0.6} />
         <gridHelper args={[6, 24, "#4a3f86", "#2a2352"]} position={[0, FLOOR_Y, 0]} />
         {slots.map((slot) => (
@@ -195,17 +213,15 @@ export function GestureScene({
             url={slot.url}
             position={[slot.x, FLOOR_Y, 0]}
             yaw={slot.yaw}
-            pose={pose}
-            poseWorld={poseWorld}
-            leftHand={leftHand}
-            rightHand={rightHand}
+            gesture={gesture}
+            time={time}
             aspect={aspect}
           />
         ))}
         {showSkeleton && (
           <SkeletonOverlay body={poseWorld ?? pose} leftHand={leftHand} rightHand={rightHand} trail={trail} anchor={slots[0]} />
         )}
-        <OrbitControls makeDefault enableDamping enablePan={false} minDistance={1.2} maxDistance={6} target={[0, FRAME_CENTER_Y, 0]} />
+        <OrbitControls makeDefault enableDamping enablePan={false} minDistance={cameraZ * MIN_ZOOM_SHARE} maxDistance={6} target={[0, FRAME_CENTER_Y, 0]} />
       </Canvas>
       <Loader
         containerStyles={{ background: "#15112b" }}
