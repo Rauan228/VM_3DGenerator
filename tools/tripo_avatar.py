@@ -1,12 +1,12 @@
-"""Generate a rigged avatar with the Tripo API from four views (front, left, back, right).
+"""Make a rigged avatar with the Tripo API (v3), one step at a time, so each paid step can be checked before the next.
 
-    python tools/tripo_avatar.py generate --views front.png left.png back.png right.png --out models/tripo/male
-    python tools/tripo_avatar.py rig --task <model task id> --out models/tripo/male
+    python tools/tripo_avatar.py restyle --image ref.png --prompt-file prompt.txt --out models/tripo/male   # ~10 credits
+    python tools/tripo_avatar.py model --input <image task id | image path> --out models/tripo/male          # ~40 credits
+    python tools/tripo_avatar.py rig --input <model task id> --out models/tripo/male                         # 25 credits
     python tools/tripo_avatar.py balance
 
-The API key is read from TRIPO_API_KEY, or from ~/.config/visualmind/tripo.env; it is never printed. "left" is the
-view from the character's left side (the character faces the image's left), "right" the opposite.
-Each stage saves its task JSON next to the output, so a later stage (or a rerun) does not pay for the earlier one again.
+The API key is read from TRIPO_API_KEY or ~/.config/visualmind/tripo.env and is never printed. Every task's JSON is
+saved next to the output (<out>_<step>_task.json) together with what it produced.
 """
 
 from __future__ import annotations
@@ -21,7 +21,7 @@ import urllib.error
 import urllib.request
 import uuid
 
-API = "https://api.tripo3d.ai/v2/openapi"
+API = "https://openapi.tripo3d.ai/v3"
 KEY_FILE = os.path.expanduser("~/.config/visualmind/tripo.env")
 
 
@@ -42,10 +42,10 @@ def request(method: str, path: str, body: bytes | None = None, content_type: str
     if body is not None:
         req.add_header("Content-Type", content_type)
     try:
-        with urllib.request.urlopen(req, timeout=120) as response:
+        with urllib.request.urlopen(req, timeout=180) as response:
             data = json.load(response)
     except urllib.error.HTTPError as error:
-        sys.exit(f"{method} {path}: HTTP {error.code} {error.read().decode(errors='replace')[:500]}")
+        sys.exit(f"{method} {path}: HTTP {error.code} {error.read().decode(errors='replace')[:600]}")
     if data.get("code") != 0:
         sys.exit(f"{method} {path}: {data}")
     return data["data"]
@@ -53,89 +53,98 @@ def request(method: str, path: str, body: bytes | None = None, content_type: str
 
 def upload(path: str) -> str:
     boundary = uuid.uuid4().hex
-    mime = mimetypes.guess_type(path)[0] or "image/png"
+    mime = mimetypes.guess_type(path)[0] or "application/octet-stream"
     body = (
         f"--{boundary}\r\nContent-Disposition: form-data; name=\"file\"; filename=\"{os.path.basename(path)}\"\r\n"
         f"Content-Type: {mime}\r\n\r\n"
     ).encode() + open(path, "rb").read() + f"\r\n--{boundary}--\r\n".encode()
-    return request("POST", "/upload", body, f"multipart/form-data; boundary={boundary}")["image_token"]
+    return request("POST", "/files", body, f"multipart/form-data; boundary={boundary}")["file_token"]
 
 
-def run_task(payload: dict, label: str) -> dict:
-    task_id = request("POST", "/task", json.dumps(payload).encode())["task_id"]
-    print(f"{label}: task {task_id}", flush=True)
+def run(endpoint: str, payload: dict, label: str, out: str) -> dict:
+    task_id = request("POST", endpoint, json.dumps(payload).encode())["task_id"]
+    print(f"{label}: {task_id}", flush=True)
+    last = None
     while True:
-        task = request("GET", f"/task/{task_id}")
+        task = request("GET", f"/tasks/{task_id}")
         status = task.get("status")
-        print(f"  {status} {task.get('progress', '')}%", flush=True)
+        if status != last:
+            print(f"  {status}", flush=True)
+            last = status
         if status == "success":
-            return task
-        if status in ("failed", "banned", "expired", "cancelled", "unknown"):
-            sys.exit(f"{label} {status}: {json.dumps(task)[:800]}")
-        time.sleep(8)
-
-
-def download(task: dict, out: str):
-    output = task.get("output", {})
-    saved = []
-    for key in ("pbr_model", "model", "base_model", "rendered_image"):
-        url = output.get(key)
-        if not url:
+            break
+        if status in ("failed", "cancelled", "banned", "expired"):
+            sys.exit(f"{label} {status}: {task.get('error_code')} {task.get('error_message')}")
+        time.sleep(3)
+    json.dump(task, open(f"{out}_{label}_task.json", "w"), indent=1)
+    for key, url in (task.get("output") or {}).items():
+        if not isinstance(url, str) or not url.startswith("http"):
             continue
-        ext = ".webp" if key == "rendered_image" else os.path.splitext(url.split("?")[0])[1] or ".glb"
-        path = f"{out}_{key}{ext}"
+        ext = os.path.splitext(url.split("?")[0])[1] or ".bin"
+        path = f"{out}_{label}_{key}{ext}"
         urllib.request.urlretrieve(url, path)
-        saved.append(path)
-        print(f"  saved {path} ({os.path.getsize(path)} bytes)")
-    return saved
+        print(f"  saved {path}")
+    print(f"  credits: {task.get('credits_consumed')} · balance {request('GET', '/account/balance')['balance']}")
+    return task
+
+
+def as_input(value: str) -> str:
+    return upload(value) if os.path.exists(value) else value
 
 
 def main():
     parser = argparse.ArgumentParser()
     sub = parser.add_subparsers(dest="command", required=True)
-    gen = sub.add_parser("generate")
-    gen.add_argument("--views", nargs=4, required=True, metavar=("FRONT", "LEFT", "BACK", "RIGHT"))
-    gen.add_argument("--out", required=True)
-    gen.add_argument("--model-version", default="v2.5-20250123")
+    restyle = sub.add_parser("restyle")
+    restyle.add_argument("--image", required=True)
+    restyle.add_argument("--prompt-file", required=True)
+    restyle.add_argument("--out", required=True)
+    restyle.add_argument("--model", default="chat_image_2")
+    model = sub.add_parser("model")
+    model.add_argument("--input", required=True, help="image path, file token or image task id")
+    model.add_argument("--out", required=True)
+    model.add_argument("--texture-quality", default="detailed")
     rig = sub.add_parser("rig")
-    rig.add_argument("--task", required=True)
+    rig.add_argument("--input", required=True, help="model task id")
     rig.add_argument("--out", required=True)
     sub.add_parser("balance")
     args = parser.parse_args()
 
     if args.command == "balance":
-        print(request("GET", "/user/balance"))
+        print(request("GET", "/account/balance"))
         return
     os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)
 
-    if args.command == "generate":
-        files = [{"type": "png", "file_token": upload(path)} for path in args.views]
-        task = run_task({
-            "type": "multiview_to_model",
-            "files": files,
-            "model_version": args.model_version,
+    if args.command == "restyle":
+        run("/generation/image-to-image", {
+            "model": args.model,
+            "input": upload(args.image),
+            "prompt": open(args.prompt_file).read().strip(),
+            "size": "1024x1536",
+            "quality": "medium",
+        }, "restyle", args.out)
+    elif args.command == "model":
+        run("/generation/image-to-model", {
+            "input": as_input(args.input),
+            "model": "v3.1-20260211",
             "texture": True,
             "pbr": True,
-            "texture_quality": "standard",
-            "orientation": "default",
-        }, "model")
-        json.dump(task, open(f"{args.out}_model_task.json", "w"), indent=1)
-        download(task, f"{args.out}_model")
+            "texture_quality": args.texture_quality,
+            "face_limit": 100000,
+        }, "model", args.out)
     else:
-        check = run_task({"type": "animate_prerigcheck", "original_model_task_id": args.task}, "rig check")
-        print("  rig check:", json.dumps(check.get("output", {})))
-        if not check.get("output", {}).get("riggable", True):
+        check = run("/animations/rig-check", {"input": args.input}, "rigcheck", args.out)
+        output = check.get("output") or {}
+        print("  rig check:", json.dumps(output))
+        if output.get("riggable") is False:
             sys.exit("Tripo says the model is not riggable")
-        task = run_task({
-            "type": "animate_rig",
-            "original_model_task_id": args.task,
-            "out_format": "glb",
-            "rig_type": check.get("output", {}).get("rig_type", "biped"),
+        run("/animations/rig", {
+            "input": args.input,
+            "model": "v3.0-20260909",
+            "rig_type": output.get("rig_type", "biped"),
             "spec": "mixamo",
-        }, "rig")
-        json.dump(task, open(f"{args.out}_rig_task.json", "w"), indent=1)
-        download(task, f"{args.out}_rig")
-    print(request("GET", "/user/balance"))
+            "out_format": "glb",
+        }, "rig", args.out)
 
 
 if __name__ == "__main__":
