@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { LandmarkFrame } from "../types";
+import type { GestureJson, LandmarkFrame } from "../types";
 import { GestureScene, type AvatarMode } from "./GestureScene";
 
 const AVATAR_CHOICES: { mode: AvatarMode; label: string }[] = [
@@ -9,6 +9,8 @@ const AVATAR_CHOICES: { mode: AvatarMode; label: string }[] = [
 ];
 
 export function ScenePanel({
+  gesture,
+  time,
   pose,
   poseWorld,
   leftHand,
@@ -17,6 +19,9 @@ export function ScenePanel({
   aspect,
   busyText,
 }: {
+  gesture?: GestureJson;
+  /** Playback position in seconds. */
+  time: number;
   pose?: LandmarkFrame;
   poseWorld?: LandmarkFrame;
   leftHand?: LandmarkFrame;
@@ -64,6 +69,8 @@ export function ScenePanel({
         <GestureScene
           // The camera is created once per canvas, so each avatar mode needs its own framing.
           key={`${avatars}-${cameraKey}`}
+          gesture={gesture}
+          time={time}
           pose={pose}
           poseWorld={poseWorld}
           leftHand={leftHand}

@@ -7,7 +7,7 @@ import { ScenePanel } from "./components/ScenePanel";
 import { UploadPanel } from "./components/UploadPanel";
 import { VideoPanel, type VideoState } from "./components/VideoPanel";
 import { formatNumber, wordFromFileName } from "./format";
-import { frameWindow, interpolateFrame, interpolateTrackedFrame, loadSampleGesture } from "./gesture-utils";
+import { frameWindow, handAt, interpolateFrame, loadSampleGesture } from "./gesture-utils";
 import type { GestureJson, LandmarkFrame } from "./types";
 import { usePlayback } from "./usePlayback";
 
@@ -235,8 +235,6 @@ export default function App() {
   const world = gesture?.tracks.pose_world;
   const pose = gesture ? interpolateFrame(gesture.tracks.pose, time) : undefined;
   const poseWorld = world ? interpolateFrame(world, time) : undefined;
-  const leftHand = gesture ? interpolateTrackedFrame(gesture.tracks.left_hand, time) : undefined;
-  const rightHand = gesture ? interpolateTrackedFrame(gesture.tracks.right_hand, time) : undefined;
   const trail = gesture ? frameWindow(world ?? gesture.tracks.pose, time, 0.55) : [];
 
   // Gestures extracted before the pipeline recorded frame size still carry MediaPipe's
@@ -244,6 +242,9 @@ export default function App() {
   const width = gesture?.metadata?.video_width ?? 0;
   const height = gesture?.metadata?.video_height ?? 0;
   const aspect = gesture?.normalization?.aspect_corrected || !width || !height ? 1 : height / width;
+
+  const leftHand = gesture ? handAt(gesture, "left_hand", time, aspect) : undefined;
+  const rightHand = gesture ? handAt(gesture, "right_hand", time, aspect) : undefined;
 
   const notes = useMemo(() => (gesture ? qualityNotes(gesture, isSample) : []), [gesture, isSample]);
   const videoDetails = width && height ? `${width}×${height} · ${formatNumber(gesture?.fps ?? 0, 0)} к/с` : undefined;
@@ -328,6 +329,8 @@ export default function App() {
             onAttach={attachVideo}
           />
           <ScenePanel
+            gesture={gesture ?? undefined}
+            time={time}
             pose={pose}
             poseWorld={poseWorld}
             leftHand={leftHand}
