@@ -40,6 +40,14 @@ export type HeadFeatureFrame = {
   head_center?: [number, number, number] | null;
 };
 
+/** One video frame of the face landmarker: ARKit blendshape weights, and the head's pitch, yaw, roll in degrees. */
+export type ExpressionFrame = {
+  frame: number;
+  timestamp: number;
+  blendshapes: Record<string, number>;
+  head: [number, number, number] | number[];
+};
+
 export type GestureMetadata = {
   source_video?: string | null;
   capture?: string;
@@ -57,6 +65,10 @@ export type NormalizationInfo = {
   coordinate_system?: string;
   /** True once the extractor has undone MediaPipe's per-axis image normalization. */
   aspect_corrected?: boolean;
+  /** "world": hand depth from the hand landmarker's 3D hand, which can be trusted; absent or "image": nearly flat. */
+  hand_depth?: "image" | "world";
+  /** Where the picture's edges lie in these units: a body point beyond them is guessed by the pose model, not seen. */
+  frame?: { left: number; right: number; top: number; bottom: number };
 };
 
 export type GestureJson = {
@@ -78,6 +90,8 @@ export type GestureJson = {
     face: FaceFeatureFrame[];
     head: HeadFeatureFrame[];
   };
+  /** Facial expression and head pose per frame. Absent in gestures extracted before it existed. */
+  expression?: ExpressionFrame[];
   compression: {
     mode: "none" | "keyframes";
     epsilon: number;

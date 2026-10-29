@@ -1,5 +1,6 @@
 import { PerspectiveCamera } from "@react-three/drei";
 import { Canvas, useThree } from "@react-three/fiber";
+import * as THREE from "three";
 import { Suspense, useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom/client";
 import { fetchGesture } from "./api";
@@ -17,10 +18,16 @@ const MODELS = { male: "/models/visualmind-male.glb", female: "/models/visualmin
 const FLOOR_Y = -1.12;
 const FRAMING = { male: { lookAt: 0.36, distance: 2.1 }, female: { lookAt: 0.3, distance: 1.95 } };
 
-type RenderWindow = Window & { renderAt?: (seconds: number) => Promise<void>; renderReady?: boolean; renderError?: string };
+type RenderWindow = Window & {
+  renderAt?: (seconds: number) => Promise<void>;
+  renderReady?: boolean;
+  renderError?: string;
+  /** For checking a pose: each hand's wrist and the (index side to little finger) x (wrist to middle knuckle) normal, in the scene. */
+  handFrames?: () => Record<string, { wrist: number[]; normal: number[]; along: number[] }>;
+};
 
 function Driver({ time }: { time: React.MutableRefObject<number> }) {
-  const { invalidate, gl } = useThree();
+  const { invalidate, gl, scene } = useThree();
   useEffect(() => {
     const target = window as RenderWindow;
     target.renderAt = (seconds) =>
@@ -30,6 +37,21 @@ function Driver({ time }: { time: React.MutableRefObject<number> }) {
         // One frame to draw, one more so the drawn frame is what the canvas shows.
         requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
       });
+    target.handFrames = () => {
+      const at = (name: string) => scene.getObjectByName(name)?.getWorldPosition(new THREE.Vector3());
+      const out: Record<string, { wrist: number[]; normal: number[]; along: number[] }> = {};
+      for (const side of ["Left", "Right"]) {
+        const wrist = at(`${side}Hand`);
+        const index = at(`${side}HandIndex1`);
+        const middle = at(`${side}HandMiddle1`);
+        const pinky = at(`${side}HandPinky1`);
+        if (!wrist || !index || !middle || !pinky) continue;
+        const along = middle.clone().sub(wrist).normalize();
+        const normal = along.clone().cross(pinky.clone().sub(index)).normalize();
+        out[side] = { wrist: wrist.toArray(), normal: normal.toArray(), along: along.toArray() };
+      }
+      return out;
+    };
     // Mounted after the avatar inside the same Suspense boundary, so the model is loaded by now.
     requestAnimationFrame(() => requestAnimationFrame(() => (target.renderReady = true)));
   }, [invalidate, gl, time]);
@@ -39,6 +61,8 @@ function Driver({ time }: { time: React.MutableRefObject<number> }) {
 function Render() {
   const params = new URLSearchParams(location.search);
   const avatar = params.get("avatar") === "female" ? "female" : "male";
+  // For checking a pose: `view=close` frames the chest and hands, `view=side` looks from the avatar's right.
+  const view = params.get("view");
   const [gesture, setGesture] = useState<GestureJson>();
   const time = useRef(0);
 
@@ -54,9 +78,15 @@ function Render() {
       <color attach="background" args={["#15112b"]} />
       <PerspectiveCamera
         makeDefault
-        position={[0, FRAMING[avatar].lookAt + 0.05, FRAMING[avatar].distance]}
+        position={
+          view === "side"
+            ? [-1.2, 0.15, 0.25]
+            : view === "close"
+              ? [0, 0.15, 1.0]
+              : [0, FRAMING[avatar].lookAt + 0.05, FRAMING[avatar].distance]
+        }
         fov={38}
-        onUpdate={(self) => self.lookAt(0, FRAMING[avatar].lookAt, 0)}
+        onUpdate={(self) => self.lookAt(0, view === "side" || view === "close" ? 0.12 : FRAMING[avatar].lookAt, 0)}
       />
       <ambientLight intensity={0.8} />
       <directionalLight position={[2.4, 3.2, 2.2]} intensity={2.2} />
