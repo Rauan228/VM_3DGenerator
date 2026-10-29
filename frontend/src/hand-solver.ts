@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { fingerDirections, fitFinger, PHALANX_RATIOS, type FingerFit, type FitFingerName, type Vec3 } from "./finger-fit";
+import { fingerDirections, fitFinger, matchReach, PHALANX_RATIOS, type FingerFit, type FitFingerName, type Vec3 } from "./finger-fit";
 import type { Landmark } from "./types";
 
 export const FINGERS = ["Thumb", "Index", "Middle", "Ring", "Pinky"] as const;
@@ -41,7 +41,19 @@ const CURL_COUPLING_RATIO = 0.6;
  */
 const FIST_START = THREE.MathUtils.degToRad(55);
 const FIST_FULL = THREE.MathUtils.degToRad(85);
+/**
+ * A fist that turns its back to the camera hides its fingertips, and the hand model then reports every finger folded
+ * about 90 degrees at the knuckle and straight beyond it: rods standing out of the palm, which no relaxed hand makes
+ * and which reads as nothing. Fingers folded this far at the knuckle are taken to be gripping as well. A hand held with
+ * its knuckles at 60 to 70 degrees (a "C") stays below the start.
+ */
+const KNUCKLE_GRIP_START = THREE.MathUtils.degToRad(72);
+const KNUCKLE_GRIP_FULL = THREE.MathUtils.degToRad(90);
 const FIST_KNUCKLE = THREE.MathUtils.degToRad(80);
+/** A palm seen shorter than this share of its real length (in the picture) is turned edge-on to the camera. */
+const EDGE_ON_PALM = 0.65;
+/** Cosine between a finger's first and last phalanx, in the picture, below which the finger is curled back on itself. */
+const HOOKED_DOT = 0.3;
 const FIST_MIDDLE = THREE.MathUtils.degToRad(100);
 const FIST_TIP = THREE.MathUtils.degToRad(60);
 
@@ -69,6 +81,11 @@ export type SolveOptions = {
    * from the camera looks shorter, so a length taken from a single frame would shrink the fingers with it.
    */
   scale?: number;
+  /**
+   * The landmarks' depth comes from the hand landmarker's 3D hand (gesture `normalization.hand_depth === "world"`):
+   * fingers are fitted to it in full, and the corrections that make up for a flat depth are left out.
+   */
+  trustedDepth?: boolean;
 };
 
 type FingerJoint = {
@@ -198,13 +215,44 @@ function readPoints(landmarks: Landmark[], options: SolveOptions): THREE.Vector3
  */
 type Palm = { up: THREE.Vector3; side: THREE.Vector3; normal: THREE.Vector3; foldSign: number };
 
+/**
+ * A finger reaching this much further from the wrist (palm lengths) than the fingers curled beside it is held out on
+ * purpose: a pointing index, a pinky, the two fingers of a "V". Sign languages keep such fingers straight, while the
+ * fit, short of depth, often leaves them bent at the knuckle toward the camera, where they disappear behind the fist.
+ */
+const POINTING_LEAD_START = 0.35;
+const POINTING_LEAD_FULL = 0.55;
+/** A held-out finger is at least this far from the wrist (palm lengths). */
+const POINTING_MIN_REACH = 1.25;
+const STRAIGHT_KNUCKLE = THREE.MathUtils.degToRad(15);
+const STRAIGHT_JOINT = THREE.MathUtils.degToRad(10);
+
+function straightenPointing(fits: FingerFit[], reaches: number[]): FingerFit[] {
+  const sorted = [...reaches].sort((a, b) => a - b);
+  // The curled group: the two shortest reaches.
+  const curled = (sorted[0] + sorted[1]) / 2;
+  return fits.map((fit, index) => {
+    const lead = reaches[index] - curled;
+    if (reaches[index] < POINTING_MIN_REACH || lead <= POINTING_LEAD_START) return fit;
+    const weight = THREE.MathUtils.smoothstep(lead, POINTING_LEAD_START, POINTING_LEAD_FULL);
+    const [spread, knuckle, middle, tip] = fit;
+    const toward = (value: number, straight: number) => (value > straight ? value + (straight - value) * weight : value);
+    return [spread, toward(knuckle, STRAIGHT_KNUCKLE), toward(middle, STRAIGHT_JOINT), toward(tip, STRAIGHT_JOINT)];
+  });
+}
+
 /** A fitted finger with the fist rule applied: curled fingers of a mostly closed hand close the rest of the way. */
 function closeFist(fits: FingerFit[]): FingerFit[] {
-  const mean = fits.reduce((sum, fit) => sum + fit[2], 0) / fits.length;
-  const closure = THREE.MathUtils.smoothstep(mean, FIST_START, FIST_FULL);
+  const mean = (index: number) => fits.reduce((sum, fit) => sum + fit[index], 0) / fits.length;
+  const curled = (knuckle: number, middle: number) =>
+    Math.max(
+      THREE.MathUtils.smoothstep(middle, FIST_START, FIST_FULL),
+      THREE.MathUtils.smoothstep(knuckle, KNUCKLE_GRIP_START, KNUCKLE_GRIP_FULL),
+    );
+  const closure = curled(mean(1), mean(2));
   return fits.map(([spread, knuckle, middle, tip]) => {
     // A finger that is already clearly curled follows the fist; one held out (a pointing index) does not.
-    const grip = closure * THREE.MathUtils.smoothstep(middle, FIST_START, FIST_FULL);
+    const grip = closure * curled(knuckle, middle);
     const closedKnuckle = knuckle + Math.max(0, FIST_KNUCKLE - knuckle) * grip;
     const closedMiddle = middle + Math.max(0, FIST_MIDDLE - middle) * grip;
     let closedTip = tip + Math.max(0, FIST_TIP - tip) * grip;
@@ -266,10 +314,30 @@ export function solveHand(rig: HandRig, landmarks: Landmark[] | undefined, optio
 
   const worldDirections = new Map<FingerName, THREE.Vector3[]>();
   const fitted = FITTED_FINGERS.map((finger) =>
-    fitFinger(segmentsOf(finger).map(toPalmFrame), PHALANX_RATIOS[finger], palm.foldSign, rig.fits.get(finger)),
+    fitFinger(segmentsOf(finger).map(toPalmFrame), PHALANX_RATIOS[finger], palm.foldSign, rig.fits.get(finger), options.trustedDepth),
   );
   FITTED_FINGERS.forEach((finger, index) => rig.fits.set(finger, fitted[index]));
-  closeFist(fitted).forEach((fit, index) => {
+  // The fit leans on the tracker's depth; where its reach disagrees with how far the tip really is from the wrist,
+  // the reach wins (a fist folding toward the camera, a pointing finger seen end-on).
+  const seenPalm = Math.hypot(points[MIDDLE_MCP].x - points[WRIST].x, points[MIDDLE_MCP].y - points[WRIST].y);
+  const edgeOn = options.scale !== undefined && seenPalm < EDGE_ON_PALM * options.scale;
+  const reaches = FITTED_FINGERS.map((finger) => points[LANDMARK_CHAINS[finger][3]].distanceTo(points[WRIST]) / palmLength);
+  const reached = options.trustedDepth ? fitted : fitted.map((fit, index) => {
+    const finger = FITTED_FINGERS[index];
+    const chain = LANDMARK_CHAINS[finger];
+    const base = toPalmFrame(points[chain[0]].clone().sub(points[WRIST]));
+    const measured = points[chain[3]].distanceTo(points[WRIST]) / palmLength;
+    // In the picture, the last phalanx turning back against the first is a curl, not a finger pointing at the camera.
+    const first = points[chain[1]].clone().sub(points[chain[0]]).setZ(0);
+    const last = points[chain[3]].clone().sub(points[chain[2]]).setZ(0);
+    const hooked = first.lengthSq() > EPSILON && last.lengthSq() > EPSILON && first.normalize().dot(last.normalize()) < HOOKED_DOT;
+    // A palm seen much shorter than it is, is turned edge-on to the camera; then the picture cannot show a finger
+    // curling back, but a short reach still means a closed hand (a fist swinging up), not fingers pointing at the lens.
+    return matchReach(fit, base, PHALANX_RATIOS[finger], palm.foldSign, measured, hooked || edgeOn);
+  });
+  // A held-out finger is straightened only to make up for a flat depth; measured in 3D, its curve is real (the arch of
+  // the index fingers in "школа").
+  closeFist(options.trustedDepth ? reached : straightenPointing(reached, reaches)).forEach((fit, index) => {
     worldDirections.set(
       FITTED_FINGERS[index],
       fingerDirections(fit, palm.foldSign).map(([x, y, z]) =>
