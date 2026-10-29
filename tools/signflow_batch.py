@@ -6,9 +6,11 @@ Only the first part (frontal, normal speed) is what the pipeline is built for; i
 backend, like an upload from the player. The use of these videos is by agreement with the site's owners.
 
     python3 tools/signflow_batch.py privet spasibo ...     # backend must be running on :8010
+    python3 tools/signflow_batch.py --redo privet ...      # process again (after a pipeline change), same place
 
 Writes data/signflow/<slug>.mp4 (the original), <slug>_front.mp4 (the part used) and the manifest the gallery reads,
-frontend/public/gallery/signflow.json. Words already in the manifest are skipped.
+frontend/public/gallery/signflow.json. Words already in the manifest are skipped, unless --redo is given: then their
+gesture and uploaded clip are replaced.
 """
 
 from __future__ import annotations
@@ -33,7 +35,9 @@ AGENT = "Mozilla/5.0 (VisualMind gesture research)"
 PAUSE = 2.0
 # A cut between the parts: a frame that differs from the one before by this many times the clip's typical difference.
 CUT_FACTOR = 4.0
-MIN_PART_SECONDS = 1.0
+MIN_PART_SECONDS = 0.6
+# ... and differs this many times more than the frames either side of it do.
+CUT_ISOLATION = 1.8
 
 
 def fetch(url: str) -> bytes:
@@ -53,30 +57,29 @@ def word_page(slug: str) -> tuple[str, str]:
 
 
 def first_part_end(path: Path) -> float:
-    """Time of the first hard cut, i.e. the end of the frontal normal-speed part."""
+    """Time of the first cut, i.e. the end of the frontal normal-speed part. A fast hand also makes a frame differ a lot
+    from the one before, but over several frames in a row (the movement and its blur); a cut is one frame that differs
+    far more than its neighbours do."""
     import cv2
     import numpy as np
 
     capture = cv2.VideoCapture(str(path))
     fps = capture.get(cv2.CAP_PROP_FPS) or 30.0
-    previous = None
-    differences = []
+    frames = []
     while True:
         ok, frame = capture.read()
         if not ok:
             break
-        grey = cv2.resize(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY), (160, 90)).astype(float)
-        if previous is not None:
-            differences.append(float(np.abs(grey - previous).mean()))
-        previous = grey
+        frames.append(cv2.resize(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY), (160, 90)).astype(float))
     capture.release()
-    differences = np.array(differences)
+    differences = np.array([np.abs(b - a).mean() for a, b in zip(frames[:-1], frames[1:])])
     typical = float(np.median(differences)) or 1e-3
-    for index, value in enumerate(differences):
-        time_s = (index + 1) / fps
-        if time_s >= MIN_PART_SECONDS and value > CUT_FACTOR * typical:
-            return time_s
-    return len(differences) / fps
+    for index in range(1, len(differences) - 1):
+        value = differences[index]
+        neighbours = max(differences[index - 1], differences[index + 1], 1e-3)
+        if (index + 1) / fps >= MIN_PART_SECONDS and value > CUT_FACTOR * typical and value > CUT_ISOLATION * neighbours:
+            return (index + 1) / fps
+    return len(frames) / fps
 
 
 def cut(source: Path, target: Path, end: float) -> None:
@@ -109,13 +112,13 @@ def process(video: Path, word: str) -> dict:
             "duration": gesture["duration"], "expression_frames": len(gesture.get("expression") or [])}
 
 
-def main(slugs: list[str]) -> None:
+def main(slugs: list[str], redo: bool = False) -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     MANIFEST.parent.mkdir(parents=True, exist_ok=True)
     manifest = json.loads(MANIFEST.read_text()) if MANIFEST.exists() else []
-    done = {entry["slug"] for entry in manifest}
+    done = {entry["slug"]: entry for entry in manifest}
     for slug in slugs:
-        if slug in done:
+        if slug in done and not redo:
             print(f"{slug}: already done")
             continue
         try:
@@ -135,9 +138,18 @@ def main(slugs: list[str]) -> None:
         except Exception as error:  # one bad word must not stop the batch
             print(f"{slug}: FAILED {error}")
             continue
-        manifest.append(entry)
+        old = done.get(slug)
+        if old:
+            # The batch's own earlier result for this word: its gesture file and uploaded clip are replaced.
+            (ROOT / "data" / "gestures" / f"{old['gesture_id']}.json").unlink(missing_ok=True)
+            (ROOT / old["source_video"]).unlink(missing_ok=True)
+            manifest[manifest.index(old)] = entry
+        else:
+            manifest.append(entry)
+        done[slug] = entry
         MANIFEST.write_text(json.dumps(manifest, ensure_ascii=False, indent=1))
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    arguments = sys.argv[1:]
+    main([a for a in arguments if a != "--redo"], redo="--redo" in arguments)
