@@ -3,8 +3,8 @@
 A hand seen edge-on (a palm held flat and level, palms pressed together, a fist from the side) shows little in the
 picture of which way it faces, and its depth then sometimes comes out mirrored: the fingers pointing into the chest
 instead of away from it, the palm down instead of up. The mirrored hand is usually one no wrist can make: bent back
-120 degrees, or sideways 90. Each hand is checked against its forearm (from the pose) and, where the hand mirrored in
-depth about its wrist fits the forearm far better, that one is taken. (Measured on signflow.ru clips: a level palm
+120 degrees, or sideways 90. Each hand is checked against its forearm (from the pose) and, where the hand turned over
+(its palm mirrored in depth about the wrist, see `turned_over`) fits the forearm far better, that one is taken. (Measured on signflow.ru clips: a level palm
 under the other hand in "извините" and "хлеб" read as fingers in the chest; flipped, the wrist is within 20 degrees
 of straight.)
 
@@ -31,6 +31,10 @@ FLEX_LIMIT = 80.0
 DEVIATION_LIMIT = 35.0
 # The mirrored hand is taken when it is this much (degrees beyond the limits) more plausible.
 FLIP_MARGIN = 15.0
+# A hand whose fingertips are this close to the wrist (palm lengths, on average) is a fist or nearly one: its shape shows
+# which way it faces, and turning it over only spoils it (the fist on the chest in "алкоголь" opened into a claw).
+# Open hands reach 1.4 to 2.5, fists 0.5 to 1.2.
+FIST_REACH = 1.3
 # Decisions are evened out over this many frames either side, so a hand does not flip back and forth.
 VOTE_HALF_WINDOW = 2
 # Two hand tracks are the same hand when their points lie this close in the picture, as a share of the palm length.
@@ -58,10 +62,10 @@ def _unit(vector: np.ndarray) -> np.ndarray | None:
 
 
 def palm_facing(points: np.ndarray, side: str) -> np.ndarray | None:
-    """The direction the palm faces. The cross product of the knuckle directions points out of the back of a right
-    hand and out of the palm of a left one in these coordinates (checked on a palm laid on the cheek and a palm up)."""
+    """The direction the palm faces. The cross product of the knuckle directions (index, then little finger) points out
+    of the palm of a right hand and out of the back of a left one in these coordinates."""
     across = np.cross(points[5] - points[0], points[17] - points[0])
-    return _unit(across if side == "left_hand" else -across)
+    return _unit(across if side == "right_hand" else -across)
 
 
 def wrist_bend(points: np.ndarray, forearm: np.ndarray, side: str) -> tuple[float, float] | None:
@@ -87,10 +91,27 @@ def implausibility(bend: tuple[float, float] | None) -> float:
     return max(0.0, abs(flex) - FLEX_LIMIT) + max(0.0, abs(deviation) - DEVIATION_LIMIT)
 
 
-def mirrored_in_depth(points: np.ndarray) -> np.ndarray:
-    mirrored = points.copy()
-    mirrored[:, 2] = 2 * points[0, 2] - points[:, 2]
-    return mirrored
+def turned_over(points: np.ndarray) -> np.ndarray | None:
+    """The hand the picture cannot tell from the measured one: its palm frame mirrored in depth about the wrist, as an
+    edge-on palm is mirrored, but turned rather than reflected, so it stays the same hand (a right hand stays right) and
+    its fingers still curl toward its palm. For a flat hand this is the same as mirroring the depth."""
+    along = _unit(points[9] - points[0])
+    if along is None:
+        return None
+    side = points[17] - points[5]
+    side = _unit(side - along * float(side @ along))
+    if side is None:
+        return None
+    normal = np.cross(along, side)
+    flip = np.diag([1.0, 1.0, -1.0])
+    source = np.stack([along, side, normal], axis=1)
+    target = np.stack([flip @ along, flip @ side, -(flip @ normal)], axis=1)
+    return points[0] + (points - points[0]) @ (target @ source.T).T
+
+
+def _reach(points: np.ndarray) -> float:
+    palm = float(np.linalg.norm(points[9] - points[0])) or 1.0
+    return float(np.mean([np.linalg.norm(points[tip] - points[0]) for tip in (8, 12, 16, 20)])) / palm
 
 
 def _forearm(tracks: dict[str, list[LandmarkFrame]], side: str, index: int) -> np.ndarray | None:
@@ -117,7 +138,7 @@ def _vote(flags: list[bool | None]) -> list[bool]:
 
 
 def fix_depth_flips(tracks: dict[str, list[LandmarkFrame]]) -> dict[str, list[LandmarkFrame]]:
-    """Mirrors in depth the hands whose measured depth makes an impossible wrist. Returns new tracks."""
+    """Turns over the hands whose measured depth makes an impossible wrist. Returns new tracks."""
     fixed = dict(tracks)
     for side in SIDES:
         frames = tracks.get(side, [])
@@ -128,12 +149,15 @@ def fix_depth_flips(tracks: dict[str, list[LandmarkFrame]]) -> dict[str, list[La
             if points is None or forearm is None:
                 flags.append(None)
                 continue
+            turned = turned_over(points)
+            if turned is None or _reach(points) < FIST_REACH:
+                flags.append(None)
+                continue
             measured = implausibility(wrist_bend(points, forearm, side))
-            mirrored = implausibility(wrist_bend(mirrored_in_depth(points), forearm, side))
-            flags.append(measured - mirrored > FLIP_MARGIN)
+            flags.append(measured - implausibility(wrist_bend(turned, forearm, side)) > FLIP_MARGIN)
         votes = _vote(flags)
         fixed[side] = [
-            _with_points(frame, mirrored_in_depth(_points(frame))) if votes[index] and flags[index] is not None else frame
+            _with_points(frame, turned_over(_points(frame))) if votes[index] and flags[index] is not None else frame
             for index, frame in enumerate(frames)
         ]
     return fixed
@@ -141,6 +165,17 @@ def fix_depth_flips(tracks: dict[str, list[LandmarkFrame]]) -> dict[str, list[La
 
 def _palm_length(points: np.ndarray) -> float:
     return float(np.linalg.norm(points[9, :2] - points[0, :2])) or 1.0
+
+
+def _rotation_between(first: np.ndarray, second: np.ndarray) -> np.ndarray:
+    """The smallest rotation taking unit vector `first` onto unit vector `second` (Rodrigues)."""
+    axis = np.cross(first, second)
+    sine, cosine = float(np.linalg.norm(axis)), float(first @ second)
+    if sine < 1e-9:
+        return np.eye(3)
+    axis = axis / sine
+    cross = np.array([[0, -axis[2], axis[1]], [axis[2], 0, -axis[0]], [-axis[1], axis[0], 0]])
+    return np.eye(3) + sine * cross + (1 - cosine) * cross @ cross
 
 
 def same_hand(first: np.ndarray, second: np.ndarray) -> bool:
@@ -174,7 +209,9 @@ def split_merged_hands(tracks: dict[str, list[LandmarkFrame]]) -> dict[str, list
             own, other = _pose_wrist(tracks, side, index), _pose_wrist(tracks, OTHER[side], index)
             if forearm is None or own is None or other is None:
                 continue
-            for points in (hand, mirrored_in_depth(hand)):
+            for points in (hand, turned_over(hand)):
+                if points is None:
+                    continue
                 facing = palm_facing(points, side)
                 # Pressed palms face each other: the palm turns toward the other wrist (across the body, in x).
                 if facing is None or facing[0] * (other[0] - own[0]) <= 0:
@@ -185,7 +222,15 @@ def split_merged_hands(tracks: dict[str, list[LandmarkFrame]]) -> dict[str, list
         if best is None:
             continue
         _, side, points, facing = best
-        meet = points[[0, 5, 9, 13, 17]].mean(0) + facing * HALF_THICKNESS * float(np.linalg.norm(points[9] - points[0]))
+        # Palms pressed together meet in an upright plane: the tilt the edge-on hand comes out with is the tracker's, not
+        # the signer's ("пожалуйста" leaned 15-30 degrees sideways). The kept hand is turned so its palm faces level.
+        centre = points[[0, 5, 9, 13, 17]].mean(0)
+        level = _unit(np.array([facing[0], 0.0, facing[2]]))
+        if level is not None:
+            turn = _rotation_between(facing, level)
+            points = centre + (points - centre) @ turn.T
+            facing = level
+        meet = centre + facing * HALF_THICKNESS * float(np.linalg.norm(points[9] - points[0]))
         mirror = points - 2 * np.outer((points - meet) @ facing, facing)
         kept, made = (left, right) if side == "left_hand" else (right, left)
         fixed[side][index] = _with_points(kept[index], points)
