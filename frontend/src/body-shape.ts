@@ -25,6 +25,9 @@ type SkinPoint = { point: THREE.Vector3; bone: string };
  * Read at bind pose: the scene must be unposed, with world matrices current.
  */
 function skinPoints(root: THREE.Object3D, center: THREE.Vector3, width: number): SkinPoint[] {
+  // updateMatrixWorld, not updateWorldMatrix: only the former refreshes a skinned mesh's bind matrix inverse, without
+  // which the skinned positions come out in the wrong place (twice the armature's scale on the Tripo avatars).
+  root.updateMatrixWorld(true);
   const rootInverse = new THREE.Matrix4().copy(root.matrixWorld).invert();
   const points: SkinPoint[] = [];
   const vertex = new THREE.Vector3();
@@ -44,18 +47,81 @@ function skinPoints(root: THREE.Object3D, center: THREE.Vector3, width: number):
       for (let k = 1; k < 4; k++) if (weight.getComponent(i, k) > weight.getComponent(i, best)) best = k;
       const bone = bones[index.getComponent(i, best)];
       if (!bone) continue;
-      vertex.fromBufferAttribute(position, i).applyMatrix4(toRoot).sub(center).divideScalar(width);
+      // Skinned, as drawn, so whatever space an exporter stored the vertices in, they land where the body stands.
+      mesh.getVertexPosition(i, vertex);
+      vertex.applyMatrix4(toRoot).sub(center).divideScalar(width);
       points.push({ point: vertex.clone(), bone: bone.name });
     }
   });
   return points;
 }
 
+/**
+ * How far forward the front of the head and neck reaches, on a grid over the face as seen from the front: the depth a
+ * hand touching the face or throat has to be at.
+ */
+export type FrontSurface = { x0: number; y0: number; step: number; cols: number; rows: number; z: Float32Array };
+
 export type BodyShape = {
   torso: Torso;
   /** Height of the bottom of the chin, when the head's skin could be read. */
   chinY?: number;
+  front?: FrontSurface;
 };
+
+/** Bones whose skin is the face, the head and the throat. */
+const HEAD_BONES = new Set(["Head", "Neck"]);
+/** Grid of the front surface, in shoulder widths from the shoulder centre. */
+const FRONT_GRID = { x0: -0.5, x1: 0.5, y0: -0.1, y1: 1.0, step: 0.025 };
+
+function measureFront(points: SkinPoint[]): FrontSurface | undefined {
+  const { x0, x1, y0, y1, step } = FRONT_GRID;
+  const cols = Math.round((x1 - x0) / step) + 1;
+  const rows = Math.round((y1 - y0) / step) + 1;
+  const z = new Float32Array(cols * rows).fill(Number.NaN);
+  let filled = 0;
+  for (const { point, bone } of points) {
+    if (!HEAD_BONES.has(bone)) continue;
+    // Each skin point raises the cells within a step of it.
+    const c = (point.x - x0) / step;
+    const r = (point.y - y0) / step;
+    for (let rr = Math.floor(r - 1); rr <= Math.ceil(r + 1); rr += 1) {
+      for (let cc = Math.floor(c - 1); cc <= Math.ceil(c + 1); cc += 1) {
+        if (rr < 0 || cc < 0 || rr >= rows || cc >= cols) continue;
+        const i = rr * cols + cc;
+        if (!(z[i] >= point.z)) {
+          if (Number.isNaN(z[i])) filled += 1;
+          z[i] = point.z;
+        }
+      }
+    }
+  }
+  return filled > 20 ? { x0, y0, step, cols, rows, z } : undefined;
+}
+
+/**
+ * Depth of the front of the face or throat at (x, y), or undefined off the head. Bilinear between grid cells, so a
+ * point sliding over the face gets a depth that changes smoothly rather than in steps.
+ */
+export function frontAt(front: FrontSurface, x: number, y: number): number | undefined {
+  const fc = (x - front.x0) / front.step;
+  const fr = (y - front.y0) / front.step;
+  const c0 = Math.floor(fc);
+  const r0 = Math.floor(fr);
+  let sum = 0;
+  let weight = 0;
+  for (const [dc, dr] of [[0, 0], [1, 0], [0, 1], [1, 1]]) {
+    const c = c0 + dc;
+    const r = r0 + dr;
+    if (c < 0 || r < 0 || c >= front.cols || r >= front.rows) continue;
+    const z = front.z[r * front.cols + c];
+    if (Number.isNaN(z)) continue;
+    const w = (dc ? fc - c0 : 1 - (fc - c0)) * (dr ? fr - r0 : 1 - (fr - r0));
+    sum += z * w;
+    weight += w;
+  }
+  return weight > 1e-6 ? sum / weight : undefined;
+}
 
 /**
  * The torso and the chin measured off the avatar's skin, so contact with the body and face is right for any avatar,
@@ -100,5 +166,5 @@ export function measureBodyShape(
     (p) => p.bone === "Head" && Math.abs(p.point.x - eyes.x) < eyes.span / 2 && p.point.z > eyes.z - 0.05 && p.point.y < eyes.y,
   );
   const chinY = chinPoints.length > 20 ? Math.min(...chinPoints.map((p) => p.point.y)) : undefined;
-  return { torso, chinY };
+  return { torso, chinY, front: measureFront(points) };
 }
