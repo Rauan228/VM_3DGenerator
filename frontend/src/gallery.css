@@ -30,7 +30,7 @@
   font-size: 14px;
 }
 
-.gallery .controls {
+.gallery .gallery-controls {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -115,6 +115,8 @@
 }
 
 .gallery .media {
+  position: relative;
+  cursor: pointer;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
@@ -126,6 +128,10 @@
   border-radius: var(--radius-sm);
   overflow: hidden;
   background: #15112b;
+}
+
+.gallery .box canvas {
+  display: block;
 }
 
 .gallery .box video {
@@ -156,6 +162,100 @@
   font-size: 14px;
 }
 
+.gallery .play-hint {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  padding-left: 4px;
+  border-radius: 50%;
+  background: rgba(16, 13, 34, 0.72);
+  border: 1px solid var(--border-strong);
+  color: var(--text);
+  font-size: 22px;
+  pointer-events: none;
+}
+
+.gallery .player {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.gallery .player button {
+  padding: 6px 10px;
+  min-width: 36px;
+}
+
+.gallery .player .play {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.gallery .player input[type="range"] {
+  flex: 1;
+  min-width: 120px;
+  accent-color: var(--accent);
+}
+
+.gallery .time {
+  color: var(--muted);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  min-width: 92px;
+}
+
+.gallery .note {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  margin-top: 10px;
+}
+
+.gallery .note.general {
+  margin-top: 12px;
+}
+
+.gallery .note textarea {
+  flex: 1;
+  min-width: 0;
+  resize: vertical;
+  background: #15112b;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.gallery .note textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.gallery .note.has-text textarea {
+  border-color: var(--border-strong);
+}
+
+.gallery .note button {
+  white-space: nowrap;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.gallery .top .copy {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
 .gallery .card footer {
   margin-top: 8px;
   color: var(--muted);
@@ -164,12 +264,4 @@
 
 .gallery .empty {
   color: var(--muted);
-}
-
-/* One canvas over the whole window; each card's 3D box is drawn into it. */
-.gallery .views {
-  position: fixed !important;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
 }

@@ -41,6 +41,52 @@ const PRELOAD_MARGIN = "800px";
 const SHOWN_MARGIN = "100px";
 /** Fired by a card that starts playing, so the others pause. */
 const PLAY_EVENT = "gallery-play";
+/** The reviewer's notes, kept in this browser as they are typed (slug → text; "" is the note on the whole gallery). */
+const NOTES_KEY = "gallery-notes-v1";
+const GENERAL = "";
+const AVATAR_NAMES: Record<Avatar, string> = { male: "Парень", female: "Девушка" };
+const ANGLE_NAMES: Record<Angle, string> = { front: "Спереди", side: "Сбоку" };
+
+function loadNotes(): Record<string, string> {
+  try {
+    return JSON.parse(localStorage.getItem(NOTES_KEY) ?? "{}") ?? {};
+  } catch {
+    return {};
+  }
+}
+
+function saveNotes(notes: Record<string, string>) {
+  try {
+    localStorage.setItem(NOTES_KEY, JSON.stringify(notes));
+  } catch {
+    // Storage blocked: the notes still live on the page until it is closed.
+  }
+}
+
+/** All notes as one text to paste back into the chat: each sign by its number, word, slug and gesture id. */
+function notesText(entries: Entry[], notes: Record<string, string>, avatar: Avatar, angle: Angle) {
+  const lines = [`Замечания по галерее signflow (${entries.length} жестов; смотрел: ${AVATAR_NAMES[avatar]}, ${ANGLE_NAMES[angle]})`];
+  const general = notes[GENERAL]?.trim();
+  if (general) lines.push("", "### Общее", general);
+  entries.forEach((entry, index) => {
+    const note = notes[entry.slug]?.trim();
+    if (note) lines.push("", `### ${index + 1}. ${entry.word} (slug: ${entry.slug}, gesture_id: ${entry.gesture_id})`, note);
+  });
+  return lines.join("\n");
+}
+
+async function copyText(text: string) {
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch {
+    const area = document.createElement("textarea");
+    area.value = text;
+    document.body.append(area);
+    area.select();
+    document.execCommand("copy");
+    area.remove();
+  }
+}
 
 /** Redraws a paused canvas when the time it shows changes (the canvas only draws on demand then). */
 function Redraw({ time }: { time: number }) {
@@ -53,9 +99,19 @@ function formatTime(seconds: number) {
   return seconds.toFixed(2).replace(".", ",");
 }
 
-function Card({ entry, index, avatar, angle }: { entry: Entry; index: number; avatar: Avatar; angle: Angle }) {
+type CardProps = {
+  entry: Entry;
+  index: number;
+  avatar: Avatar;
+  angle: Angle;
+  note: string;
+  onNote: (slug: string, text: string) => void;
+};
+
+function Card({ entry, index, avatar, angle, note, onNote }: CardProps) {
   const card = useRef<HTMLElement>(null);
   const video = useRef<HTMLVideoElement>(null);
+  const noteArea = useRef<HTMLTextAreaElement>(null);
   const [near, setNear] = useState(false);
   const [shown, setShown] = useState(false);
   const [gesture, setGesture] = useState<GestureJson>();
@@ -126,6 +182,19 @@ function Card({ entry, index, avatar, angle }: { entry: Entry; index: number; av
     element.pause();
     element.currentTime = Math.min(Math.max(seconds, 0), element.duration || duration);
     setTime(element.currentTime);
+  };
+  // Puts the player's current time into the note at the cursor, so a remark can say where in the sign it is.
+  const markTime = () => {
+    const area = noteArea.current;
+    const mark = `[${formatTime(time)} с] `;
+    const at = area?.selectionStart ?? note.length;
+    const before = note.slice(0, at);
+    const prefix = before && !before.endsWith("\n") && !before.endsWith(" ") ? " " : "";
+    onNote(entry.slug, before + prefix + mark + note.slice(area?.selectionEnd ?? at));
+    requestAnimationFrame(() => {
+      area?.focus();
+      area?.setSelectionRange(at + prefix.length + mark.length, at + prefix.length + mark.length);
+    });
   };
 
   const aspect = gesture?.normalization?.aspect_corrected
@@ -218,6 +287,18 @@ function Card({ entry, index, avatar, angle }: { entry: Entry; index: number; av
           ))}
         </div>
       </div>
+      <div className={note.trim() ? "note has-text" : "note"}>
+        <textarea
+          ref={noteArea}
+          value={note}
+          onChange={(event) => onNote(entry.slug, event.target.value)}
+          placeholder={`Замечания к «${entry.word}»…`}
+          rows={3}
+        />
+        <button onClick={markTime} title="Вставить в замечание текущее время ролика">
+          ⏱ {formatTime(time)} с
+        </button>
+      </div>
       <footer>мимика: {entry.expression_frames ? `${entry.expression_frames} кадров` : "нет"}</footer>
     </article>
   );
@@ -227,6 +308,23 @@ function Gallery() {
   const [entries, setEntries] = useState<Entry[]>();
   const [avatar, setAvatar] = useState<Avatar>("female");
   const [angle, setAngle] = useState<Angle>("front");
+  const [notes, setNotes] = useState<Record<string, string>>(loadNotes);
+  const [copied, setCopied] = useState(false);
+
+  const setNote = (slug: string, text: string) =>
+    setNotes((previous) => {
+      const next = { ...previous, [slug]: text };
+      saveNotes(next);
+      return next;
+    });
+  const noted = entries?.filter((entry) => notes[entry.slug]?.trim()).length ?? 0;
+  const copyAll = () => {
+    if (!entries) return;
+    void copyText(notesText(entries, notes, avatar, angle)).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
 
   useEffect(() => {
     fetch("/gallery/signflow.json", { cache: "no-store" })
@@ -253,12 +351,31 @@ function Gallery() {
             <button className={angle === "front" ? "on" : ""} onClick={() => setAngle("front")}>Спереди</button>
             <button className={angle === "side" ? "on" : ""} onClick={() => setAngle("side")}>Сбоку</button>
           </div>
+          <button className="copy" onClick={copyAll} title="Скопировать все замечания одним текстом для чата">
+            {copied ? "Скопировано ✓" : `Скопировать замечания (${noted})`}
+          </button>
         </div>
       </header>
+      <div className="note general">
+        <textarea
+          value={notes[GENERAL] ?? ""}
+          onChange={(event) => setNote(GENERAL, event.target.value)}
+          placeholder="Общие замечания ко всей галерее (необязательно)…"
+          rows={2}
+        />
+      </div>
       {entries && entries.length === 0 && <p className="empty">Список пуст: запустите tools/signflow_batch.py.</p>}
       <main className="grid">
         {entries?.map((entry, index) => (
-          <Card key={entry.slug} entry={entry} index={index} avatar={avatar} angle={angle} />
+          <Card
+            key={entry.slug}
+            entry={entry}
+            index={index}
+            avatar={avatar}
+            angle={angle}
+            note={notes[entry.slug] ?? ""}
+            onNote={setNote}
+          />
         ))}
       </main>
     </div>
