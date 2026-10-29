@@ -1,0 +1,175 @@
+.gallery {
+  position: relative;
+  min-height: 100vh;
+  padding: 0 16px 32px;
+}
+
+.gallery .top {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+  background: rgba(16, 13, 34, 0.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+}
+
+.gallery h1 {
+  margin: 0 0 4px;
+  font-size: 22px;
+}
+
+.gallery .top p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.gallery .controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.gallery button {
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.gallery button:hover {
+  border-color: var(--border-strong);
+}
+
+.gallery .segmented {
+  display: flex;
+}
+
+.gallery .segmented button {
+  border-radius: 0;
+}
+
+.gallery .segmented button:first-child {
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+}
+
+.gallery .segmented button:last-child {
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.gallery .segmented button + button {
+  border-left: 0;
+}
+
+.gallery .segmented button.on {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.gallery .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 480px), 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.gallery .card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+}
+
+.gallery .card header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.gallery .card h2 {
+  margin: 0;
+  font-size: 18px;
+  flex: 1;
+}
+
+.gallery .number {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+}
+
+.gallery .card a {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.gallery .media {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.gallery .box {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: #15112b;
+}
+
+.gallery .box video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.gallery .label {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgba(16, 13, 34, 0.7);
+  color: var(--muted);
+  font-size: 12px;
+  pointer-events: none;
+}
+
+.gallery .placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.gallery .card footer {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.gallery .empty {
+  color: var(--muted);
+}
+
+/* One canvas over the whole window; each card's 3D box is drawn into it. */
+.gallery .views {
+  position: fixed !important;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
