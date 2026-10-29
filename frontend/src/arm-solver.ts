@@ -1,4 +1,6 @@
 import * as THREE from "three";
+import { measureBodyShape, type FrontSurface, type Torso } from "./body-shape";
+import { faceShift, type FaceLine } from "./face-anchor";
 import type { Landmark } from "./types";
 
 export type ArmSide = "Left" | "Right";
@@ -10,27 +12,24 @@ const ARM_LANDMARKS: Record<ArmSide, readonly [number, number, number]> = {
 };
 /** Index fingertip on the pose model: a rough but visible stand-in for where the hand is. */
 const HAND_TIP_LANDMARK: Record<ArmSide, number> = { Left: 19, Right: 20 };
-const LEFT_SHOULDER = 11;
-const RIGHT_SHOULDER = 12;
-const LEFT_EYE = 2;
-const RIGHT_EYE = 5;
 
 const EPSILON = 1e-10;
-/** Below this the limb is guessed rather than seen (hand out of frame), so the arm lets go. */
+/** Below this a wrist is guessed rather than seen (hand out of frame), so the arm lets go. */
 const MIN_VISIBILITY = 0.3;
+/**
+ * Between MIN_VISIBILITY and this the arm eases from hanging at the side toward the tracked pose. The pose model
+ * invents a wrist that is partly out of frame and tends to invent it too close, which folds the arm onto the hip.
+ */
+const FULL_VISIBILITY = 0.7;
+/** Pose landmarks the hand model has vouched for are trusted from this visibility up; elbows are often blurred or cropped. */
+const MIN_ELBOW_VISIBILITY = 0.1;
 
 /**
- * The hand counts as "at the face" when it is closer than FACE_NEAR eye-to-hand shoulder widths
- * and stops counting beyond FACE_FAR. Only then is the arm re-aimed at the avatar's own face.
+ * The share of the distance from the neck to the eyes that the chin hangs below the eyes, for an avatar whose head
+ * skin cannot be measured. Measured on the original stock avatars (eyes 0.66, neck 0.06, chin 0.30 shoulder widths
+ * over the shoulder centre).
  */
-const FACE_NEAR = 0.75;
-const FACE_FAR = 1.15;
-
-/**
- * The torso as an upright elliptic cylinder, in shoulder widths. Pose depth is the least reliable axis, so a
- * wrist can land inside the body; a hand that is visible over the clothes is in front of it, so it is pushed out.
- */
-const TORSO = { halfWidth: 0.45, halfDepth: 0.32, top: 0.05, bottom: -1.55, clearance: 0.1 };
+const AVATAR_CHIN_SHARE = 0.6;
 
 export type ArmSolveOptions = {
   /** 0 snaps to the solved pose, values toward 1 damp landmark jitter. */
@@ -41,15 +40,35 @@ export type ArmSolveOptions = {
    * world quaternion so the arms follow however the avatar is turned.
    */
   toWorld?: THREE.Quaternion;
+  /**
+   * The hand model found this hand. That is independent proof the arm is in frame and raised, however low the
+   * pose model rates the wrist or elbow (a blurred arm at the edge of the picture scores poorly but is real).
+   */
+  handTracked?: boolean;
+  /** The signer's face line this frame, in the landmarks' units. With `handCenter` it lets the hand land on the same facial feature. */
+  face?: FaceLine;
+  /** Where the signer's hand is in the picture (the same units as the landmarks); the fingertip landmark stands in when absent. */
+  handCenter?: { x: number; y: number };
+  /** Receives the wrist target and elbow direction this frame asked for, before `offset`: what `aimArm` takes to pose the arm again. */
+  record?: ArmPlan;
+  /** Added to the wrist target and the elbow direction, in the avatar's units: how the body-contact pass moves the arm off the torso. */
+  offset?: THREE.Vector3;
 };
+
+/** Where an arm is asked to go, in the avatar's units: the wrist target, and the shoulder-to-elbow vector that says which way the elbow bends. */
+export type ArmPlan = { target: THREE.Vector3; hint: THREE.Vector3 };
 
 /** Where the avatar's body sits, measured once at bind pose in the avatar's own units. */
 export type BodyFrame = {
   shoulderCenter: THREE.Vector3;
   shoulderWidth: number;
   eyeCenter: THREE.Vector3;
-  /** Depth of the torso's axis relative to the shoulder centre, in shoulder widths. */
-  torsoCenterZ: number;
+  /** The avatar's face line in shoulder widths over the shoulder centre, for matching where hands touch the face. */
+  face: FaceLine;
+  /** The trunk, measured off the skin, that arms and hands are kept out of. */
+  torso: Torso;
+  /** The front of the head and throat, for hands that touch them. */
+  front?: FrontSurface;
 };
 
 type Segment = {
@@ -103,16 +122,29 @@ export function measureBody(root: THREE.Object3D): BodyFrame | undefined {
   const right = bonePosition(root, "RightArm");
   const leftEye = bonePosition(root, "LeftEye");
   const rightEye = bonePosition(root, "RightEye");
-  const spine = bonePosition(root, "Spine2");
-  if (!left || !right || !leftEye || !rightEye || !spine) return undefined;
+  if (!left || !right || !leftEye || !rightEye) return undefined;
 
   const shoulderCenter = left.clone().add(right).multiplyScalar(0.5);
   const shoulderWidth = left.distanceTo(right);
+  const eyeCenter = leftEye.clone().add(rightEye).multiplyScalar(0.5);
+
+  const inUnits = (point: THREE.Vector3) => point.clone().sub(shoulderCenter).divideScalar(shoulderWidth);
+  const eyes = inUnits(eyeCenter);
+  const neck = inUnits(bonePosition(root, "Neck") ?? shoulderCenter);
+  const eyeSpan = leftEye.distanceTo(rightEye) / shoulderWidth;
+  const shape = measureBodyShape(root, shoulderCenter, shoulderWidth, { x: eyes.x, y: eyes.y, z: eyes.z, span: eyeSpan });
   return {
     shoulderCenter,
     shoulderWidth,
-    eyeCenter: leftEye.add(rightEye).multiplyScalar(0.5),
-    torsoCenterZ: (spine.z - shoulderCenter.z) / shoulderWidth,
+    eyeCenter,
+    face: {
+      centerX: eyes.x,
+      eyeY: eyes.y,
+      chinY: shape.chinY ?? eyes.y - AVATAR_CHIN_SHARE * (eyes.y - neck.y),
+      eyeSpan,
+    },
+    torso: shape.torso,
+    front: shape.front,
   };
 }
 
@@ -143,9 +175,12 @@ function aim(segment: Segment, worldDirection: THREE.Vector3, damping: number) {
   else segment.bone.quaternion.slerp(target, 1 - damping);
 }
 
+function finite(point: Landmark | undefined): point is Landmark {
+  return Boolean(point && Number.isFinite(point.x) && Number.isFinite(point.y) && Number.isFinite(point.z));
+}
+
 function trusted(point: Landmark | undefined): point is Landmark {
-  if (!point || !Number.isFinite(point.x) || !Number.isFinite(point.y) || !Number.isFinite(point.z)) return false;
-  return point.visibility == null || point.visibility >= MIN_VISIBILITY;
+  return finite(point) && (point.visibility == null || point.visibility >= MIN_VISIBILITY);
 }
 
 const vector = (point: Landmark) => new THREE.Vector3(point.x, point.y, point.z);
@@ -163,36 +198,16 @@ function applyDirections(rig: ArmRig, upper: THREE.Vector3, fore: THREE.Vector3,
 /**
  * Where the wrist should be, in the avatar's units. The signer's wrist offset from their shoulder is scaled by
  * shoulder width, then corrected for the two ways a sign and an avatar body disagree: the faces sit at different
- * heights over the shoulders (hands near the face follow the avatar's face), and the pose model can place a wrist
- * inside the torso (it is moved out in front).
+ * heights over the shoulders (a hand at the face is moved to the same feature of the avatar's face).
  */
-function wristTarget(rig: ArmRig, body: BodyFrame, landmarks: Landmark[], shoulder: Landmark, wrist: Landmark): THREE.Vector3 {
+function wristTarget(rig: ArmRig, body: BodyFrame, landmarks: Landmark[], shoulder: Landmark, wrist: Landmark, options: ArmSolveOptions): THREE.Vector3 {
   const target = rig.shoulder.clone().add(vector(wrist).sub(vector(shoulder)).multiplyScalar(body.shoulderWidth));
 
-  const leftEye = landmarks[LEFT_EYE];
-  const rightEye = landmarks[RIGHT_EYE];
-  const leftShoulder = landmarks[LEFT_SHOULDER];
-  const rightShoulder = landmarks[RIGHT_SHOULDER];
-  if (trusted(leftEye) && trusted(rightEye) && trusted(leftShoulder) && trusted(rightShoulder)) {
-    const eyes = vector(leftEye).add(vector(rightEye)).multiplyScalar(0.5);
-    const shoulderMid = vector(leftShoulder).add(vector(rightShoulder)).multiplyScalar(0.5);
+  if (options.face) {
     const tip = landmarks[HAND_TIP_LANDMARK[rig.side]];
-    const hand = trusted(tip) ? vector(tip) : vector(wrist);
-    const nearFace = 1 - THREE.MathUtils.smoothstep(hand.distanceTo(eyes), FACE_NEAR, FACE_FAR);
-    // Height only: depth is the pose model's weakest axis, and the face is where contact happens up and down.
-    const avatarEyeHeight = body.eyeCenter.y - body.shoulderCenter.y;
-    const signerEyeHeight = (eyes.y - shoulderMid.y) * body.shoulderWidth;
-    target.y += (avatarEyeHeight - signerEyeHeight) * nearFace;
-  }
-
-  const relative = target.clone().sub(body.shoulderCenter).divideScalar(body.shoulderWidth);
-  const halfWidth = TORSO.halfWidth + TORSO.clearance;
-  if (relative.y < TORSO.top && relative.y > TORSO.bottom && Math.abs(relative.x) < halfWidth) {
-    const surface = body.torsoCenterZ + TORSO.halfDepth * Math.sqrt(1 - (relative.x / halfWidth) ** 2) + TORSO.clearance;
-    if (relative.z < surface) {
-      relative.z = surface;
-      target.copy(relative.multiplyScalar(body.shoulderWidth).add(body.shoulderCenter));
-    }
+    const shift = faceShift(options.handCenter ?? (trusted(tip) ? tip : wrist), options.face, body.face);
+    target.x += shift.x * body.shoulderWidth;
+    target.y += shift.y * body.shoulderWidth;
   }
   return target;
 }
@@ -232,21 +247,62 @@ export function solveArm(rig: ArmRig, body: BodyFrame, landmarks: Landmark[] | u
   const shoulder = landmarks[shoulderIndex];
   const elbow = landmarks[elbowIndex];
   const wrist = landmarks[wristIndex];
-  if (!trusted(shoulder) || !trusted(elbow) || !trusted(wrist)) return false;
+  if (!finite(shoulder) || !finite(elbow) || !finite(wrist)) return false;
 
-  const target = wristTarget(rig, body, landmarks, shoulder, wrist);
+  const confidence = options.handTracked
+    ? 1
+    : THREE.MathUtils.smoothstep(wrist.visibility ?? 1, MIN_VISIBILITY, FULL_VISIBILITY);
+  if (confidence <= 0 || (elbow.visibility ?? 1) < MIN_ELBOW_VISIBILITY) return false;
+
+  const target = wristTarget(rig, body, landmarks, shoulder, wrist, options);
   const elbowHint = vector(elbow).sub(vector(shoulder)).multiplyScalar(body.shoulderWidth);
+
+  // A wrist the pose model is unsure of eases toward the arm hanging at the side. Blending the plan rather than the
+  // finished directions keeps what is recorded for easing a lost stretch the same as what was actually posed.
+  if (confidence < 1) {
+    const resting = restPlan(rig);
+    target.lerp(resting.target, 1 - confidence);
+    elbowHint.lerp(resting.hint, 1 - confidence);
+  }
+  options.record?.target.copy(target);
+  options.record?.hint.copy(elbowHint);
+  // An elbow that sank into the body is brought out by the same push as the hand.
+  if (options.offset) {
+    target.add(options.offset);
+    elbowHint.add(options.offset);
+  }
   const [upper, fore] = reach(rig, target, elbowHint);
 
   applyDirections(rig, upper, fore, THREE.MathUtils.clamp(options.damping ?? 0, 0, 0.99), options.toWorld);
   return true;
 }
 
+/** Shoulder->elbow and elbow->wrist directions of an arm hanging at the side. */
+function restingDirections(side: ArmSide): [THREE.Vector3, THREE.Vector3] {
+  const outward = side === "Left" ? 1 : -1;
+  // Slightly out and forward so the forearm clears the hip instead of clipping into it.
+  return [new THREE.Vector3(outward * 0.1, -1, 0).normalize(), new THREE.Vector3(outward * 0.05, -1, 0.12).normalize()];
+}
+
 /** Lets the arm drop to the side of the body, for frames where the arm is not tracked. */
 export function relaxArm(rig: ArmRig, options: ArmSolveOptions = {}) {
-  const outward = rig.side === "Left" ? 1 : -1;
-  // Slightly out and forward so the forearm clears the hip instead of clipping into it.
-  const upper = new THREE.Vector3(outward * 0.1, -1, 0).normalize();
-  const fore = new THREE.Vector3(outward * 0.05, -1, 0.12).normalize();
+  const [upper, fore] = restingDirections(rig.side);
   applyDirections(rig, upper, fore, THREE.MathUtils.clamp(options.damping ?? 0.85, 0, 0.99), options.toWorld);
+}
+
+/** The plan of an arm hanging at the side of the body, which `aimArm` poses exactly as `relaxArm` does. */
+export function restPlan(rig: ArmRig): ArmPlan {
+  const [upper, fore] = restingDirections(rig.side);
+  const hint = upper.multiplyScalar(rig.upperLength);
+  const target = rig.shoulder.clone().add(hint).addScaledVector(fore, rig.foreLength);
+  return { target, hint };
+}
+
+/**
+ * Poses the arm so the wrist reaches `plan.target` with the elbow bent toward `plan.hint`. Easing an arm between two
+ * plans moves its wrist along a path, where easing the bones' rotations sweeps the forearm through the body.
+ */
+export function aimArm(rig: ArmRig, plan: ArmPlan, options: ArmSolveOptions = {}) {
+  const [upper, fore] = reach(rig, plan.target, plan.hint);
+  applyDirections(rig, upper, fore, 0, options.toWorld);
 }
