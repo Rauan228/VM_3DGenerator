@@ -1,10 +1,33 @@
+# Environments and builds
 .venv/
-__pycache__/
-*.pyc
-data/
-output/
+.venv-linux/
+venv/
 node_modules/
 dist/
 .vite/
-.DS_Store
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Local data: uploaded videos, extracted gestures, exports, logs
+data/
+exports/
+output/
 *.log
+*.mp4
+.claude/
+
+# Heavy or third-party models and leftovers of avatar experiments (models/avatar.glb is the player's donor rig)
+models/*
+!models/avatar.glb
+frontend/public/candidates/
+frontend/public/models/legacy-rpm/
+frontend/public/models/previous-stylized/
+tools/_glb_tex/
+
+# Not part of the project
+VERSION
+*.xlsx
+форма 2.2
+.env
+.DS_Store
