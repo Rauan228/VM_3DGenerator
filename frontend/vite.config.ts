@@ -16,6 +16,8 @@ export default defineConfig({
         gallery: resolve(__dirname, "gallery.html"),
         // One avatar drawn frame by frame for video export (tools/export_videos.py).
         render: resolve(__dirname, "render.html"),
+        // A gesture as a three.js animation clip for other sites (tools/export_clips.py).
+        clip: resolve(__dirname, "clip.html"),
       },
     },
   },
