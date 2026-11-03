@@ -116,7 +116,7 @@ const MAX_TOUCH_PUSH = 0.15;
  * Sideways and up-down, a touch moves the hand at most this far. The arm already puts the hand about right; this
  * corrects for the avatar's hand having other proportions than the signer's (a longer finger overshoots the chin).
  */
-const MAX_TOUCH_SLIDE = 0.2;
+export const MAX_TOUCH_SLIDE = 0.2;
 
 /**
  * How far, in the avatar's units, the arm has to move along depth so that the touching point lands on the front of the

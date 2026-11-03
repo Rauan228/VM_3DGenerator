@@ -16,6 +16,8 @@ export type FaceLine = {
   chinY: number;
   /** Distance between the eyes. */
   eyeSpan: number;
+  /** Half the face's width at the cheekbones (face mesh points 234 and 454), when it is known. */
+  halfWidth?: number;
 };
 
 const LEFT_EYE = 2;
@@ -24,6 +26,9 @@ const MOUTH_LEFT = 9;
 const MOUTH_RIGHT = 10;
 /** Face mesh landmark at the bottom of the chin. */
 const CHIN = 152;
+/** Face mesh landmarks on the face's contour at the cheekbones, in front of the ears. */
+const CHEEK_RIGHT = 234;
+const CHEEK_LEFT = 454;
 
 /**
  * Without a face mesh the chin is placed below the mouth corners by this share of the eye-to-mouth distance. Measured
@@ -67,11 +72,17 @@ export function signerFaceLine(body: Landmark[], mesh: Landmark[] | undefined, a
 
   const eyeToChin = eyeY - chinY;
   if (eyeToChin < MIN_EYE_TO_CHIN || eyeToChin > MAX_EYE_TO_CHIN || chinY < MIN_CHIN_HEIGHT) return undefined;
+  const eyeSpan = Math.abs(leftEye.x - rightEye.x);
+  const cheeks = [mesh?.[CHEEK_RIGHT], mesh?.[CHEEK_LEFT]];
+  const halfWidth = cheeks.every((p) => p && Number.isFinite(p.x)) ? Math.abs(cheeks[0]!.x - cheeks[1]!.x) / 2 : undefined;
+  // A face seen from the front is two to three eye spans wide; anything else is a tracking slip.
+  const plausible = halfWidth !== undefined && halfWidth > 0.9 * eyeSpan && halfWidth < 1.6 * eyeSpan;
   return {
     centerX: (leftEye.x + rightEye.x) / 2,
     eyeY,
     chinY,
-    eyeSpan: Math.abs(leftEye.x - rightEye.x),
+    eyeSpan,
+    halfWidth: plausible ? halfWidth : undefined,
   };
 }
 
@@ -95,8 +106,32 @@ export function faceShift(point: { x: number; y: number }, signer: FaceLine, ava
   const fromCenter = point.x - signer.centerX;
   const nearSideways = 1 - THREE.MathUtils.smoothstep(Math.abs(fromCenter), 0.5, 1.1);
   const nearHeight = THREE.MathUtils.smoothstep(point.y, signer.chinY - 0.4, signer.chinY - 0.1);
-  const scale = THREE.MathUtils.clamp(avatar.eyeSpan / Math.max(signer.eyeSpan, 1e-3), 0.75, 1.25);
+  // Sideways, the hand keeps its place against the width of the face: a hand cupped at the ear stays at the ear. The
+  // eyes are no measure of that, as an avatar's may be set wider apart than a person's (14% wider on the Tripo ones).
+  const sizes = avatar.halfWidth && signer.halfWidth ? [avatar.halfWidth, signer.halfWidth] : [avatar.eyeSpan, signer.eyeSpan];
+  const scale = THREE.MathUtils.clamp(sizes[0] / Math.max(sizes[1], 1e-3), 0.75, 1.25);
   const sideways = (avatar.centerX - signer.centerX + (scale - 1) * fromCenter) * nearSideways * nearHeight;
 
   return { x: sideways, y: mapped - point.y };
+}
+
+/** A hand beside the head is at the head's depth: its wrist is at most this far (shoulder widths) ahead of the eyes. */
+const BESIDE_HEAD_AHEAD = 0.12;
+/** A hand in front of the face may be held off it (palms before the face in "читать"), up to this far ahead of the eyes. */
+const BEFORE_FACE_AHEAD = 0.35;
+
+/**
+ * How far ahead of the eyes (shoulder widths) the wrist of a hand at `point` (the signer's hand centre in the picture)
+ * can be, and how surely that limit holds (0 to 1). The pose model's depth for a raised hand is often far too much
+ * forward (a hand at the temple came out a whole shoulder width in front of the shoulder, and seen from the front then
+ * floats above the head); in the picture a hand overlapping the head or right beside it cannot be far in front of it.
+ */
+export function headDepthLimit(point: { x: number; y: number }, signer: FaceLine): { ahead: number; weight: number } {
+  const half = signer.halfWidth ?? 1.25 * signer.eyeSpan;
+  const across = Math.abs(point.x - signer.centerX);
+  const top = signer.eyeY + (signer.eyeY - signer.chinY);
+  const height = THREE.MathUtils.smoothstep(point.y, signer.chinY - 0.05, signer.chinY + 0.05) * (1 - THREE.MathUtils.smoothstep(point.y, top, top + 0.15));
+  const near = 1 - THREE.MathUtils.smoothstep(across, half + 0.15, half + 0.35);
+  const beside = THREE.MathUtils.smoothstep(across, 0.8 * half, half + 0.05);
+  return { ahead: THREE.MathUtils.lerp(BEFORE_FACE_AHEAD, BESIDE_HEAD_AHEAD, beside), weight: height * near };
 }

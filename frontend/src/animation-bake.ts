@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { aimArm, relaxArm, restPlan, solveArm, type ArmPlan, type ArmRig, type ArmSide, type BodyFrame } from "./arm-solver";
-import { armTorsoPush, buildContactRig, faceTouchPull, type ContactRig, type FaceTouch } from "./body-contact";
+import { armTorsoPush, buildContactRig, faceTouchPull, MAX_TOUCH_SLIDE, type ContactRig, type FaceTouch } from "./body-contact";
 import { faceShift, signerFaceLine, type FaceLine } from "./face-anchor";
 import { handAt, interpolateFrame } from "./gesture-utils";
 import { relaxHand, resetHandFit, solveHand, type HandRig } from "./hand-solver";
@@ -49,6 +49,12 @@ const FINAL_DROP_PAUSE = Math.round(0.1 * BAKE_FPS);
 /** An arm counts as hanging at rest only for stretches this long (samples): 0.3 s. */
 const MIN_HANGING_SAMPLES = Math.round(0.3 * BAKE_FPS);
 const CONTACT_ROUNDS = 3;
+/**
+ * A face touch never brings the wrist closer to the shoulder than this share of the arm's length. Touching the face the
+ * arm is open about half or more (a fist at the forehead 0.63, a finger at the lips 0.45, the hand at the temple 0.44);
+ * pulled onto the face from before it, "четыре" came to 0.22.
+ */
+const MIN_TOUCH_REACH = 0.35;
 
 /** Image-space pose depth is only a hint (see AvatarRig history): gestures without `pose_world` squash it by this much. */
 const LEGACY_DEPTH_SCALE = 0.3;
@@ -689,6 +695,8 @@ export function bakeAnimation({ gesture, aspect, arms, hands, body, root, toWorl
     active: Side[],
     repose: (side: Side, offset: THREE.Vector3) => void,
     touch?: Partial<Record<Side, FaceTouch>>,
+    slid?: Partial<Record<Side, THREE.Vector2>>,
+    bases?: Partial<Record<Side, THREE.Vector3>>,
   ): Record<Side, THREE.Vector3> => {
     const offsets: Record<Side, THREE.Vector3> = { Left: new THREE.Vector3(), Right: new THREE.Vector3() };
     if (!root || !body) return offsets;
@@ -700,7 +708,43 @@ export function bakeAnimation({ gesture, aspect, arms, hands, body, root, toWorl
         armTorsoPush(contact[side]!, root, body, push);
         // A hand that touches the face or throat in the picture is brought to its surface: the tracker's depth puts it
         // well in front of the face, where the camera sees it over the mouth instead of under the chin.
-        push.add(faceTouchPull(touch?.[side], root, body, pull));
+        faceTouchPull(touch?.[side], root, body, pull);
+        // Sideways and up-down the touch slides the hand at most MAX_TOUCH_SLIDE in all, over every round and pass:
+        // when the hand cannot get there (a hand smaller than the signer's, a fingertip reaching up from the chest in
+        // "четыре") each round would slide it on, and it ended up over the head.
+        const used = slid?.[side];
+        if (used) {
+          const limit = MAX_TOUCH_SLIDE * body.shoulderWidth;
+          const total = new THREE.Vector2(used.x + pull.x, used.y + pull.y);
+          if (total.length() > limit) total.setLength(limit);
+          pull.x = total.x - used.x;
+          pull.y = total.y - used.y;
+          used.copy(total);
+        }
+        // Nor does it fold the arm up: a hand held before the face (the fingers of "четыре" beside the cheek) is not
+        // touching it, and pulled back onto it the wrist ends up at the shoulder with the elbow thrown out. Touching
+        // the face the arm is always at least half open.
+        const base = bases?.[side];
+        const arm = arms[side];
+        if (base && arm && pull.z < 0) {
+          const shortest = MIN_TOUCH_REACH * (arm.upperLength + arm.foreLength);
+          const reachWith = (share: number) => base.clone().add(offsets[side]).add(push).addScaledVector(pull, share).distanceTo(arm.shoulder);
+          if (reachWith(1) < shortest) {
+            let share = 0;
+            if (reachWith(0) >= shortest) {
+              let low = 0;
+              let high = 1;
+              for (let i = 0; i < 12; i += 1) {
+                const middle = (low + high) / 2;
+                if (reachWith(middle) >= shortest) low = middle;
+                else high = middle;
+              }
+              share = low;
+            }
+            pull.z *= share;
+          }
+        }
+        push.add(pull);
         if (push.length() <= MIN_CONTACT_PUSH) continue;
         offsets[side].add(push);
         repose(side, offsets[side]);
@@ -713,6 +757,8 @@ export function bakeAnimation({ gesture, aspect, arms, hands, body, root, toWorl
 
   // What each tracked arm sample asked for, with the contact push included: the poses an untracked stretch eases between.
   const plans: Record<Side, (ArmPlan | undefined)[]> = { Left: new Array(count), Right: new Array(count) };
+  // How far a face touch has already slid each tracked sample's wrist (the avatar's units, x and y).
+  const touchSlide: Record<Side, (THREE.Vector2 | undefined)[]> = { Left: new Array(count), Right: new Array(count) };
   const handWorld: Record<Side, (THREE.Quaternion | undefined)[]> = { Left: new Array(count), Right: new Array(count) };
   const rootInverse = root ? root.getWorldQuaternion(new THREE.Quaternion()).invert() : new THREE.Quaternion();
 
@@ -870,6 +916,7 @@ export function bakeAnimation({ gesture, aspect, arms, hands, body, root, toWorl
           // A hand touching the face is anchored by the point that touches (a fingertip under the chin lands under the
           // avatar's chin); otherwise by its centre.
           handCenter: anchorOf(touch[side], handCenterOf(handFrames[side]?.landmarks)),
+          palmCenter: handCenterOf(handFrames[side]?.landmarks),
           offset,
           record: asked[side],
         });
@@ -887,7 +934,9 @@ export function bakeAnimation({ gesture, aspect, arms, hands, body, root, toWorl
 
     const armTracked: Record<Side, boolean> = { Left: false, Right: false };
     for (const side of sides) if (arms[side] || hands[side]) armTracked[side] = poseSide(side);
-    const offsets = clearTorso(sides.filter((side) => armTracked[side]), poseSide, touch);
+    const slid = { Left: new THREE.Vector2(), Right: new THREE.Vector2() };
+    const offsets = clearTorso(sides.filter((side) => armTracked[side]), poseSide, touch, slid, { Left: asked.Left.target, Right: asked.Right.target });
+    for (const side of sides) touchSlide[side][k] = slid[side];
     for (const side of sides) {
       if (armTracked[side]) plans[side][k] = { target: asked[side].target.clone().add(offsets[side]), hint: asked[side].hint.clone().add(offsets[side]) };
     }
@@ -983,7 +1032,8 @@ export function bakeAnimation({ gesture, aspect, arms, hands, body, root, toWorl
 
         const aimAt = (offset: THREE.Vector3) =>
           aimArm(arm, { target: base.target.clone().add(offset), hint: base.hint.clone().add(offset) }, { toWorld });
-        const used = clearTorso([side], (_, offset) => aimAt(offset), gap ? undefined : { [side]: touches[side][k] })[side];
+        const slid = { [side]: touchSlide[side][k]?.clone() ?? new THREE.Vector2() };
+        const used = clearTorso([side], (_, offset) => aimAt(offset), gap ? undefined : { [side]: touches[side][k] }, slid, { [side]: base.target })[side];
         finalTargets[k] = base.target.clone().add(used);
         finalHints[k] = base.hint.clone().add(used);
       }

@@ -18,6 +18,10 @@ const BAND_TOP = -0.15;
 const BAND_BOTTOM = -1.15;
 const SLAB = 0.1;
 
+/** The cheeks are read this far (eye spans) below the eyes, and only skin less than this far behind the eyes: the ears are further back. */
+const CHEEK_BAND = 0.8;
+const EAR_BEHIND_EYES = 0.9;
+
 type SkinPoint = { point: THREE.Vector3; bone: string };
 
 /**
@@ -67,6 +71,8 @@ export type BodyShape = {
   /** Height of the bottom of the chin, when the head's skin could be read. */
   chinY?: number;
   front?: FrontSurface;
+  /** Half the face's width at the cheekbones, in front of the ears, when the head's skin could be read. */
+  faceHalfWidth?: number;
 };
 
 /** Bones whose skin is the face, the head and the throat. */
@@ -166,5 +172,14 @@ export function measureBodyShape(
     (p) => p.bone === "Head" && Math.abs(p.point.x - eyes.x) < eyes.span / 2 && p.point.z > eyes.z - 0.05 && p.point.y < eyes.y,
   );
   const chinY = chinPoints.length > 20 ? Math.min(...chinPoints.map((p) => p.point.y)) : undefined;
-  return { torso, chinY, front: measureFront(points) };
+  // The face's width where the face mesh's contour points 234 and 454 are (level with the eyes' outer corners and
+  // below), in front of the ears.
+  const cheekPoints = points.filter(
+    (p) => p.bone === "Head" && p.point.y < eyes.y && p.point.y > eyes.y - CHEEK_BAND * eyes.span && p.point.z > eyes.z - EAR_BEHIND_EYES * eyes.span,
+  );
+  const faceHalfWidth =
+    cheekPoints.length > 20
+      ? (Math.max(...cheekPoints.map((p) => p.point.x)) - Math.min(...cheekPoints.map((p) => p.point.x))) / 2
+      : undefined;
+  return { torso, chinY, front: measureFront(points), faceHalfWidth };
 }

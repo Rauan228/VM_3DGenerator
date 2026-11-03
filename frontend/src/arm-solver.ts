@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { measureBodyShape, type FrontSurface, type Torso } from "./body-shape";
-import { faceShift, type FaceLine } from "./face-anchor";
+import { faceShift, headDepthLimit, type FaceLine } from "./face-anchor";
 import type { Landmark } from "./types";
 
 export type ArmSide = "Left" | "Right";
@@ -49,6 +49,8 @@ export type ArmSolveOptions = {
   face?: FaceLine;
   /** Where the signer's hand is in the picture (the same units as the landmarks); the fingertip landmark stands in when absent. */
   handCenter?: { x: number; y: number };
+  /** The middle of the signer's palm in the picture, when the hand was seen: what says whether the hand is at the head. */
+  palmCenter?: { x: number; y: number };
   /** Receives the wrist target and elbow direction this frame asked for, before `offset`: what `aimArm` takes to pose the arm again. */
   record?: ArmPlan;
   /** Added to the wrist target and the elbow direction, in the avatar's units: how the body-contact pass moves the arm off the torso. */
@@ -142,6 +144,7 @@ export function measureBody(root: THREE.Object3D): BodyFrame | undefined {
       eyeY: eyes.y,
       chinY: shape.chinY ?? eyes.y - AVATAR_CHIN_SHARE * (eyes.y - neck.y),
       eyeSpan,
+      halfWidth: shape.faceHalfWidth,
     },
     torso: shape.torso,
     front: shape.front,
@@ -198,16 +201,23 @@ function applyDirections(rig: ArmRig, upper: THREE.Vector3, fore: THREE.Vector3,
 /**
  * Where the wrist should be, in the avatar's units. The signer's wrist offset from their shoulder is scaled by
  * shoulder width, then corrected for the two ways a sign and an avatar body disagree: the faces sit at different
- * heights over the shoulders (a hand at the face is moved to the same feature of the avatar's face).
+ * heights over the shoulders (a hand at the face is moved to the same feature of the avatar's face). Near the head the
+ * pose model's depth is also held to the head's (see `headDepthLimit`).
  */
 function wristTarget(rig: ArmRig, body: BodyFrame, landmarks: Landmark[], shoulder: Landmark, wrist: Landmark, options: ArmSolveOptions): THREE.Vector3 {
   const target = rig.shoulder.clone().add(vector(wrist).sub(vector(shoulder)).multiplyScalar(body.shoulderWidth));
 
   if (options.face) {
     const tip = landmarks[HAND_TIP_LANDMARK[rig.side]];
-    const shift = faceShift(options.handCenter ?? (trusted(tip) ? tip : wrist), options.face, body.face);
+    const point = options.handCenter ?? (trusted(tip) ? tip : wrist);
+    const shift = faceShift(point, options.face, body.face);
     target.x += shift.x * body.shoulderWidth;
     target.y += shift.y * body.shoulderWidth;
+    // ... and a hand at the head is not left floating far in front of it by the pose model's depth.
+    // By the palm, not by a fingertip reaching up to the chin from a hand held before the chest.
+    const limit = headDepthLimit(options.palmCenter ?? point, options.face);
+    const deepest = body.eyeCenter.z + limit.ahead * body.shoulderWidth;
+    if (target.z > deepest) target.z = THREE.MathUtils.lerp(target.z, deepest, limit.weight);
   }
   return target;
 }
