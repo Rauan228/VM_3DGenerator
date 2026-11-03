@@ -298,5 +298,1005 @@
   "source_video": "data/uploads/d4a7865e-Алкоголь.mp4",
   "duration": 2.7333333333333334,
   "expression_frames": 82
+ },
+ {
+  "slug": "est",
+  "word": "Есть",
+  "page": "https://signflow.ru/est",
+  "front_seconds": 1.267,
+  "gesture_id": "rsl-759978f53ff44e86ad5696dec1113d6d",
+  "source_video": "data/uploads/95016063-Есть.mp4",
+  "duration": 1.2333333333333334,
+  "expression_frames": 37
+ },
+ {
+  "slug": "pit",
+  "word": "Пить",
+  "page": "https://signflow.ru/pit",
+  "front_seconds": 1.8,
+  "gesture_id": "rsl-a4f7a954129643c9acb83314bb73dd37",
+  "source_video": "data/uploads/61e7a170-Пить.mp4",
+  "duration": 1.8,
+  "expression_frames": 54
+ },
+ {
+  "slug": "spat",
+  "word": "Спать",
+  "page": "https://signflow.ru/spat",
+  "front_seconds": 1.833,
+  "gesture_id": "rsl-feffd46401a445838d6f4f30d97061b2",
+  "source_video": "data/uploads/a81d4129-Спать.mp4",
+  "duration": 1.8,
+  "expression_frames": 54
+ },
+ {
+  "slug": "uchitsya",
+  "word": "Учиться",
+  "page": "https://signflow.ru/uchitsya",
+  "front_seconds": 2.2,
+  "gesture_id": "rsl-4c2af1f1856841068d35bf3adf2769c3",
+  "source_video": "data/uploads/a662ee6c-Учиться.mp4",
+  "duration": 2.2,
+  "expression_frames": 66
+ },
+ {
+  "slug": "uchit",
+  "word": "Учить",
+  "page": "https://signflow.ru/uchit",
+  "front_seconds": 2.267,
+  "gesture_id": "rsl-909d6090199a4090bc632055cdedda23",
+  "source_video": "data/uploads/cbf013ab-Учить.mp4",
+  "duration": 2.2333333333333334,
+  "expression_frames": 67
+ },
+ {
+  "slug": "idti",
+  "word": "Идти",
+  "page": "https://signflow.ru/idti",
+  "front_seconds": 2.2,
+  "gesture_id": "rsl-87995dac0b5c40fa9b80e974fb2460ba",
+  "source_video": "data/uploads/9e51f381-Идти.mp4",
+  "duration": 2.2,
+  "expression_frames": 66
+ },
+ {
+  "slug": "begat",
+  "word": "Бегать",
+  "page": "https://signflow.ru/begat",
+  "front_seconds": 1.967,
+  "gesture_id": "rsl-156f4740566d437dba7b6df546b2a7d6",
+  "source_video": "data/uploads/b5a356da-Бегать.mp4",
+  "duration": 1.9333333333333333,
+  "expression_frames": 58
+ },
+ {
+  "slug": "chitat",
+  "word": "Читать",
+  "page": "https://signflow.ru/chitat",
+  "front_seconds": 2.233,
+  "gesture_id": "rsl-05942bfed2f846058fe8b6a848bdaa0c",
+  "source_video": "data/uploads/a62bccdb-Читать.mp4",
+  "duration": 2.2,
+  "expression_frames": 66
+ },
+ {
+  "slug": "pisat",
+  "word": "Писать",
+  "page": "https://signflow.ru/pisat",
+  "front_seconds": 2.067,
+  "gesture_id": "rsl-3b7abb03980e4a49a616f6428ece0abb",
+  "source_video": "data/uploads/9d917044-Писать.mp4",
+  "duration": 2.033333333333333,
+  "expression_frames": 61
+ },
+ {
+  "slug": "govorit",
+  "word": "Говорить",
+  "page": "https://signflow.ru/govorit",
+  "front_seconds": 3.0,
+  "gesture_id": "rsl-44baae1fcb6241138f4647ce6d3aa739",
+  "source_video": "data/uploads/76dde39f-Говорить.mp4",
+  "duration": 3.0,
+  "expression_frames": 90
+ },
+ {
+  "slug": "smotret",
+  "word": "Смотреть",
+  "page": "https://signflow.ru/smotret",
+  "front_seconds": 2.067,
+  "gesture_id": "rsl-a6f9e93b64d54fbe8ed245c7d15f7dfc",
+  "source_video": "data/uploads/4ae94085-Смотреть.mp4",
+  "duration": 2.033333333333333,
+  "expression_frames": 61
+ },
+ {
+  "slug": "slushat",
+  "word": "Слушать",
+  "page": "https://signflow.ru/slushat",
+  "front_seconds": 1.967,
+  "gesture_id": "rsl-174a0f8cea9940029d614d33dc79f70b",
+  "source_video": "data/uploads/3dc37645-Слушать.mp4",
+  "duration": 1.9333333333333333,
+  "expression_frames": 58
+ },
+ {
+  "slug": "nravitsya",
+  "word": "Нравится",
+  "page": "https://signflow.ru/nravitsya",
+  "front_seconds": 1.8,
+  "gesture_id": "rsl-cae8e65268aa46b1abd789656971b8f7",
+  "source_video": "data/uploads/46b69512-Нравится.mp4",
+  "duration": 1.8,
+  "expression_frames": 54
+ },
+ {
+  "slug": "delat",
+  "word": "Делать",
+  "page": "https://signflow.ru/delat",
+  "front_seconds": 1.633,
+  "gesture_id": "rsl-02565ac4312142319673041039020f88",
+  "source_video": "data/uploads/bbd83174-Делать.mp4",
+  "duration": 1.6,
+  "expression_frames": 48
+ },
+ {
+  "slug": "igrat",
+  "word": "Играть",
+  "page": "https://signflow.ru/igrat",
+  "front_seconds": 1.933,
+  "gesture_id": "rsl-2ec88af4c28a42b188e5dd6d32c6bfc5",
+  "source_video": "data/uploads/971954ac-Играть.mp4",
+  "duration": 1.9,
+  "expression_frames": 57
+ },
+ {
+  "slug": "zhit",
+  "word": "Жить",
+  "page": "https://signflow.ru/zhit",
+  "front_seconds": 2.233,
+  "gesture_id": "rsl-2982a4507a274b8b9ca9dc60116e26e0",
+  "source_video": "data/uploads/316d97a5-Жить.mp4",
+  "duration": 2.2,
+  "expression_frames": 66
+ },
+ {
+  "slug": "zhdat",
+  "word": "Ждать",
+  "page": "https://signflow.ru/zhdat",
+  "front_seconds": 7.8,
+  "gesture_id": "rsl-ad7b59137e764646b23cb0c40d8ad2b4",
+  "source_video": "data/uploads/a21249ee-Ждать.mp4",
+  "duration": 7.8,
+  "expression_frames": 234
+ },
+ {
+  "slug": "pomnit",
+  "word": "Помнить",
+  "page": "https://signflow.ru/pomnit",
+  "front_seconds": 2.333,
+  "gesture_id": "rsl-e3d4355f8409461c97ffbb1945c7ad1f",
+  "source_video": "data/uploads/728f76db-Помнить.mp4",
+  "duration": 2.3,
+  "expression_frames": 69
+ },
+ {
+  "slug": "zabyt",
+  "word": "Забыть",
+  "page": "https://signflow.ru/zabyt",
+  "front_seconds": 2.433,
+  "gesture_id": "rsl-07e6c70ccf4f499b9634533e485eb940",
+  "source_video": "data/uploads/42fe4f46-Забыть.mp4",
+  "duration": 2.4,
+  "expression_frames": 64
+ },
+ {
+  "slug": "sprosit",
+  "word": "Спросить",
+  "page": "https://signflow.ru/sprosit",
+  "front_seconds": 1.9,
+  "gesture_id": "rsl-97a67671ea184c7bbca1b3b8cdaf1993",
+  "source_video": "data/uploads/9b42c30b-Спросить.mp4",
+  "duration": 1.9,
+  "expression_frames": 57
+ },
+ {
+  "slug": "otvet",
+  "word": "Ответ",
+  "page": "https://signflow.ru/otvet",
+  "front_seconds": 1.667,
+  "gesture_id": "rsl-0777ebab223d47759597e3fc41267e35",
+  "source_video": "data/uploads/6673699a-Ответ.mp4",
+  "duration": 1.6333333333333333,
+  "expression_frames": 49
+ },
+ {
+  "slug": "kupit",
+  "word": "Купить",
+  "page": "https://signflow.ru/kupit",
+  "front_seconds": 2.1,
+  "gesture_id": "rsl-92765d94c3274946bfc12c32b0edc25b",
+  "source_video": "data/uploads/b8774166-Купить.mp4",
+  "duration": 2.1,
+  "expression_frames": 63
+ },
+ {
+  "slug": "pokupat",
+  "word": "Покупать",
+  "page": "https://signflow.ru/pokupat",
+  "front_seconds": 2.467,
+  "gesture_id": "rsl-105b99e6fc6e46569d55361d7ffe5f24",
+  "source_video": "data/uploads/9cce1fd8-Покупать.mp4",
+  "duration": 2.433333333333333,
+  "expression_frames": 73
+ },
+ {
+  "slug": "prodavat",
+  "word": "Продавать",
+  "page": "https://signflow.ru/prodavat",
+  "front_seconds": 4.133,
+  "gesture_id": "rsl-a739d2541b6b44eba87e9ded845c7f03",
+  "source_video": "data/uploads/fae87e1f-Продавать.mp4",
+  "duration": 4.1,
+  "expression_frames": 123
+ },
+ {
+  "slug": "platit",
+  "word": "Платить",
+  "page": "https://signflow.ru/platit",
+  "front_seconds": 2.6,
+  "gesture_id": "rsl-34ed6f91eaa944bab164702bcb997275",
+  "source_video": "data/uploads/acbb6e81-Платить.mp4",
+  "duration": 2.6,
+  "expression_frames": 78
+ },
+ {
+  "slug": "dengi",
+  "word": "Деньги",
+  "page": "https://signflow.ru/dengi",
+  "front_seconds": 2.333,
+  "gesture_id": "rsl-900f62d830974ad2a9738bc5be231cd2",
+  "source_video": "data/uploads/0c75ccd8-Деньги.mp4",
+  "duration": 2.3,
+  "expression_frames": 69
+ },
+ {
+  "slug": "magazin",
+  "word": "Магазин",
+  "page": "https://signflow.ru/magazin",
+  "front_seconds": 2.1,
+  "gesture_id": "rsl-dceaf7869af941d0824de5826f6ccb9f",
+  "source_video": "data/uploads/b18232a3-Магазин.mp4",
+  "duration": 2.1,
+  "expression_frames": 63
+ },
+ {
+  "slug": "kvartira",
+  "word": "Квартира",
+  "page": "https://signflow.ru/kvartira",
+  "front_seconds": 2.1,
+  "gesture_id": "rsl-c02a2351999c42838a894b28b2cca26a",
+  "source_video": "data/uploads/85a2b3b5-Квартира.mp4",
+  "duration": 2.1,
+  "expression_frames": 63
+ },
+ {
+  "slug": "gorod",
+  "word": "Город",
+  "page": "https://signflow.ru/gorod",
+  "front_seconds": 2.5,
+  "gesture_id": "rsl-e7300af2c29d4025bfa05c689d559061",
+  "source_video": "data/uploads/3b2fe945-Город.mp4",
+  "duration": 2.5,
+  "expression_frames": 75
+ },
+ {
+  "slug": "derevnya",
+  "word": "Деревня",
+  "page": "https://signflow.ru/derevnya",
+  "front_seconds": 1.933,
+  "gesture_id": "rsl-f877ab6a8308481baa3aa5c1152e473e",
+  "source_video": "data/uploads/c349dd94-Деревня.mp4",
+  "duration": 1.9,
+  "expression_frames": 57
+ },
+ {
+  "slug": "ulitsa",
+  "word": "Улица",
+  "page": "https://signflow.ru/ulitsa",
+  "front_seconds": 1.767,
+  "gesture_id": "rsl-4948501c2a7945da882881bc17741a5f",
+  "source_video": "data/uploads/88348a82-Улица.mp4",
+  "duration": 1.7333333333333334,
+  "expression_frames": 52
+ },
+ {
+  "slug": "mashina",
+  "word": "Машина",
+  "page": "https://signflow.ru/mashina",
+  "front_seconds": 2.133,
+  "gesture_id": "rsl-16ee16e594f940e18ab0ec6e37ee14f6",
+  "source_video": "data/uploads/2474572e-Машина.mp4",
+  "duration": 2.1,
+  "expression_frames": 63
+ },
+ {
+  "slug": "avtobus",
+  "word": "Автобус",
+  "page": "https://signflow.ru/avtobus",
+  "front_seconds": 1.7,
+  "gesture_id": "rsl-66c216ae6d8d49e1965ddb520f0d1320",
+  "source_video": "data/uploads/1d76931a-Автобус.mp4",
+  "duration": 1.7,
+  "expression_frames": 51
+ },
+ {
+  "slug": "poezd",
+  "word": "Поезд",
+  "page": "https://signflow.ru/poezd",
+  "front_seconds": 2.233,
+  "gesture_id": "rsl-afdd46bf961d43439f8ef1d988d591d8",
+  "source_video": "data/uploads/b56a44c7-Поезд.mp4",
+  "duration": 2.2,
+  "expression_frames": 66
+ },
+ {
+  "slug": "doroga",
+  "word": "Дорога",
+  "page": "https://signflow.ru/doroga",
+  "front_seconds": 2.033,
+  "gesture_id": "rsl-f5ab2b5ec2f5401a9ba8ce7359f7f830",
+  "source_video": "data/uploads/addb9e71-Дорога.mp4",
+  "duration": 2.0,
+  "expression_frames": 60
+ },
+ {
+  "slug": "lekarstvo",
+  "word": "Лекарство",
+  "page": "https://signflow.ru/lekarstvo",
+  "front_seconds": 2.233,
+  "gesture_id": "rsl-45be0fb52f504c3fb1eaf3690a94650c",
+  "source_video": "data/uploads/edc121dd-Лекарство.mp4",
+  "duration": 2.2,
+  "expression_frames": 66
+ },
+ {
+  "slug": "bolet",
+  "word": "Болеть",
+  "page": "https://signflow.ru/bolet",
+  "front_seconds": 2.8,
+  "gesture_id": "rsl-25a791d91c7644f1ae5425e7e28c3117",
+  "source_video": "data/uploads/43aa8e5e-Болеть.mp4",
+  "duration": 2.8,
+  "expression_frames": 84
+ },
+ {
+  "slug": "zdorovyy",
+  "word": "Здоровый",
+  "page": "https://signflow.ru/zdorovyy",
+  "front_seconds": 2.033,
+  "gesture_id": "rsl-319e783765e549478b0b8e7e229df1ca",
+  "source_video": "data/uploads/652291bd-Здоровый.mp4",
+  "duration": 2.0,
+  "expression_frames": 60
+ },
+ {
+  "slug": "ruka",
+  "word": "Рука",
+  "page": "https://signflow.ru/ruka",
+  "front_seconds": 1.7,
+  "gesture_id": "rsl-3f3a18b8ec164f828917f0d9bb4de04d",
+  "source_video": "data/uploads/51a310e1-Рука.mp4",
+  "duration": 1.7,
+  "expression_frames": 51
+ },
+ {
+  "slug": "noga",
+  "word": "Нога",
+  "page": "https://signflow.ru/noga",
+  "front_seconds": 1.7,
+  "gesture_id": "rsl-b954c659e02c4c459a369d7add27aa8f",
+  "source_video": "data/uploads/587f8326-Нога.mp4",
+  "duration": 1.7,
+  "expression_frames": 51
+ },
+ {
+  "slug": "glaza",
+  "word": "Глаза",
+  "page": "https://signflow.ru/glaza",
+  "front_seconds": 1.9,
+  "gesture_id": "rsl-59571f27f51047369a1930642b34e267",
+  "source_video": "data/uploads/84d725c3-Глаза.mp4",
+  "duration": 1.9,
+  "expression_frames": 57
+ },
+ {
+  "slug": "brat",
+  "word": "Брат",
+  "page": "https://signflow.ru/brat",
+  "front_seconds": 2.0,
+  "gesture_id": "rsl-bf67db6dc6e947f480db50ff4d9f4bae",
+  "source_video": "data/uploads/9a290e63-Брат.mp4",
+  "duration": 2.0,
+  "expression_frames": 60
+ },
+ {
+  "slug": "sestra",
+  "word": "Сестра",
+  "page": "https://signflow.ru/sestra",
+  "front_seconds": 1.933,
+  "gesture_id": "rsl-5ec3a63dd10e4bb5b5def5291ca849c0",
+  "source_video": "data/uploads/c5541649-Сестра.mp4",
+  "duration": 1.9,
+  "expression_frames": 57
+ },
+ {
+  "slug": "syn",
+  "word": "Сын",
+  "page": "https://signflow.ru/syn",
+  "front_seconds": 2.033,
+  "gesture_id": "rsl-8e2c4861314343aa9051be00b1e681b9",
+  "source_video": "data/uploads/ce9c6cdc-Сын.mp4",
+  "duration": 2.0,
+  "expression_frames": 60
+ },
+ {
+  "slug": "doch",
+  "word": "Дочь",
+  "page": "https://signflow.ru/doch",
+  "front_seconds": 3.067,
+  "gesture_id": "rsl-7056a2e1c5514e53b187bd65164f1004",
+  "source_video": "data/uploads/51fda1f5-Дочь.mp4",
+  "duration": 3.033333333333333,
+  "expression_frames": 91
+ },
+ {
+  "slug": "babushka",
+  "word": "Бабушка",
+  "page": "https://signflow.ru/babushka",
+  "front_seconds": 3.2,
+  "gesture_id": "rsl-143a9aa9c8f54e26905459fe1e1e38ce",
+  "source_video": "data/uploads/05d7059e-Бабушка.mp4",
+  "duration": 3.2,
+  "expression_frames": 96
+ },
+ {
+  "slug": "dedushka",
+  "word": "Дедушка",
+  "page": "https://signflow.ru/dedushka",
+  "front_seconds": 2.933,
+  "gesture_id": "rsl-f9fa704abcc24fc48d1041645bc2e994",
+  "source_video": "data/uploads/7dc3d187-Дедушка.mp4",
+  "duration": 2.9,
+  "expression_frames": 87
+ },
+ {
+  "slug": "rebenok",
+  "word": "Ребенок",
+  "page": "https://signflow.ru/rebenok",
+  "front_seconds": 1.5,
+  "gesture_id": "rsl-595450df808e4a03ac7113009360b181",
+  "source_video": "data/uploads/35b08413-Ребенок.mp4",
+  "duration": 1.5,
+  "expression_frames": 45
+ },
+ {
+  "slug": "deti",
+  "word": "Дети",
+  "page": "https://signflow.ru/deti",
+  "front_seconds": 2.0,
+  "gesture_id": "rsl-095ceac2fa9e4dbb8cfc5c689364f3cb",
+  "source_video": "data/uploads/92577d34-Дети.mp4",
+  "duration": 2.0,
+  "expression_frames": 60
+ },
+ {
+  "slug": "muzh",
+  "word": "Муж",
+  "page": "https://signflow.ru/muzh",
+  "front_seconds": 1.8,
+  "gesture_id": "rsl-36c1f2cac6d848c399eae944c09b5ba0",
+  "source_video": "data/uploads/c73bbc80-Муж.mp4",
+  "duration": 1.8,
+  "expression_frames": 54
+ },
+ {
+  "slug": "zhena",
+  "word": "Жена",
+  "page": "https://signflow.ru/zhena",
+  "front_seconds": 2.3,
+  "gesture_id": "rsl-e210a198ebc149dca368d4cc9fb1b996",
+  "source_video": "data/uploads/5aa93a2c-Жена.mp4",
+  "duration": 2.3,
+  "expression_frames": 69
+ },
+ {
+  "slug": "muzhchina",
+  "word": "Мужчина",
+  "page": "https://signflow.ru/muzhchina",
+  "front_seconds": 1.833,
+  "gesture_id": "rsl-3422c88a86b6428db6541081d123e2af",
+  "source_video": "data/uploads/40fcca3c-Мужчина.mp4",
+  "duration": 1.8,
+  "expression_frames": 54
+ },
+ {
+  "slug": "zhenshchina",
+  "word": "Женщина",
+  "page": "https://signflow.ru/zhenshchina",
+  "front_seconds": 2.133,
+  "gesture_id": "rsl-37a9fb541ea7473ea25304660acac567",
+  "source_video": "data/uploads/9f1f9326-Женщина.mp4",
+  "duration": 2.1,
+  "expression_frames": 63
+ },
+ {
+  "slug": "devochka",
+  "word": "Девочка",
+  "page": "https://signflow.ru/devochka",
+  "front_seconds": 1.967,
+  "gesture_id": "rsl-faec19546ad94b37aa21a08c028cffe1",
+  "source_video": "data/uploads/1d96871b-Девочка.mp4",
+  "duration": 1.9333333333333333,
+  "expression_frames": 58
+ },
+ {
+  "slug": "chelovek",
+  "word": "Человек",
+  "page": "https://signflow.ru/chelovek",
+  "front_seconds": 1.7,
+  "gesture_id": "rsl-92863b1c21c0470786206b0026cf8238",
+  "source_video": "data/uploads/23465b78-Человек.mp4",
+  "duration": 1.7,
+  "expression_frames": 51
+ },
+ {
+  "slug": "lyudi",
+  "word": "Люди",
+  "page": "https://signflow.ru/lyudi",
+  "front_seconds": 2.433,
+  "gesture_id": "rsl-cd1eff82d3674b70a1fa9a18e4bf8674",
+  "source_video": "data/uploads/5d9e5ee5-Люди.mp4",
+  "duration": 2.4,
+  "expression_frames": 72
+ },
+ {
+  "slug": "imya",
+  "word": "Имя",
+  "page": "https://signflow.ru/imya",
+  "front_seconds": 1.533,
+  "gesture_id": "rsl-1e7196cb92e14c61857a82bdf2c8fe88",
+  "source_video": "data/uploads/90476b00-Имя.mp4",
+  "duration": 1.5,
+  "expression_frames": 45
+ },
+ {
+  "slug": "krasnyy",
+  "word": "Красный",
+  "page": "https://signflow.ru/krasnyy",
+  "front_seconds": 1.667,
+  "gesture_id": "rsl-01393ffbf8cf4bef84ca190d5703d83e",
+  "source_video": "data/uploads/b742a434-Красный.mp4",
+  "duration": 1.6333333333333333,
+  "expression_frames": 49
+ },
+ {
+  "slug": "siniy",
+  "word": "Синий",
+  "page": "https://signflow.ru/siniy",
+  "front_seconds": 1.8,
+  "gesture_id": "rsl-5d633cb7d7e644b683f8b4ba4962b712",
+  "source_video": "data/uploads/b2a42164-Синий.mp4",
+  "duration": 1.8,
+  "expression_frames": 54
+ },
+ {
+  "slug": "belyy",
+  "word": "Белый",
+  "page": "https://signflow.ru/belyy",
+  "front_seconds": 2.167,
+  "gesture_id": "rsl-894103b0f8ef49e9b8a5b53dad4730ca",
+  "source_video": "data/uploads/cf4a9746-Белый.mp4",
+  "duration": 2.1333333333333333,
+  "expression_frames": 64
+ },
+ {
+  "slug": "seryy",
+  "word": "Серый",
+  "page": "https://signflow.ru/seryy",
+  "front_seconds": 1.7,
+  "gesture_id": "rsl-efc9850bfb7449ea90ba8e7a09c2eb0a",
+  "source_video": "data/uploads/c5754ae8-Серый.mp4",
+  "duration": 1.7,
+  "expression_frames": 51
+ },
+ {
+  "slug": "korichnevyy",
+  "word": "Коричневый",
+  "page": "https://signflow.ru/korichnevyy",
+  "front_seconds": 2.767,
+  "gesture_id": "rsl-469a75ffc91b4a26bfd6f88be56b0116",
+  "source_video": "data/uploads/b6fa3bdc-Коричневый.mp4",
+  "duration": 2.7333333333333334,
+  "expression_frames": 82
+ },
+ {
+  "slug": "rozovyy",
+  "word": "Розовый",
+  "page": "https://signflow.ru/rozovyy",
+  "front_seconds": 3.2,
+  "gesture_id": "rsl-a757629e802e48da914b85edcaf3f723",
+  "source_video": "data/uploads/8edc5e0d-Розовый.mp4",
+  "duration": 3.2,
+  "expression_frames": 96
+ },
+ {
+  "slug": "oranzhevyy",
+  "word": "Оранжевый",
+  "page": "https://signflow.ru/oranzhevyy",
+  "front_seconds": 1.9,
+  "gesture_id": "rsl-0401d3f1fbde4955bea14a875fa9851c",
+  "source_video": "data/uploads/8986516b-Оранжевый.mp4",
+  "duration": 1.9,
+  "expression_frames": 57
+ },
+ {
+  "slug": "fioletovyy",
+  "word": "Фиолетовый",
+  "page": "https://signflow.ru/fioletovyy",
+  "front_seconds": 1.933,
+  "gesture_id": "rsl-e6a724fe49af4cdd8f6eca5bb768821c",
+  "source_video": "data/uploads/789b36ba-Фиолетовый.mp4",
+  "duration": 1.9,
+  "expression_frames": 57
+ },
+ {
+  "slug": "odin",
+  "word": "Один",
+  "page": "https://signflow.ru/odin",
+  "front_seconds": 1.5,
+  "gesture_id": "rsl-3752fddc9f8b4db498093b39d728db17",
+  "source_video": "data/uploads/cfc255cb-Один.mp4",
+  "duration": 1.5,
+  "expression_frames": 45
+ },
+ {
+  "slug": "dva",
+  "word": "Два",
+  "page": "https://signflow.ru/dva",
+  "front_seconds": 1.567,
+  "gesture_id": "rsl-3c002f3d35564f99bcb9086164eb3f21",
+  "source_video": "data/uploads/50100f7f-Два.mp4",
+  "duration": 1.5333333333333334,
+  "expression_frames": 46
+ },
+ {
+  "slug": "chetyre",
+  "word": "Четыре",
+  "page": "https://signflow.ru/chetyre",
+  "front_seconds": 1.733,
+  "gesture_id": "rsl-10cab2efe336482ba1e1a5ff892ccaa8",
+  "source_video": "data/uploads/bd75c355-Четыре.mp4",
+  "duration": 1.7,
+  "expression_frames": 51
+ },
+ {
+  "slug": "pyat",
+  "word": "Пять",
+  "page": "https://signflow.ru/pyat",
+  "front_seconds": 1.833,
+  "gesture_id": "rsl-d1bc5a03f37e4210943b7028edbb2519",
+  "source_video": "data/uploads/68bac052-Пять.mp4",
+  "duration": 1.8,
+  "expression_frames": 54
+ },
+ {
+  "slug": "shest",
+  "word": "Шесть",
+  "page": "https://signflow.ru/shest",
+  "front_seconds": 2.067,
+  "gesture_id": "rsl-77e352bd8ec94157a643507a11b74c4e",
+  "source_video": "data/uploads/89a57d4e-Шесть.mp4",
+  "duration": 2.033333333333333,
+  "expression_frames": 61
+ },
+ {
+  "slug": "sem",
+  "word": "Семь",
+  "page": "https://signflow.ru/sem",
+  "front_seconds": 3.167,
+  "gesture_id": "rsl-60219e65e45944c48f099ba18498cf98",
+  "source_video": "data/uploads/0965da7c-Семь.mp4",
+  "duration": 3.1333333333333333,
+  "expression_frames": 94
+ },
+ {
+  "slug": "vosem",
+  "word": "Восемь",
+  "page": "https://signflow.ru/vosem",
+  "front_seconds": 2.067,
+  "gesture_id": "rsl-2c9d26038bcb41e49cf96e79ffdc31a8",
+  "source_video": "data/uploads/083223a7-Восемь.mp4",
+  "duration": 2.033333333333333,
+  "expression_frames": 61
+ },
+ {
+  "slug": "devyat",
+  "word": "Девять",
+  "page": "https://signflow.ru/devyat",
+  "front_seconds": 2.8,
+  "gesture_id": "rsl-0840f80fd8f34394a758e2b3cb162892",
+  "source_video": "data/uploads/cbc0c8d2-Девять.mp4",
+  "duration": 2.8,
+  "expression_frames": 84
+ },
+ {
+  "slug": "desyat",
+  "word": "Десять",
+  "page": "https://signflow.ru/desyat",
+  "front_seconds": 1.7,
+  "gesture_id": "rsl-9e980d069809429483b1db69b4de102c",
+  "source_video": "data/uploads/0b7bd453-Десять.mp4",
+  "duration": 1.7,
+  "expression_frames": 51
+ },
+ {
+  "slug": "sto",
+  "word": "Сто",
+  "page": "https://signflow.ru/sto",
+  "front_seconds": 1.8,
+  "gesture_id": "rsl-30e05b5724654721b1394e1d8559f066",
+  "source_video": "data/uploads/6be995b7-Сто.mp4",
+  "duration": 1.8,
+  "expression_frames": 54
+ },
+ {
+  "slug": "tysyacha",
+  "word": "Тысяча",
+  "page": "https://signflow.ru/tysyacha",
+  "front_seconds": 1.7,
+  "gesture_id": "rsl-a9b32d9de29b459681df5e8ade527f26",
+  "source_video": "data/uploads/9496886a-Тысяча.mp4",
+  "duration": 1.7,
+  "expression_frames": 51
+ },
+ {
+  "slug": "utro",
+  "word": "Утро",
+  "page": "https://signflow.ru/utro",
+  "front_seconds": 2.5,
+  "gesture_id": "rsl-221b82a87e2e4e129d4a05872f93d11e",
+  "source_video": "data/uploads/8737d770-Утро.mp4",
+  "duration": 2.5,
+  "expression_frames": 75
+ },
+ {
+  "slug": "vecher",
+  "word": "Вечер",
+  "page": "https://signflow.ru/vecher",
+  "front_seconds": 2.6,
+  "gesture_id": "rsl-409f71dd26f64bb98c397ddf8f1e034b",
+  "source_video": "data/uploads/5bb1a21c-Вечер.mp4",
+  "duration": 2.6,
+  "expression_frames": 78
+ },
+ {
+  "slug": "mesyats",
+  "word": "Месяц",
+  "page": "https://signflow.ru/mesyats",
+  "front_seconds": 1.867,
+  "gesture_id": "rsl-3425c774722a4ce9807068aec4fe3186",
+  "source_video": "data/uploads/4538e42d-Месяц.mp4",
+  "duration": 1.8333333333333333,
+  "expression_frames": 55
+ },
+ {
+  "slug": "god",
+  "word": "Год",
+  "page": "https://signflow.ru/god",
+  "front_seconds": 2.267,
+  "gesture_id": "rsl-4c2ba9032b5f436a8fbb575bca7933e0",
+  "source_video": "data/uploads/42f86aab-Год.mp4",
+  "duration": 2.2333333333333334,
+  "expression_frames": 67
+ },
+ {
+  "slug": "vremya",
+  "word": "Время",
+  "page": "https://signflow.ru/vremya",
+  "front_seconds": 1.667,
+  "gesture_id": "rsl-8bc2f14532914ca787fcdb10be7ce2bd",
+  "source_video": "data/uploads/f98d2203-Время.mp4",
+  "duration": 1.6333333333333333,
+  "expression_frames": 49
+ },
+ {
+  "slug": "chas",
+  "word": "Час",
+  "page": "https://signflow.ru/chas",
+  "front_seconds": 1.867,
+  "gesture_id": "rsl-8a1a3eabb4aa45b8bc057ee85310bef5",
+  "source_video": "data/uploads/0f81e047-Час.mp4",
+  "duration": 1.8333333333333333,
+  "expression_frames": 55
+ },
+ {
+  "slug": "ponedelnik",
+  "word": "Понедельник",
+  "page": "https://signflow.ru/ponedelnik",
+  "front_seconds": 1.933,
+  "gesture_id": "rsl-34d76c7fdbf4474bbd562794980fb80a",
+  "source_video": "data/uploads/5a668efa-Понедельник.mp4",
+  "duration": 1.9,
+  "expression_frames": 57
+ },
+ {
+  "slug": "vtornik",
+  "word": "Вторник",
+  "page": "https://signflow.ru/vtornik",
+  "front_seconds": 1.6,
+  "gesture_id": "rsl-cfbf552984a34d528432e7adeb38fcc0",
+  "source_video": "data/uploads/484878bb-Вторник.mp4",
+  "duration": 1.6,
+  "expression_frames": 48
+ },
+ {
+  "slug": "sreda",
+  "word": "Среда",
+  "page": "https://signflow.ru/sreda",
+  "front_seconds": 2.067,
+  "gesture_id": "rsl-89c12ffece1849fcbc6807cfe272feec",
+  "source_video": "data/uploads/f2ce31dd-Среда.mp4",
+  "duration": 2.033333333333333,
+  "expression_frames": 61
+ },
+ {
+  "slug": "chetverg",
+  "word": "Четверг",
+  "page": "https://signflow.ru/chetverg",
+  "front_seconds": 2.7,
+  "gesture_id": "rsl-a8a0b9f7dc204eb8bcc430521f2e8b7c",
+  "source_video": "data/uploads/d651a963-Четверг.mp4",
+  "duration": 2.7,
+  "expression_frames": 81
+ },
+ {
+  "slug": "pyatnitsa",
+  "word": "Пятница",
+  "page": "https://signflow.ru/pyatnitsa",
+  "front_seconds": 2.233,
+  "gesture_id": "rsl-ffa871209ef84067a2355eb48eb51dbe",
+  "source_video": "data/uploads/8a2ef228-Пятница.mp4",
+  "duration": 2.2,
+  "expression_frames": 66
+ },
+ {
+  "slug": "subbota",
+  "word": "Суббота",
+  "page": "https://signflow.ru/subbota",
+  "front_seconds": 2.133,
+  "gesture_id": "rsl-2d732d223444449f8ab49073391586ca",
+  "source_video": "data/uploads/2a5d4677-Суббота.mp4",
+  "duration": 2.1,
+  "expression_frames": 63
+ },
+ {
+  "slug": "voskresene",
+  "word": "Воскресенье",
+  "page": "https://signflow.ru/voskresene",
+  "front_seconds": 1.867,
+  "gesture_id": "rsl-6753889a415a4966be01295433638e3a",
+  "source_video": "data/uploads/b701f8b6-Воскресенье.mp4",
+  "duration": 1.8333333333333333,
+  "expression_frames": 55
+ },
+ {
+  "slug": "zima",
+  "word": "Зима",
+  "page": "https://signflow.ru/zima",
+  "front_seconds": 2.067,
+  "gesture_id": "rsl-37994fd12ad34732b0432caa2be7468a",
+  "source_video": "data/uploads/c380a669-Зима.mp4",
+  "duration": 2.033333333333333,
+  "expression_frames": 61
+ },
+ {
+  "slug": "vesna",
+  "word": "Весна",
+  "page": "https://signflow.ru/vesna",
+  "front_seconds": 2.1,
+  "gesture_id": "rsl-4b7a4dd49bc94f27898c0d29a4c206ca",
+  "source_video": "data/uploads/bcac8d46-Весна.mp4",
+  "duration": 2.1,
+  "expression_frames": 63
+ },
+ {
+  "slug": "leto",
+  "word": "Лето",
+  "page": "https://signflow.ru/leto",
+  "front_seconds": 1.567,
+  "gesture_id": "rsl-9a842c887c974736a60216ec36be784b",
+  "source_video": "data/uploads/811ca10f-Лето.mp4",
+  "duration": 1.5333333333333334,
+  "expression_frames": 46
+ },
+ {
+  "slug": "osen",
+  "word": "Осень",
+  "page": "https://signflow.ru/osen",
+  "front_seconds": 1.967,
+  "gesture_id": "rsl-d72f354ef45a4c72b7c26f037932b072",
+  "source_video": "data/uploads/745ea560-Осень.mp4",
+  "duration": 1.9333333333333333,
+  "expression_frames": 58
+ },
+ {
+  "slug": "sneg",
+  "word": "Снег",
+  "page": "https://signflow.ru/sneg",
+  "front_seconds": 3.133,
+  "gesture_id": "rsl-8515a10d65344b6985c1a6d5789f18f8",
+  "source_video": "data/uploads/f0d9d5d6-Снег.mp4",
+  "duration": 3.1,
+  "expression_frames": 93
+ },
+ {
+  "slug": "dozhd",
+  "word": "Дождь",
+  "page": "https://signflow.ru/dozhd",
+  "front_seconds": 2.433,
+  "gesture_id": "rsl-08378c2d874f49e58f84ea6c78bc0a98",
+  "source_video": "data/uploads/02674385-Дождь.mp4",
+  "duration": 2.4,
+  "expression_frames": 72
+ },
+ {
+  "slug": "solntse",
+  "word": "Солнце",
+  "page": "https://signflow.ru/solntse",
+  "front_seconds": 2.067,
+  "gesture_id": "rsl-3c5a1c3eb6fc43e2ae3f9b627489f071",
+  "source_video": "data/uploads/33ac1a06-Солнце.mp4",
+  "duration": 2.033333333333333,
+  "expression_frames": 61
+ },
+ {
+  "slug": "veter",
+  "word": "Ветер",
+  "page": "https://signflow.ru/veter",
+  "front_seconds": 1.933,
+  "gesture_id": "rsl-2265a64698a9424ab544075529c09151",
+  "source_video": "data/uploads/b4502953-Ветер.mp4",
+  "duration": 1.9,
+  "expression_frames": 57
+ },
+ {
+  "slug": "nebo",
+  "word": "Небо",
+  "page": "https://signflow.ru/nebo",
+  "front_seconds": 2.033,
+  "gesture_id": "rsl-5adc148ea8604b94b2c429e72ae9cc41",
+  "source_video": "data/uploads/883dcda0-Небо.mp4",
+  "duration": 2.0,
+  "expression_frames": 60
+ },
+ {
+  "slug": "tri",
+  "word": "Три",
+  "page": "https://signflow.ru/tri",
+  "front_seconds": 1.767,
+  "gesture_id": "rsl-b5e378512ce44bc7b2e8d25554693b0d",
+  "source_video": "data/uploads/658f0bd3-Три.mp4",
+  "duration": 1.7333333333333334,
+  "expression_frames": 52
+ },
+ {
+  "slug": "nedelya",
+  "word": "Неделя",
+  "page": "https://signflow.ru/nedelya",
+  "front_seconds": 1.7,
+  "gesture_id": "rsl-c44da76898474e5eb03064baecfd1547",
+  "source_video": "data/uploads/3c99fe17-Неделя.mp4",
+  "duration": 1.7,
+  "expression_frames": 51
  }
 ]
