@@ -28,7 +28,7 @@ type Entry = {
 type Avatar = "male" | "female";
 type Angle = "front" | "side";
 
-const MODELS: Record<Avatar, string> = { male: "/models/visualmind-male.glb", female: "/models/visualmind-female.glb" };
+const MODELS: Record<Avatar, string> = { male: "/models/tilmind-male.glb", female: "/models/tilmind-female.glb" };
 const FLOOR_Y = -1.12;
 // Framed like the videos: head to waist, with room for hands raised above the head.
 const LOOK_AT_Y = 0.27;

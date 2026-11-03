@@ -40,7 +40,7 @@ CHARACTERS = {
     "female": {"height": 1.66, "gender": 0.0, "ink": (0.27, 0.03, 0.17)},
 }
 # The lettering, as a decal of its own (reprojected from the reference it comes out soft and garbled).
-PRINT_TEXT = os.path.join(ROOT, "assets", "logo", "visual-mind-text.png")
+PRINT_TEXT = os.path.join(ROOT, "assets", "logo", "til-mind-text.png")
 # The reference background (light grey); anything further from it than this is the figure.
 BACKGROUND_TOLERANCE = 0.08
 # Faces turned further than this from the camera keep Tripo's texture; between this and FULL the two are blended.
@@ -404,19 +404,32 @@ def paint_out_print(mesh, texture, projection, region, normal_map=None, orm=None
     for rows, cols, points, _ in rasterize(mesh, (width, height), keep):
         inside = polygon_distance(projection.to_image(points), region) > 0
         covered[rows[inside], cols[inside]] = True
+    # And the texels just past the triangles' edges: at a UV seam the texture is sampled a texel or two past the edge,
+    # and letters left there show as light threads along the seam (under a long word they were hidden).
+    for _ in range(PRINT_SEAM_TEXELS):
+        grown = covered.copy()
+        grown[1:] |= covered[:-1]
+        grown[:-1] |= covered[1:]
+        grown[:, 1:] |= covered[:, :-1]
+        grown[:, :-1] |= covered[:, 1:]
+        covered = grown
     # Even faint traces: the letters' blurred fringes are only a little lighter than the cloth.
     filled = fill_lettering(texture, covered, lighter=0.035)
     flatten_maps(texture, covered, normal_map, orm)
     return filled, np.median(texture[covered, :3], axis=0)
 
 
+# Share of the reference lettering's box the wordmark fills.
+PRINT_FILL = 0.85
+# How far past the painted-out triangles' edges (texels) the lettering is painted out too.
+PRINT_SEAM_TEXELS = 4
 # The decal floats this far (model units, about 1.5 mm) off the cloth, enough not to flicker into it.
 DECAL_LIFT = 0.0009
 
 
 def print_decal(body, projection, letters, ink):
     """The chest print as its own thin mesh: a copy of the hoodie's surface under the letters, lifted off it, skinned
-    like it, and textured with the logo's text in `ink` (fitted to the letters' box by width, centred in height). Sharp
+    like it, and textured with the logo's text in `ink` (fitted into the letters' box). Sharp
     at any zoom, where text painted into the body's texture would be a few texels tall."""
     text_image = bpy.data.images.load(PRINT_TEXT)
     alpha = mpfb.image_pixels(text_image)[..., 3].copy()
@@ -428,11 +441,14 @@ def print_decal(body, projection, letters, ink):
     tx0, tx1, ty0, ty1 = tx.min() - margin, tx.max() + 1 + margin, ty.min() - margin, ty.max() + 1 + margin
     crop = np.pad(alpha, margin)[ty0 + margin:ty1 + margin, tx0 + margin:tx1 + margin]
     x0, x1, y0, y1 = letters
-    scale = (tx1 - tx0 - 2 * margin) / max(x1 - x0, 1)  # text pixels per reference pixel
+    # Text pixels per reference pixel: the text fits inside the letters' box (the wordmark need not have the reference's
+    # proportions), from its left edge like the reference's lettering, centred in height, a little smaller than the box:
+    # its far end is where the chest turns toward the sleeve seam, and letters there are cut off (the girl's "d").
+    scale = max((tx1 - tx0 - 2 * margin) / max(x1 - x0, 1), (ty1 - ty0 - 2 * margin) / max(y1 - y0, 1)) / PRINT_FILL
     mid_y = (y0 + y1) / 2
-    box = (x0 - margin / scale, x1 + margin / scale, mid_y - crop.shape[0] / scale / 2, mid_y + crop.shape[0] / scale / 2)
+    box = (x0 - margin / scale, x0 + (crop.shape[1] - margin) / scale, mid_y - crop.shape[0] / scale / 2, mid_y + crop.shape[0] / scale / 2)
 
-    image = bpy.data.images.new("VM_print", crop.shape[1], crop.shape[0], alpha=True)
+    image = bpy.data.images.new("TM_print", crop.shape[1], crop.shape[0], alpha=True)
     pixels = np.empty(crop.shape + (4,), np.float32)
     pixels[..., :3] = ink
     pixels[..., 3] = crop
@@ -460,10 +476,10 @@ def print_decal(body, projection, letters, ink):
         for loop in face.loops:
             col, row = projection.to_image(np.array([loop.vert.co[:]]))[0]
             loop[uv].uv = ((col - box[0]) / (box[1] - box[0]), (row - box[2]) / (box[3] - box[2]))
-    mesh = bpy.data.meshes.new("VM_print")
+    mesh = bpy.data.meshes.new("TM_print")
     bm.to_mesh(mesh)
     bm.free()
-    decal = bpy.data.objects.new("VM_print", mesh)
+    decal = bpy.data.objects.new("TM_print", mesh)
     bpy.context.scene.collection.objects.link(decal)
     for group in body.vertex_groups:
         decal.vertex_groups.new(name=group.name)
@@ -474,7 +490,7 @@ def print_decal(body, projection, letters, ink):
         if modifier.type == "ARMATURE":
             decal.modifiers.new("Armature", "ARMATURE").object = modifier.object
 
-    material = bpy.data.materials.new("VM_print")
+    material = bpy.data.materials.new("TM_print")
     material.use_nodes = True
     material.blend_method = "BLEND"
     bsdf = material.node_tree.nodes["Principled BSDF"]
@@ -651,18 +667,18 @@ def build(key, spec, args, landmarks_all):
     z_hi = projection.to_model(0, print_rows[1] + 180)[1]
     print("back print texels", paint_out_back_print(mesh, texture, (z_lo, z_hi), cloth, normal_map, orm))
     if orm is not None:
-        orm_image = bpy.data.images.new(f"VM_{key}_orm", orm.shape[1], orm.shape[0], alpha=True, is_data=True)
+        orm_image = bpy.data.images.new(f"TM_{key}_orm", orm.shape[1], orm.shape[0], alpha=True, is_data=True)
         orm_image.colorspace_settings.name = "Non-Color"
         orm_image.pixels.foreach_set(orm.ravel())
         orm_image.pack()
         orm_node.image = orm_image
     if normal_map is not None:
-        flat_image = bpy.data.images.new(f"VM_{key}_normal", normal_map.shape[1], normal_map.shape[0], alpha=True, is_data=True)
+        flat_image = bpy.data.images.new(f"TM_{key}_normal", normal_map.shape[1], normal_map.shape[0], alpha=True, is_data=True)
         flat_image.colorspace_settings.name = "Non-Color"
         flat_image.pixels.foreach_set(normal_map.ravel())
         flat_image.pack()
         normal_node.image = flat_image
-    image = bpy.data.images.new(f"VM_{key}_color", texture.shape[1], texture.shape[0], alpha=True)
+    image = bpy.data.images.new(f"TM_{key}_color", texture.shape[1], texture.shape[0], alpha=True)
     image.pixels.foreach_set(texture.ravel())
     image.pack()
     color_node.image = image
@@ -783,9 +799,9 @@ def build(key, spec, args, landmarks_all):
     rig.location = (0.0, 0.0, -lowest * h)
 
     rig.name = rig.data.name = "Armature"
-    body.name = mesh.name = "VM_body"
+    body.name = mesh.name = "TM_body"
     mpfb.shrink_textures()
-    out = os.path.join(args.out, f"visualmind-{key}.glb")
+    out = os.path.join(args.out, f"tilmind-{key}.glb")
     bpy.ops.object.select_all(action="SELECT")
     bpy.ops.export_scene.gltf(filepath=out, export_format="GLB", export_yup=True, export_skins=True, export_morph=True,
                               export_morph_normal=False, export_animations=False, export_image_format="WEBP",

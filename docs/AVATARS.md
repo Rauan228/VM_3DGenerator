@@ -20,10 +20,17 @@
    jaw open (chin turned about the jaw's hinge, lower teeth with it), pucker/funnel (rounded lips), brows down / inner
    up / outer up.
 
-   The chest print is a decal of its own (`VM_print`): a copy of the hoodie's surface under the letters, lifted 1.5 mm
-   and skinned like it, textured with `assets/logo/visual-mind-text.png` in the avatar's ink colour (white on the
-   purple hoodie, deep berry on the pink one). The print Tripo painted, its mirrored copy on the back, and their relief in
-   the normal and occlusion maps are painted out.
+   The chest print is a decal of its own (`TM_print`): a copy of the hoodie's surface under the letters, lifted 1.5 mm
+   and skinned like it, textured with the team's wordmark "Til Mind" (`assets/logo/til-mind-text.png`, made by
+   `tools/make_logo.py --out assets/logo/til-mind-text.png --align left`) in the avatar's ink colour (white on the
+   purple hoodie, deep berry on the pink one), fitted into 85% of the box the reference's lettering took (toward the
+   box's far end the chest turns to the sleeve seam and letters there are cut off). The print Tripo painted, its mirrored
+   copy on the back, and their relief in the normal and occlusion maps are painted out, 4 texels past the triangles'
+   edges so no letters are left in the UV seams. (Until 2026-11-03 the print read "Visual Mind" and the files were
+   `visualmind-*.glb`; the team is called Til Mind.)
+
+   The player's files are `frontend/public/models/tilmind-male.glb` and `tilmind-female.glb`; meshes, materials and
+   images in them are named `TM_*`.
 
 The API key lives in `~/.config/visualmind/tripo.env` (`TRIPO_API_KEY`), never in the repo. Tripo outputs and task
 JSONs are kept in `models/tripo/`. Earlier avatars: `frontend/public/models/legacy-rpm/`, `previous-stylized/`.

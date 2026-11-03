@@ -157,7 +157,7 @@ def carve_eyes(body, projection, all_points, ref_h, reference_path):
     print("eye faces removed", len(doomed))
 
     image = bpy.data.images.load(reference_path)
-    material = bpy.data.materials.new("VM_eyes")
+    material = bpy.data.materials.new("TM_eyes")
     material.use_nodes = True
     nodes = material.node_tree.nodes
     bsdf = nodes["Principled BSDF"]
@@ -172,7 +172,7 @@ def carve_eyes(body, projection, all_points, ref_h, reference_path):
     for key, eye in info.items():
         bpy.ops.mesh.primitive_uv_sphere_add(segments=32, ring_count=24, radius=eye["radius"], location=tuple(eye["centre"]))
         ball = bpy.context.active_object
-        ball.name = ball.data.name = f"VM_eye_{key}"
+        ball.name = ball.data.name = f"TM_eye_{key}"
         bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
         uv = (ball.data.uv_layers[0] if ball.data.uv_layers else ball.data.uv_layers.new()).data
         for loop in ball.data.loops:
@@ -481,13 +481,13 @@ def mouth_parts(rig_parent, line, pivot, lower_front_x, head_group="Head"):
     width = float(np.ptp(line[:, 0]))
     parts = []
 
-    dark = bpy.data.materials.new("VM_mouth")
+    dark = bpy.data.materials.new("TM_mouth")
     dark.use_nodes = True
     bsdf = dark.node_tree.nodes["Principled BSDF"]
     bsdf.inputs["Base Color"].default_value = (0.035, 0.008, 0.01, 1.0)
     bsdf.inputs["Roughness"].default_value = 1.0
     bsdf.inputs["Specular IOR Level"].default_value = 0.0
-    teeth_mat = bpy.data.materials.new("VM_teeth")
+    teeth_mat = bpy.data.materials.new("TM_teeth")
     teeth_mat.use_nodes = True
     tb = teeth_mat.node_tree.nodes["Principled BSDF"]
     tb.inputs["Base Color"].default_value = (0.86, 0.84, 0.8, 1.0)
@@ -499,10 +499,10 @@ def mouth_parts(rig_parent, line, pivot, lower_front_x, head_group="Head"):
     cavity.location = (lower_front_x - width * 0.75, mid_y, seam_z - width * 0.12)
     bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
     cavity.data.materials.append(dark)
-    cavity.name = cavity.data.name = "VM_mouth_cavity"
+    cavity.name = cavity.data.name = "TM_mouth_cavity"
     parts.append((cavity, False))
 
-    for name, dz, moves in (("VM_teeth_upper", width * 0.04, False), ("VM_teeth_lower", -width * 0.06, True)):
+    for name, dz, moves in (("TM_teeth_upper", width * 0.04, False), ("TM_teeth_lower", -width * 0.06, True)):
         bpy.ops.mesh.primitive_cylinder_add(vertices=24, radius=width * 0.38, depth=width * 0.07, end_fill_type="NOTHING")
         teeth = bpy.context.active_object
         bm = bmesh.new()

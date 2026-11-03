@@ -1,6 +1,6 @@
 import avatarUrl from "../../models/avatar.glb?url";
-import maleUrl from "../../models/visualmind-male.glb?url";
-import femaleUrl from "../../models/visualmind-female.glb?url";
+import maleUrl from "../public/models/tilmind-male.glb?url";
+import femaleUrl from "../public/models/tilmind-female.glb?url";
 import waterUrl from "../../models/вода.glb?url";
 import deafUrl from "../../models/глухой.glb?url";
 import diplomaUrl from "../../models/диплом подправить левая рука.glb?url";
@@ -21,8 +21,8 @@ export type AvatarOption = {
 };
 
 export const AVATAR_OPTIONS: AvatarOption[] = [
-  { id: "visualmind-male", label: "Visual Mind male", url: maleUrl },
-  { id: "visualmind-female", label: "Visual Mind female", url: femaleUrl },
+  { id: "tilmind-male", label: "Til Mind male", url: maleUrl },
+  { id: "tilmind-female", label: "Til Mind female", url: femaleUrl },
   { id: "avatar", label: "avatar", url: avatarUrl },
   { id: "water", label: "вода", url: waterUrl },
   { id: "deaf", label: "глухой", url: deafUrl },

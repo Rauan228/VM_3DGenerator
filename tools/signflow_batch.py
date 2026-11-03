@@ -30,7 +30,7 @@ OUT = ROOT / "data" / "signflow"
 MANIFEST = ROOT / "frontend" / "public" / "gallery" / "signflow.json"
 SITE = "https://signflow.ru"
 API = "http://127.0.0.1:8010/api/v1/gestures/process"
-AGENT = "Mozilla/5.0 (VisualMind gesture research)"
+AGENT = "Mozilla/5.0 (TilMind gesture research)"
 # Seconds between requests to the site: one word at a time, gently.
 PAUSE = 2.0
 # A cut between the parts: a frame that differs from the one before by this many times the clip's typical difference.

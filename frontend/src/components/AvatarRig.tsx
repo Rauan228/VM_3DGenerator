@@ -92,5 +92,5 @@ export function AvatarRig({
   );
 }
 
-useGLTF.preload("/models/visualmind-male.glb");
-useGLTF.preload("/models/visualmind-female.glb");
+useGLTF.preload("/models/tilmind-male.glb");
+useGLTF.preload("/models/tilmind-female.glb");

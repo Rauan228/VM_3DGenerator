@@ -13,7 +13,7 @@ import type { GestureJson } from "./types";
  * resolves once it is on the canvas.
  */
 
-const MODELS = { male: "/models/visualmind-male.glb", female: "/models/visualmind-female.glb" };
+const MODELS = { male: "/models/tilmind-male.glb", female: "/models/tilmind-female.glb" };
 // Head to below the waist, with room for hands raised to the side of the head. The man is 10 cm taller.
 const FLOOR_Y = -1.12;
 const FRAMING = { male: { lookAt: 0.36, distance: 2.1 }, female: { lookAt: 0.3, distance: 1.95 } };
@@ -24,6 +24,8 @@ type RenderWindow = Window & {
   renderError?: string;
   /** For checking a pose: each hand's wrist and the (index side to little finger) x (wrist to middle knuckle) normal, in the scene. */
   handFrames?: () => Record<string, { wrist: number[]; normal: number[]; along: number[] }>;
+  /** For checking a pose: where the named bones are, in the scene. */
+  bonePositions?: (names: string[]) => Record<string, number[]>;
 };
 
 function Driver({ time }: { time: React.MutableRefObject<number> }) {
@@ -52,6 +54,11 @@ function Driver({ time }: { time: React.MutableRefObject<number> }) {
       }
       return out;
     };
+    target.bonePositions = (names) =>
+      Object.fromEntries(names.flatMap((name) => {
+        const bone = scene.getObjectByName(name);
+        return bone ? [[name, bone.getWorldPosition(new THREE.Vector3()).toArray()]] : [];
+      }));
     // Mounted after the avatar inside the same Suspense boundary, so the model is loaded by now.
     requestAnimationFrame(() => requestAnimationFrame(() => (target.renderReady = true)));
   }, [invalidate, gl, time]);
@@ -61,7 +68,7 @@ function Driver({ time }: { time: React.MutableRefObject<number> }) {
 function Render() {
   const params = new URLSearchParams(location.search);
   const avatar = params.get("avatar") === "female" ? "female" : "male";
-  // For checking a pose: `view=close` frames the chest and hands, `view=side` looks from the avatar's right.
+  // For checking a pose: `view=close` frames the chest and hands, `view=head` the head and shoulders, `view=side` looks from the avatar's right.
   const view = params.get("view");
   const [gesture, setGesture] = useState<GestureJson>();
   const time = useRef(0);
@@ -83,10 +90,14 @@ function Render() {
             ? [-1.2, 0.15, 0.25]
             : view === "close"
               ? [0, 0.15, 1.0]
-              : [0, FRAMING[avatar].lookAt + 0.05, FRAMING[avatar].distance]
+              : view === "head"
+                ? [0, 0.5, 1.3]
+                : [0, FRAMING[avatar].lookAt + 0.05, FRAMING[avatar].distance]
         }
         fov={38}
-        onUpdate={(self) => self.lookAt(0, view === "side" || view === "close" ? 0.12 : FRAMING[avatar].lookAt, 0)}
+        onUpdate={(self) =>
+          self.lookAt(0, view === "side" || view === "close" ? 0.12 : view === "head" ? 0.42 : FRAMING[avatar].lookAt, 0)
+        }
       />
       <ambientLight intensity={0.8} />
       <directionalLight position={[2.4, 3.2, 2.2]} intensity={2.2} />

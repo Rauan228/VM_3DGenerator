@@ -22,7 +22,7 @@ type ModelEntry = { label: string; url: string; group: string };
 /** Grouped so the catalogue reads as bases, works-in-progress and the baked gesture clips. */
 function classify(label: string): { group: string; rank: number } {
   if (label.startsWith("rocketbox-")) return { group: "Базы (Rocketbox)", rank: 0 };
-  if (label.startsWith("visualmind-")) return { group: "Visual Mind", rank: 1 };
+  if (label.startsWith("tilmind-")) return { group: "Til Mind", rank: 1 };
   if (label.startsWith("generated/") || label.startsWith("parts/")) return { group: "Сгенерированное", rank: 2 };
   if (label === "avatar") return { group: "База (Ready Player Me)", rank: 3 };
   return { group: "Жесты РЖЯ", rank: 4 };

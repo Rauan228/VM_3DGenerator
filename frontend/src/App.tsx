@@ -147,7 +147,7 @@ export default function App() {
       showGesture(parsed, null, false);
       setNotice({ kind: "success", text: `Открыт файл жеста «${parsed.word}». Исходного видео в нём нет, его можно прикрепить слева.` });
     } catch {
-      setNotice({ kind: "error", text: "Не удалось открыть файл: это не файл жеста Visual Mind." });
+      setNotice({ kind: "error", text: "Не удалось открыть файл: это не файл жеста Til Mind." });
     }
   }
 
@@ -253,7 +253,7 @@ export default function App() {
     <div className="app">
       <header className="topbar">
         <div className="brand">
-          <span className="brand-name">Visual Mind</span>
+          <span className="brand-name">Til Mind</span>
           <span className="brand-sub">Словарь жестов РЖЯ</span>
         </div>
         <div className="topbar-actions">

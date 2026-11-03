@@ -33,8 +33,8 @@ const FINGER_TIPS = new Set([4, 8, 12, 16, 20]);
 type AvatarSlot = { id: "male" | "female"; url: string; x: number; yaw: number };
 
 function avatarSlots(mode: AvatarMode): AvatarSlot[] {
-  const male = { id: "male", url: "/models/visualmind-male.glb" } as const;
-  const female = { id: "female", url: "/models/visualmind-female.glb" } as const;
+  const male = { id: "male", url: "/models/tilmind-male.glb" } as const;
+  const female = { id: "female", url: "/models/tilmind-female.glb" } as const;
   if (mode === "male") return [{ ...male, x: 0, yaw: 0 }];
   if (mode === "female") return [{ ...female, x: 0, yaw: 0 }];
   return [

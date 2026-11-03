@@ -1,4 +1,4 @@
-"""Render the Visual Mind wordmark to a transparent PNG for use as a decal on the hoodie.
+"""Render the Til Mind wordmark to a transparent PNG for use as a decal on the hoodie.
 
 The hoodie mesh arrives from Hunyuan3D without UVs, so the logo cannot be painted into a
 texture atlas. It is applied as a decal plane instead, and this is the image it carries.
@@ -15,6 +15,7 @@ FONTS = (
     r"C:\Windows\Fonts\segoeuisl.ttf",
     r"C:\Windows\Fonts\segoeui.ttf",
     r"C:\Windows\Fonts\arial.ttf",
+    "/usr/share/fonts/noto/NotoSans-Bold.ttf",
 )
 
 
@@ -29,7 +30,8 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--out", required=True)
     parser.add_argument("--size", type=int, default=1024)
-    parser.add_argument("--lines", default="Visual|Mind")
+    parser.add_argument("--lines", default="Til|Mind")
+    parser.add_argument("--align", choices=("centre", "left"), default="centre")
     args = parser.parse_args()
 
     canvas = args.size
@@ -56,7 +58,8 @@ def main() -> None:
     y = (canvas - block) / 2
     for line, height in zip(lines, heights):
         box = draw.textbbox((0, 0), line, font=font)
-        draw.text(((canvas - (box[2] - box[0])) / 2 - box[0], y - box[1]), line, font=font, fill=(255, 255, 255, 255))
+        x = (canvas - widest) / 2 if args.align == "left" else (canvas - (box[2] - box[0])) / 2
+        draw.text((x - box[0], y - box[1]), line, font=font, fill=(255, 255, 255, 255))
         y += height + gap
 
     os.makedirs(os.path.dirname(os.path.abspath(args.out)) or ".", exist_ok=True)
