@@ -1,8 +1,20 @@
 # Til Mind — готовые 3D-анимации жестов РЖЯ
 
-Готовые анимации жестов для сайта: два аватара Til Mind (парень и девушка) и клипы анимации к ним. Жесты сняты с видео
-signflow.ru (видео используются по договорённости с владельцами сайта) и пересчитаны плеером 3DAnimationGPT. Каждый
-клип двигает аватара в точности как плеер, это проверяется при выгрузке.
+Готовые анимации жестов для сайта: два аватара Til Mind (парень и девушка) и клипы анимации к ним, 421 жест. Каждый
+клип двигает аватара в точности как плеер 3DAnimationGPT, это проверяется при выгрузке.
+
+## Откуда жесты
+
+- **130 жестов — signflow.ru** (видео используются по договорённости с владельцами сайта).
+- **291 жест — датасет Slovo** ([github.com/hukenovs/slovo](https://github.com/hukenovs/slovo)): 300 слов, на которых обучена
+  наша модель распознавания жестов. Ещё 9 из этих 300 слов (белый, красный, синий, серый, розовый, оранжевый,
+  коричневый, фиолетовый, нравиться) уже были в наборе signflow.ru, и это тот же жест — для них оставлена студийная
+  запись signflow.ru. Для каждого слова из 20 записей Slovo выбрано самое типичное и лучше всего снятое исполнение;
+  записи левой рукой и зеркальные (селфи) отражены, чтобы аватар везде показывал правой рукой.
+
+У каждого жеста в `signs.json` есть поле `source`. **Лицензия Slovo — вариант CC BY-SA 4.0:** анимации из Slovo можно
+использовать на сайте, если указать источник (например, «Часть жестов — по датасету Slovo, github.com/hukenovs/slovo,
+CC BY-SA 4.0») и распространять сами анимации под той же лицензией.
 
 ## Что в папке
 
@@ -10,7 +22,7 @@ signflow.ru (видео используются по договорённост
 |---|---|
 | `avatars/tilmind-male.glb`, `avatars/tilmind-female.glb` | Аватары: скелет, лицо с 52 формами мимики ARKit, одежда с надписью «Til Mind» |
 | `clips/male/<slug>.json`, `clips/female/<slug>.json` | Клип жеста для своего аватара (формат `THREE.AnimationClip.toJSON`): повороты костей и мимика, 60 кадров в секунду |
-| `signs.json` | Список жестов: `slug`, слово, длительность, пути к клипам |
+| `signs.json` | Список жестов: `slug`, слово, длительность, пути к клипам, источник |
 | `react/TilMindSign.tsx` | Готовый компонент для React + three.js (`@react-three/fiber`, `@react-three/drei`) |
 
 Клип сделан под своего аватара, потому что у парня и девушки разные пропорции. Клипы из `clips/male/` проигрывайте на
@@ -38,7 +50,8 @@ import { TilMindSignViewer } from "@/components/TilMindSign";
 
 ```ts
 const signs = await fetch("/tilmind-signs/signs.json").then((r) => r.json());
-// [{ slug: "privet", word: "Привет", duration: 1.533, clips: { male: "clips/male/privet.json", female: "clips/female/privet.json" } }, ...]
+// [{ slug: "privet", word: "Привет", duration: 1.533, clips: { male: "clips/male/privet.json", female: "clips/female/privet.json" },
+//    source: "signflow.ru" }, ...]
 ```
 
 `TilMindSign` без обёртки ставится внутрь своего `<Canvas>`. Аватар стоит на `y = 0` в реальный рост (парень 1,76 м,
@@ -57,4 +70,4 @@ mixer.clipAction(clip).play();   // и mixer.update(dt) в каждом кадр
 
 В проекте 3DAnimationGPT нужно запустить бэкенд на `:8010` и Vite на `:5173`, потом выполнить
 `<python с playwright> tools/export_clips.py` (подробности в шапке скрипта). Новые слова добавляются через
-`tools/signflow_batch.py <slug> ...`.
+`tools/signflow_batch.py <slug> ...` (signflow.ru) или `tools/slovo/` + `tools/slovo_batch.py` (Slovo).

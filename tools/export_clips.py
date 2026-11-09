@@ -7,7 +7,9 @@ Playwright and Chrome:
     <python with playwright> tools/export_clips.py [--out tilmind-signs] [slug ...]
 
 Writes <out>/clips/<avatar>/<slug>.json (`THREE.AnimationClip.toJSON`), copies the avatars to <out>/avatars/ and
-writes <out>/signs.json, the list of signs in the gallery's order.
+writes <out>/signs.json, the list of signs: the signflow.ru gallery's first, then the Slovo dataset's
+(frontend/public/gallery/slovo.json). A word both have keeps the signflow.ru clip (a cleaner studio recording of the
+same sign); each sign says which source it comes from, as the Slovo license asks.
 """
 
 from __future__ import annotations
@@ -18,7 +20,9 @@ import shutil
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-MANIFEST = ROOT / "frontend" / "public" / "gallery" / "signflow.json"
+GALLERY = ROOT / "frontend" / "public" / "gallery"
+SOURCES = ("signflow", "slovo")
+CREDIT = {"signflow": "signflow.ru", "slovo": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"}
 MODELS = ROOT / "frontend" / "public" / "models"
 PAGE = "http://127.0.0.1:5173/clip.html"
 CHROME = "/usr/bin/google-chrome-stable"
@@ -42,7 +46,12 @@ def main() -> None:
     parser.add_argument("--out", default=str(ROOT / "tilmind-signs"))
     args = parser.parse_args()
     out = Path(args.out)
-    entries = json.loads(MANIFEST.read_text())
+    entries, seen = [], set()
+    for source in SOURCES:
+        for entry in json.loads((GALLERY / f"{source}.json").read_text()):
+            if entry["slug"] not in seen:
+                seen.add(entry["slug"])
+                entries.append({**entry, "source": source})
     (out / "avatars").mkdir(parents=True, exist_ok=True)
     for avatar in AVATARS:
         (out / "clips" / avatar).mkdir(parents=True, exist_ok=True)
@@ -67,7 +76,8 @@ def main() -> None:
                     print(f"{slug}: FAILED {error}")
             if all((out / "clips" / avatar / f"{slug}.json").exists() for avatar in AVATARS):
                 signs.append({"slug": slug, "word": entry["word"], "duration": round(entry["duration"], 3),
-                              "clips": {avatar: f"clips/{avatar}/{slug}.json" for avatar in AVATARS}})
+                              "clips": {avatar: f"clips/{avatar}/{slug}.json" for avatar in AVATARS},
+                              "source": CREDIT[entry["source"]]})
         browser.close()
     (out / "signs.json").write_text(json.dumps(signs, ensure_ascii=False, indent=1))
     print(f"{len(signs)} signs in {out / 'signs.json'}")

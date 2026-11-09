@@ -6,7 +6,8 @@
   "clips": {
    "male": "clips/male/privet.json",
    "female": "clips/female/privet.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "spasibo",
@@ -15,7 +16,8 @@
   "clips": {
    "male": "clips/male/spasibo.json",
    "female": "clips/female/spasibo.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "pozhaluysta",
@@ -24,7 +26,8 @@
   "clips": {
    "male": "clips/male/pozhaluysta.json",
    "female": "clips/female/pozhaluysta.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "da",
@@ -33,7 +36,8 @@
   "clips": {
    "male": "clips/male/da.json",
    "female": "clips/female/da.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "net",
@@ -42,7 +46,8 @@
   "clips": {
    "male": "clips/male/net.json",
    "female": "clips/female/net.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "khorosho",
@@ -51,7 +56,8 @@
   "clips": {
    "male": "clips/male/khorosho.json",
    "female": "clips/female/khorosho.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "plokho",
@@ -60,7 +66,8 @@
   "clips": {
    "male": "clips/male/plokho.json",
    "female": "clips/female/plokho.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "mama",
@@ -69,7 +76,8 @@
   "clips": {
    "male": "clips/male/mama.json",
    "female": "clips/female/mama.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "papa",
@@ -78,7 +86,8 @@
   "clips": {
    "male": "clips/male/papa.json",
    "female": "clips/female/papa.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "semya",
@@ -87,7 +96,8 @@
   "clips": {
    "male": "clips/male/semya.json",
    "female": "clips/female/semya.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "drug",
@@ -96,7 +106,8 @@
   "clips": {
    "male": "clips/male/drug.json",
    "female": "clips/female/drug.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "lyubov",
@@ -105,7 +116,8 @@
   "clips": {
    "male": "clips/male/lyubov.json",
    "female": "clips/female/lyubov.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "rabota",
@@ -114,7 +126,8 @@
   "clips": {
    "male": "clips/male/rabota.json",
    "female": "clips/female/rabota.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "shkola",
@@ -123,7 +136,8 @@
   "clips": {
    "male": "clips/male/shkola.json",
    "female": "clips/female/shkola.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "uchitel",
@@ -132,7 +146,8 @@
   "clips": {
    "male": "clips/male/uchitel.json",
    "female": "clips/female/uchitel.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "khleb",
@@ -141,7 +156,8 @@
   "clips": {
    "male": "clips/male/khleb.json",
    "female": "clips/female/khleb.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "moloko",
@@ -150,7 +166,8 @@
   "clips": {
    "male": "clips/male/moloko.json",
    "female": "clips/female/moloko.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "kofe",
@@ -159,7 +176,8 @@
   "clips": {
    "male": "clips/male/kofe.json",
    "female": "clips/female/kofe.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "chay",
@@ -168,7 +186,8 @@
   "clips": {
    "male": "clips/male/chay.json",
    "female": "clips/female/chay.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "zavtra",
@@ -177,7 +196,8 @@
   "clips": {
    "male": "clips/male/zavtra.json",
    "female": "clips/female/zavtra.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "vchera",
@@ -186,7 +206,8 @@
   "clips": {
    "male": "clips/male/vchera.json",
    "female": "clips/female/vchera.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "ponimat",
@@ -195,7 +216,8 @@
   "clips": {
    "male": "clips/male/ponimat.json",
    "female": "clips/female/ponimat.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "znat",
@@ -204,7 +226,8 @@
   "clips": {
    "male": "clips/male/znat.json",
    "female": "clips/female/znat.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "khotet",
@@ -213,7 +236,8 @@
   "clips": {
    "male": "clips/male/khotet.json",
    "female": "clips/female/khotet.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "pomoch",
@@ -222,7 +246,8 @@
   "clips": {
    "male": "clips/male/pomoch.json",
    "female": "clips/female/pomoch.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "izvinite",
@@ -231,7 +256,8 @@
   "clips": {
    "male": "clips/male/izvinite.json",
    "female": "clips/female/izvinite.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "zdravstvuyte",
@@ -240,7 +266,8 @@
   "clips": {
    "male": "clips/male/zdravstvuyte.json",
    "female": "clips/female/zdravstvuyte.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "poka",
@@ -249,7 +276,8 @@
   "clips": {
    "male": "clips/male/poka.json",
    "female": "clips/female/poka.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "vrach",
@@ -258,7 +286,8 @@
   "clips": {
    "male": "clips/male/vrach.json",
    "female": "clips/female/vrach.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "alkogol",
@@ -267,7 +296,8 @@
   "clips": {
    "male": "clips/male/alkogol.json",
    "female": "clips/female/alkogol.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "est",
@@ -276,7 +306,8 @@
   "clips": {
    "male": "clips/male/est.json",
    "female": "clips/female/est.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "pit",
@@ -285,7 +316,8 @@
   "clips": {
    "male": "clips/male/pit.json",
    "female": "clips/female/pit.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "spat",
@@ -294,7 +326,8 @@
   "clips": {
    "male": "clips/male/spat.json",
    "female": "clips/female/spat.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "uchitsya",
@@ -303,7 +336,8 @@
   "clips": {
    "male": "clips/male/uchitsya.json",
    "female": "clips/female/uchitsya.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "uchit",
@@ -312,7 +346,8 @@
   "clips": {
    "male": "clips/male/uchit.json",
    "female": "clips/female/uchit.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "idti",
@@ -321,7 +356,8 @@
   "clips": {
    "male": "clips/male/idti.json",
    "female": "clips/female/idti.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "begat",
@@ -330,7 +366,8 @@
   "clips": {
    "male": "clips/male/begat.json",
    "female": "clips/female/begat.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "chitat",
@@ -339,7 +376,8 @@
   "clips": {
    "male": "clips/male/chitat.json",
    "female": "clips/female/chitat.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "pisat",
@@ -348,7 +386,8 @@
   "clips": {
    "male": "clips/male/pisat.json",
    "female": "clips/female/pisat.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "govorit",
@@ -357,7 +396,8 @@
   "clips": {
    "male": "clips/male/govorit.json",
    "female": "clips/female/govorit.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "smotret",
@@ -366,7 +406,8 @@
   "clips": {
    "male": "clips/male/smotret.json",
    "female": "clips/female/smotret.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "slushat",
@@ -375,7 +416,8 @@
   "clips": {
    "male": "clips/male/slushat.json",
    "female": "clips/female/slushat.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "nravitsya",
@@ -384,7 +426,8 @@
   "clips": {
    "male": "clips/male/nravitsya.json",
    "female": "clips/female/nravitsya.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "delat",
@@ -393,7 +436,8 @@
   "clips": {
    "male": "clips/male/delat.json",
    "female": "clips/female/delat.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "igrat",
@@ -402,7 +446,8 @@
   "clips": {
    "male": "clips/male/igrat.json",
    "female": "clips/female/igrat.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "zhit",
@@ -411,7 +456,8 @@
   "clips": {
    "male": "clips/male/zhit.json",
    "female": "clips/female/zhit.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "zhdat",
@@ -420,7 +466,8 @@
   "clips": {
    "male": "clips/male/zhdat.json",
    "female": "clips/female/zhdat.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "pomnit",
@@ -429,7 +476,8 @@
   "clips": {
    "male": "clips/male/pomnit.json",
    "female": "clips/female/pomnit.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "zabyt",
@@ -438,7 +486,8 @@
   "clips": {
    "male": "clips/male/zabyt.json",
    "female": "clips/female/zabyt.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "sprosit",
@@ -447,7 +496,8 @@
   "clips": {
    "male": "clips/male/sprosit.json",
    "female": "clips/female/sprosit.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "otvet",
@@ -456,7 +506,8 @@
   "clips": {
    "male": "clips/male/otvet.json",
    "female": "clips/female/otvet.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "kupit",
@@ -465,7 +516,8 @@
   "clips": {
    "male": "clips/male/kupit.json",
    "female": "clips/female/kupit.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "pokupat",
@@ -474,7 +526,8 @@
   "clips": {
    "male": "clips/male/pokupat.json",
    "female": "clips/female/pokupat.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "prodavat",
@@ -483,7 +536,8 @@
   "clips": {
    "male": "clips/male/prodavat.json",
    "female": "clips/female/prodavat.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "platit",
@@ -492,7 +546,8 @@
   "clips": {
    "male": "clips/male/platit.json",
    "female": "clips/female/platit.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "dengi",
@@ -501,7 +556,8 @@
   "clips": {
    "male": "clips/male/dengi.json",
    "female": "clips/female/dengi.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "magazin",
@@ -510,7 +566,8 @@
   "clips": {
    "male": "clips/male/magazin.json",
    "female": "clips/female/magazin.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "kvartira",
@@ -519,7 +576,8 @@
   "clips": {
    "male": "clips/male/kvartira.json",
    "female": "clips/female/kvartira.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "gorod",
@@ -528,7 +586,8 @@
   "clips": {
    "male": "clips/male/gorod.json",
    "female": "clips/female/gorod.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "derevnya",
@@ -537,7 +596,8 @@
   "clips": {
    "male": "clips/male/derevnya.json",
    "female": "clips/female/derevnya.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "ulitsa",
@@ -546,7 +606,8 @@
   "clips": {
    "male": "clips/male/ulitsa.json",
    "female": "clips/female/ulitsa.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "mashina",
@@ -555,7 +616,8 @@
   "clips": {
    "male": "clips/male/mashina.json",
    "female": "clips/female/mashina.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "avtobus",
@@ -564,7 +626,8 @@
   "clips": {
    "male": "clips/male/avtobus.json",
    "female": "clips/female/avtobus.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "poezd",
@@ -573,7 +636,8 @@
   "clips": {
    "male": "clips/male/poezd.json",
    "female": "clips/female/poezd.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "doroga",
@@ -582,7 +646,8 @@
   "clips": {
    "male": "clips/male/doroga.json",
    "female": "clips/female/doroga.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "lekarstvo",
@@ -591,7 +656,8 @@
   "clips": {
    "male": "clips/male/lekarstvo.json",
    "female": "clips/female/lekarstvo.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "bolet",
@@ -600,7 +666,8 @@
   "clips": {
    "male": "clips/male/bolet.json",
    "female": "clips/female/bolet.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "zdorovyy",
@@ -609,7 +676,8 @@
   "clips": {
    "male": "clips/male/zdorovyy.json",
    "female": "clips/female/zdorovyy.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "ruka",
@@ -618,7 +686,8 @@
   "clips": {
    "male": "clips/male/ruka.json",
    "female": "clips/female/ruka.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "noga",
@@ -627,7 +696,8 @@
   "clips": {
    "male": "clips/male/noga.json",
    "female": "clips/female/noga.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "glaza",
@@ -636,7 +706,8 @@
   "clips": {
    "male": "clips/male/glaza.json",
    "female": "clips/female/glaza.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "brat",
@@ -645,7 +716,8 @@
   "clips": {
    "male": "clips/male/brat.json",
    "female": "clips/female/brat.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "sestra",
@@ -654,7 +726,8 @@
   "clips": {
    "male": "clips/male/sestra.json",
    "female": "clips/female/sestra.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "syn",
@@ -663,7 +736,8 @@
   "clips": {
    "male": "clips/male/syn.json",
    "female": "clips/female/syn.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "doch",
@@ -672,7 +746,8 @@
   "clips": {
    "male": "clips/male/doch.json",
    "female": "clips/female/doch.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "babushka",
@@ -681,7 +756,8 @@
   "clips": {
    "male": "clips/male/babushka.json",
    "female": "clips/female/babushka.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "dedushka",
@@ -690,7 +766,8 @@
   "clips": {
    "male": "clips/male/dedushka.json",
    "female": "clips/female/dedushka.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "rebenok",
@@ -699,7 +776,8 @@
   "clips": {
    "male": "clips/male/rebenok.json",
    "female": "clips/female/rebenok.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "deti",
@@ -708,7 +786,8 @@
   "clips": {
    "male": "clips/male/deti.json",
    "female": "clips/female/deti.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "muzh",
@@ -717,7 +796,8 @@
   "clips": {
    "male": "clips/male/muzh.json",
    "female": "clips/female/muzh.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "zhena",
@@ -726,7 +806,8 @@
   "clips": {
    "male": "clips/male/zhena.json",
    "female": "clips/female/zhena.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "muzhchina",
@@ -735,7 +816,8 @@
   "clips": {
    "male": "clips/male/muzhchina.json",
    "female": "clips/female/muzhchina.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "zhenshchina",
@@ -744,7 +826,8 @@
   "clips": {
    "male": "clips/male/zhenshchina.json",
    "female": "clips/female/zhenshchina.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "devochka",
@@ -753,7 +836,8 @@
   "clips": {
    "male": "clips/male/devochka.json",
    "female": "clips/female/devochka.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "chelovek",
@@ -762,7 +846,8 @@
   "clips": {
    "male": "clips/male/chelovek.json",
    "female": "clips/female/chelovek.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "lyudi",
@@ -771,7 +856,8 @@
   "clips": {
    "male": "clips/male/lyudi.json",
    "female": "clips/female/lyudi.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "imya",
@@ -780,7 +866,8 @@
   "clips": {
    "male": "clips/male/imya.json",
    "female": "clips/female/imya.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "krasnyy",
@@ -789,7 +876,8 @@
   "clips": {
    "male": "clips/male/krasnyy.json",
    "female": "clips/female/krasnyy.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "siniy",
@@ -798,7 +886,8 @@
   "clips": {
    "male": "clips/male/siniy.json",
    "female": "clips/female/siniy.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "belyy",
@@ -807,7 +896,8 @@
   "clips": {
    "male": "clips/male/belyy.json",
    "female": "clips/female/belyy.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "seryy",
@@ -816,7 +906,8 @@
   "clips": {
    "male": "clips/male/seryy.json",
    "female": "clips/female/seryy.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "korichnevyy",
@@ -825,7 +916,8 @@
   "clips": {
    "male": "clips/male/korichnevyy.json",
    "female": "clips/female/korichnevyy.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "rozovyy",
@@ -834,7 +926,8 @@
   "clips": {
    "male": "clips/male/rozovyy.json",
    "female": "clips/female/rozovyy.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "oranzhevyy",
@@ -843,7 +936,8 @@
   "clips": {
    "male": "clips/male/oranzhevyy.json",
    "female": "clips/female/oranzhevyy.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "fioletovyy",
@@ -852,7 +946,8 @@
   "clips": {
    "male": "clips/male/fioletovyy.json",
    "female": "clips/female/fioletovyy.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "odin",
@@ -861,7 +956,8 @@
   "clips": {
    "male": "clips/male/odin.json",
    "female": "clips/female/odin.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "dva",
@@ -870,7 +966,8 @@
   "clips": {
    "male": "clips/male/dva.json",
    "female": "clips/female/dva.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "chetyre",
@@ -879,7 +976,8 @@
   "clips": {
    "male": "clips/male/chetyre.json",
    "female": "clips/female/chetyre.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "pyat",
@@ -888,7 +986,8 @@
   "clips": {
    "male": "clips/male/pyat.json",
    "female": "clips/female/pyat.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "shest",
@@ -897,7 +996,8 @@
   "clips": {
    "male": "clips/male/shest.json",
    "female": "clips/female/shest.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "sem",
@@ -906,7 +1006,8 @@
   "clips": {
    "male": "clips/male/sem.json",
    "female": "clips/female/sem.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "vosem",
@@ -915,7 +1016,8 @@
   "clips": {
    "male": "clips/male/vosem.json",
    "female": "clips/female/vosem.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "devyat",
@@ -924,7 +1026,8 @@
   "clips": {
    "male": "clips/male/devyat.json",
    "female": "clips/female/devyat.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "desyat",
@@ -933,7 +1036,8 @@
   "clips": {
    "male": "clips/male/desyat.json",
    "female": "clips/female/desyat.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "sto",
@@ -942,7 +1046,8 @@
   "clips": {
    "male": "clips/male/sto.json",
    "female": "clips/female/sto.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "tysyacha",
@@ -951,7 +1056,8 @@
   "clips": {
    "male": "clips/male/tysyacha.json",
    "female": "clips/female/tysyacha.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "utro",
@@ -960,7 +1066,8 @@
   "clips": {
    "male": "clips/male/utro.json",
    "female": "clips/female/utro.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "vecher",
@@ -969,7 +1076,8 @@
   "clips": {
    "male": "clips/male/vecher.json",
    "female": "clips/female/vecher.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "mesyats",
@@ -978,7 +1086,8 @@
   "clips": {
    "male": "clips/male/mesyats.json",
    "female": "clips/female/mesyats.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "god",
@@ -987,7 +1096,8 @@
   "clips": {
    "male": "clips/male/god.json",
    "female": "clips/female/god.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "vremya",
@@ -996,7 +1106,8 @@
   "clips": {
    "male": "clips/male/vremya.json",
    "female": "clips/female/vremya.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "chas",
@@ -1005,7 +1116,8 @@
   "clips": {
    "male": "clips/male/chas.json",
    "female": "clips/female/chas.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "ponedelnik",
@@ -1014,7 +1126,8 @@
   "clips": {
    "male": "clips/male/ponedelnik.json",
    "female": "clips/female/ponedelnik.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "vtornik",
@@ -1023,7 +1136,8 @@
   "clips": {
    "male": "clips/male/vtornik.json",
    "female": "clips/female/vtornik.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "sreda",
@@ -1032,7 +1146,8 @@
   "clips": {
    "male": "clips/male/sreda.json",
    "female": "clips/female/sreda.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "chetverg",
@@ -1041,7 +1156,8 @@
   "clips": {
    "male": "clips/male/chetverg.json",
    "female": "clips/female/chetverg.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "pyatnitsa",
@@ -1050,7 +1166,8 @@
   "clips": {
    "male": "clips/male/pyatnitsa.json",
    "female": "clips/female/pyatnitsa.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "subbota",
@@ -1059,7 +1176,8 @@
   "clips": {
    "male": "clips/male/subbota.json",
    "female": "clips/female/subbota.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "voskresene",
@@ -1068,7 +1186,8 @@
   "clips": {
    "male": "clips/male/voskresene.json",
    "female": "clips/female/voskresene.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "zima",
@@ -1077,7 +1196,8 @@
   "clips": {
    "male": "clips/male/zima.json",
    "female": "clips/female/zima.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "vesna",
@@ -1086,7 +1206,8 @@
   "clips": {
    "male": "clips/male/vesna.json",
    "female": "clips/female/vesna.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "leto",
@@ -1095,7 +1216,8 @@
   "clips": {
    "male": "clips/male/leto.json",
    "female": "clips/female/leto.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "osen",
@@ -1104,7 +1226,8 @@
   "clips": {
    "male": "clips/male/osen.json",
    "female": "clips/female/osen.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "sneg",
@@ -1113,7 +1236,8 @@
   "clips": {
    "male": "clips/male/sneg.json",
    "female": "clips/female/sneg.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "dozhd",
@@ -1122,7 +1246,8 @@
   "clips": {
    "male": "clips/male/dozhd.json",
    "female": "clips/female/dozhd.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "solntse",
@@ -1131,7 +1256,8 @@
   "clips": {
    "male": "clips/male/solntse.json",
    "female": "clips/female/solntse.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "veter",
@@ -1140,7 +1266,8 @@
   "clips": {
    "male": "clips/male/veter.json",
    "female": "clips/female/veter.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "nebo",
@@ -1149,7 +1276,8 @@
   "clips": {
    "male": "clips/male/nebo.json",
    "female": "clips/female/nebo.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "tri",
@@ -1158,7 +1286,8 @@
   "clips": {
    "male": "clips/male/tri.json",
    "female": "clips/female/tri.json"
-  }
+  },
+  "source": "signflow.ru"
  },
  {
   "slug": "nedelya",
@@ -1167,6 +1296,2917 @@
   "clips": {
    "male": "clips/male/nedelya.json",
    "female": "clips/female/nedelya.json"
-  }
+  },
+  "source": "signflow.ru"
+ },
+ {
+  "slug": "alligator",
+  "word": "аллигатор",
+  "duration": 1.8,
+  "clips": {
+   "male": "clips/male/alligator.json",
+   "female": "clips/female/alligator.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "agressivnyy",
+  "word": "агрессивный",
+  "duration": 1.8,
+  "clips": {
+   "male": "clips/male/agressivnyy.json",
+   "female": "clips/female/agressivnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "babochka",
+  "word": "бабочка",
+  "duration": 2.3,
+  "clips": {
+   "male": "clips/male/babochka.json",
+   "female": "clips/female/babochka.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "belka",
+  "word": "белка",
+  "duration": 2.4,
+  "clips": {
+   "male": "clips/male/belka.json",
+   "female": "clips/female/belka.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "volk",
+  "word": "волк",
+  "duration": 1.767,
+  "clips": {
+   "male": "clips/male/volk.json",
+   "female": "clips/female/volk.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "chernyy",
+  "word": "черный",
+  "duration": 1.633,
+  "clips": {
+   "male": "clips/male/chernyy.json",
+   "female": "clips/female/chernyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "tsvet",
+  "word": "цвет",
+  "duration": 1.8,
+  "clips": {
+   "male": "clips/male/tsvet.json",
+   "female": "clips/female/tsvet.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "vezhlivyy",
+  "word": "вежливый",
+  "duration": 2.4,
+  "clips": {
+   "male": "clips/male/vezhlivyy.json",
+   "female": "clips/female/vezhlivyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "bespokoitsya",
+  "word": "беспокоиться",
+  "duration": 2.2,
+  "clips": {
+   "male": "clips/male/bespokoitsya.json",
+   "female": "clips/female/bespokoitsya.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "verblyud",
+  "word": "верблюд",
+  "duration": 2.3,
+  "clips": {
+   "male": "clips/male/verblyud.json",
+   "female": "clips/female/verblyud.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "vlyubitsya",
+  "word": "влюбиться",
+  "duration": 2.0,
+  "clips": {
+   "male": "clips/male/vlyubitsya.json",
+   "female": "clips/female/vlyubitsya.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "akula",
+  "word": "акула",
+  "duration": 2.1,
+  "clips": {
+   "male": "clips/male/akula.json",
+   "female": "clips/female/akula.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "begemot",
+  "word": "бегемот",
+  "duration": 3.4,
+  "clips": {
+   "male": "clips/male/begemot.json",
+   "female": "clips/female/begemot.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "adaptivnoe-povedenie",
+  "word": "адаптивное поведение",
+  "duration": 3.9,
+  "clips": {
+   "male": "clips/male/adaptivnoe-povedenie.json",
+   "female": "clips/female/adaptivnoe-povedenie.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "adaptivnost",
+  "word": "адаптивность",
+  "duration": 1.733,
+  "clips": {
+   "male": "clips/male/adaptivnost.json",
+   "female": "clips/female/adaptivnost.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "adaptivnyy",
+  "word": "адаптивный",
+  "duration": 2.6,
+  "clips": {
+   "male": "clips/male/adaptivnyy.json",
+   "female": "clips/female/adaptivnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "akkuratnyy",
+  "word": "аккуратный",
+  "duration": 1.6,
+  "clips": {
+   "male": "clips/male/akkuratnyy.json",
+   "female": "clips/female/akkuratnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "aktivnyy",
+  "word": "активный",
+  "duration": 2.2,
+  "clips": {
+   "male": "clips/male/aktivnyy.json",
+   "female": "clips/female/aktivnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "ambitsioznyy",
+  "word": "амбициозный",
+  "duration": 3.7,
+  "clips": {
+   "male": "clips/male/ambitsioznyy.json",
+   "female": "clips/female/ambitsioznyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "animator",
+  "word": "аниматор",
+  "duration": 1.767,
+  "clips": {
+   "male": "clips/male/animator.json",
+   "female": "clips/female/animator.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "bezhevyy",
+  "word": "бежевый",
+  "duration": 1.333,
+  "clips": {
+   "male": "clips/male/bezhevyy.json",
+   "female": "clips/female/bezhevyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "bespokoyashchiy",
+  "word": "беспокоящий",
+  "duration": 2.7,
+  "clips": {
+   "male": "clips/male/bespokoyashchiy.json",
+   "female": "clips/female/bespokoyashchiy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "blednyy",
+  "word": "бледный",
+  "duration": 2.933,
+  "clips": {
+   "male": "clips/male/blednyy.json",
+   "female": "clips/female/blednyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "bryuzzhat",
+  "word": "брюзжать",
+  "duration": 3.0,
+  "clips": {
+   "male": "clips/male/bryuzzhat.json",
+   "female": "clips/female/bryuzzhat.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "byk",
+  "word": "бык",
+  "duration": 1.8,
+  "clips": {
+   "male": "clips/male/byk.json",
+   "female": "clips/female/byk.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "byt-potryasennym",
+  "word": "быть потрясенным",
+  "duration": 1.9,
+  "clips": {
+   "male": "clips/male/byt-potryasennym.json",
+   "female": "clips/female/byt-potryasennym.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "vernyy",
+  "word": "верный",
+  "duration": 1.5,
+  "clips": {
+   "male": "clips/male/vernyy.json",
+   "female": "clips/female/vernyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "veselyy",
+  "word": "веселый",
+  "duration": 1.867,
+  "clips": {
+   "male": "clips/male/veselyy.json",
+   "female": "clips/female/veselyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "vesennyaya",
+  "word": "весенняя",
+  "duration": 2.567,
+  "clips": {
+   "male": "clips/male/vesennyaya.json",
+   "female": "clips/female/vesennyaya.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "vilyat",
+  "word": "вилять",
+  "duration": 2.2,
+  "clips": {
+   "male": "clips/male/vilyat.json",
+   "female": "clips/female/vilyat.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "vodoplavayushchee",
+  "word": "водоплавающее",
+  "duration": 2.533,
+  "clips": {
+   "male": "clips/male/vodoplavayushchee.json",
+   "female": "clips/female/vodoplavayushchee.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "vozbuzhdenie",
+  "word": "возбуждение",
+  "duration": 1.833,
+  "clips": {
+   "male": "clips/male/vozbuzhdenie.json",
+   "female": "clips/female/vozbuzhdenie.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "voy",
+  "word": "вой",
+  "duration": 1.9,
+  "clips": {
+   "male": "clips/male/voy.json",
+   "female": "clips/female/voy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "vol",
+  "word": "вол",
+  "duration": 2.2,
+  "clips": {
+   "male": "clips/male/vol.json",
+   "female": "clips/female/vol.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "vozradovatsya",
+  "word": "возрадоваться",
+  "duration": 2.433,
+  "clips": {
+   "male": "clips/male/vozradovatsya.json",
+   "female": "clips/female/vozradovatsya.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "vorotnik",
+  "word": "воротник",
+  "duration": 1.933,
+  "clips": {
+   "male": "clips/male/vorotnik.json",
+   "female": "clips/female/vorotnik.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "voskhishchatsya",
+  "word": "восхищаться",
+  "duration": 1.7,
+  "clips": {
+   "male": "clips/male/voskhishchatsya.json",
+   "female": "clips/female/voskhishchatsya.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "vrazhdebnyy",
+  "word": "враждебный",
+  "duration": 2.333,
+  "clips": {
+   "male": "clips/male/vrazhdebnyy.json",
+   "female": "clips/female/vrazhdebnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "vskruzhit",
+  "word": "вскружить",
+  "duration": 2.633,
+  "clips": {
+   "male": "clips/male/vskruzhit.json",
+   "female": "clips/female/vskruzhit.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "vrednyy-ozornoy",
+  "word": "вредный; озорной",
+  "duration": 3.1,
+  "clips": {
+   "male": "clips/male/vrednyy-ozornoy.json",
+   "female": "clips/female/vrednyy-ozornoy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "vysokomernyy",
+  "word": "высокомерный",
+  "duration": 1.3,
+  "clips": {
+   "male": "clips/male/vysokomernyy.json",
+   "female": "clips/female/vysokomernyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "geniy",
+  "word": "гений",
+  "duration": 2.1,
+  "clips": {
+   "male": "clips/male/geniy.json",
+   "female": "clips/female/geniy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "gavkane",
+  "word": "гавканье",
+  "duration": 1.8,
+  "clips": {
+   "male": "clips/male/gavkane.json",
+   "female": "clips/female/gavkane.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "glupyy",
+  "word": "глупый",
+  "duration": 2.7,
+  "clips": {
+   "male": "clips/male/glupyy.json",
+   "female": "clips/female/glupyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "gnev",
+  "word": "гнев",
+  "duration": 2.2,
+  "clips": {
+   "male": "clips/male/gnev.json",
+   "female": "clips/female/gnev.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "golova",
+  "word": "голова",
+  "duration": 1.233,
+  "clips": {
+   "male": "clips/male/golova.json",
+   "female": "clips/female/golova.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "gnezdo",
+  "word": "гнездо",
+  "duration": 3.5,
+  "clips": {
+   "male": "clips/male/gnezdo.json",
+   "female": "clips/female/gnezdo.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "gordyy",
+  "word": "гордый",
+  "duration": 1.8,
+  "clips": {
+   "male": "clips/male/gordyy.json",
+   "female": "clips/female/gordyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "grustnyy",
+  "word": "грустный",
+  "duration": 2.1,
+  "clips": {
+   "male": "clips/male/grustnyy.json",
+   "female": "clips/female/grustnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "grubyy",
+  "word": "грубый",
+  "duration": 1.8,
+  "clips": {
+   "male": "clips/male/grubyy.json",
+   "female": "clips/female/grubyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "detskiy",
+  "word": "детский",
+  "duration": 1.5,
+  "clips": {
+   "male": "clips/male/detskiy.json",
+   "female": "clips/female/detskiy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "delat-vyvody",
+  "word": "делать выводы",
+  "duration": 2.967,
+  "clips": {
+   "male": "clips/male/delat-vyvody.json",
+   "female": "clips/female/delat-vyvody.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "delfin",
+  "word": "дельфин",
+  "duration": 2.5,
+  "clips": {
+   "male": "clips/male/delfin.json",
+   "female": "clips/female/delfin.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "distress",
+  "word": "дистресс",
+  "duration": 1.833,
+  "clips": {
+   "male": "clips/male/distress.json",
+   "female": "clips/female/distress.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "dikoe-zhivotnoe",
+  "word": "дикое животное",
+  "duration": 2.8,
+  "clips": {
+   "male": "clips/male/dikoe-zhivotnoe.json",
+   "female": "clips/female/dikoe-zhivotnoe.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "dinozavr",
+  "word": "динозавр",
+  "duration": 3.1,
+  "clips": {
+   "male": "clips/male/dinozavr.json",
+   "female": "clips/female/dinozavr.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "doveryat",
+  "word": "доверять",
+  "duration": 2.5,
+  "clips": {
+   "male": "clips/male/doveryat.json",
+   "female": "clips/female/doveryat.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "dobrota",
+  "word": "доброта",
+  "duration": 2.133,
+  "clips": {
+   "male": "clips/male/dobrota.json",
+   "female": "clips/female/dobrota.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "dobryy",
+  "word": "добрый",
+  "duration": 2.6,
+  "clips": {
+   "male": "clips/male/dobryy.json",
+   "female": "clips/female/dobryy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "dominantnyy",
+  "word": "доминантный",
+  "duration": 2.4,
+  "clips": {
+   "male": "clips/male/dominantnyy.json",
+   "female": "clips/female/dominantnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "dovolnyy",
+  "word": "довольный",
+  "duration": 1.8,
+  "clips": {
+   "male": "clips/male/dovolnyy.json",
+   "female": "clips/female/dovolnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "dominiruyushchiy",
+  "word": "доминирующий",
+  "duration": 1.7,
+  "clips": {
+   "male": "clips/male/dominiruyushchiy.json",
+   "female": "clips/female/dominiruyushchiy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "domashnee-zhivotnoe",
+  "word": "домашнее животное",
+  "duration": 3.0,
+  "clips": {
+   "male": "clips/male/domashnee-zhivotnoe.json",
+   "female": "clips/female/domashnee-zhivotnoe.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "druzhelyubnyy",
+  "word": "дружелюбный",
+  "duration": 1.433,
+  "clips": {
+   "male": "clips/male/druzhelyubnyy.json",
+   "female": "clips/female/druzhelyubnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "ezhik",
+  "word": "ежик",
+  "duration": 2.6,
+  "clips": {
+   "male": "clips/male/ezhik.json",
+   "female": "clips/female/ezhik.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "zhadnost",
+  "word": "жадность",
+  "duration": 1.667,
+  "clips": {
+   "male": "clips/male/zhadnost.json",
+   "female": "clips/female/zhadnost.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "dyatel",
+  "word": "дятел",
+  "duration": 6.233,
+  "clips": {
+   "male": "clips/male/dyatel.json",
+   "female": "clips/female/dyatel.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "zhazhda",
+  "word": "жажда",
+  "duration": 1.6,
+  "clips": {
+   "male": "clips/male/zhazhda.json",
+   "female": "clips/female/zhazhda.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "zhadnyy",
+  "word": "жадный",
+  "duration": 1.5,
+  "clips": {
+   "male": "clips/male/zhadnyy.json",
+   "female": "clips/female/zhadnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "zhelanie",
+  "word": "желание",
+  "duration": 2.0,
+  "clips": {
+   "male": "clips/male/zhelanie.json",
+   "female": "clips/female/zhelanie.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "zheltyy",
+  "word": "желтый",
+  "duration": 2.0,
+  "clips": {
+   "male": "clips/male/zheltyy.json",
+   "female": "clips/female/zheltyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "zhestokiy",
+  "word": "жестокий",
+  "duration": 1.533,
+  "clips": {
+   "male": "clips/male/zhestokiy.json",
+   "female": "clips/female/zhestokiy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "zhelat",
+  "word": "желать",
+  "duration": 2.1,
+  "clips": {
+   "male": "clips/male/zhelat.json",
+   "female": "clips/female/zhelat.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "zhiraf",
+  "word": "жираф",
+  "duration": 2.9,
+  "clips": {
+   "male": "clips/male/zhiraf.json",
+   "female": "clips/female/zhiraf.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "zhivotnoe",
+  "word": "животное",
+  "duration": 1.8,
+  "clips": {
+   "male": "clips/male/zhivotnoe.json",
+   "female": "clips/female/zhivotnoe.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "zhestkiy",
+  "word": "жёсткий",
+  "duration": 1.8,
+  "clips": {
+   "male": "clips/male/zhestkiy.json",
+   "female": "clips/female/zhestkiy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "zhutkiy",
+  "word": "жуткий",
+  "duration": 3.967,
+  "clips": {
+   "male": "clips/male/zhutkiy.json",
+   "female": "clips/female/zhutkiy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "zavist",
+  "word": "зависть",
+  "duration": 2.6,
+  "clips": {
+   "male": "clips/male/zavist.json",
+   "female": "clips/female/zavist.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "zastenchivyy",
+  "word": "застенчивый",
+  "duration": 1.8,
+  "clips": {
+   "male": "clips/male/zastenchivyy.json",
+   "female": "clips/female/zastenchivyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "zayats",
+  "word": "заяц",
+  "duration": 1.933,
+  "clips": {
+   "male": "clips/male/zayats.json",
+   "female": "clips/female/zayats.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "zapaslivyy",
+  "word": "запасливый",
+  "duration": 2.833,
+  "clips": {
+   "male": "clips/male/zapaslivyy.json",
+   "female": "clips/female/zapaslivyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "zelenyy",
+  "word": "зелёный",
+  "duration": 1.6,
+  "clips": {
+   "male": "clips/male/zelenyy.json",
+   "female": "clips/female/zelenyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "zlo",
+  "word": "зло",
+  "duration": 1.8,
+  "clips": {
+   "male": "clips/male/zlo.json",
+   "female": "clips/female/zlo.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "zloy",
+  "word": "злой",
+  "duration": 1.4,
+  "clips": {
+   "male": "clips/male/zloy.json",
+   "female": "clips/female/zloy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "zver",
+  "word": "зверь",
+  "duration": 2.5,
+  "clips": {
+   "male": "clips/male/zver.json",
+   "female": "clips/female/zver.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "zlost",
+  "word": "злость",
+  "duration": 2.1,
+  "clips": {
+   "male": "clips/male/zlost.json",
+   "female": "clips/female/zlost.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "zolotoy",
+  "word": "золотой",
+  "duration": 1.8,
+  "clips": {
+   "male": "clips/male/zolotoy.json",
+   "female": "clips/female/zolotoy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "zlobnyy",
+  "word": "злобный",
+  "duration": 2.0,
+  "clips": {
+   "male": "clips/male/zlobnyy.json",
+   "female": "clips/female/zlobnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "zoopark",
+  "word": "зоопарк",
+  "duration": 1.6,
+  "clips": {
+   "male": "clips/male/zoopark.json",
+   "female": "clips/female/zoopark.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "zuby",
+  "word": "зубы",
+  "duration": 1.9,
+  "clips": {
+   "male": "clips/male/zuby.json",
+   "female": "clips/female/zuby.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "zmeya",
+  "word": "змея",
+  "duration": 2.2,
+  "clips": {
+   "male": "clips/male/zmeya.json",
+   "female": "clips/female/zmeya.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "impuls",
+  "word": "импульс",
+  "duration": 2.3,
+  "clips": {
+   "male": "clips/male/impuls.json",
+   "female": "clips/female/impuls.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "intellektualnyy",
+  "word": "интеллектуальный",
+  "duration": 1.667,
+  "clips": {
+   "male": "clips/male/intellektualnyy.json",
+   "female": "clips/female/intellektualnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "interesnyy",
+  "word": "интересный",
+  "duration": 1.6,
+  "clips": {
+   "male": "clips/male/interesnyy.json",
+   "female": "clips/female/interesnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "zrelishchnyy",
+  "word": "зрелищный",
+  "duration": 2.3,
+  "clips": {
+   "male": "clips/male/zrelishchnyy.json",
+   "female": "clips/female/zrelishchnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "isporchennyy",
+  "word": "испорченный",
+  "duration": 2.6,
+  "clips": {
+   "male": "clips/male/isporchennyy.json",
+   "female": "clips/female/isporchennyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "ispug",
+  "word": "испуг",
+  "duration": 1.933,
+  "clips": {
+   "male": "clips/male/ispug.json",
+   "female": "clips/female/ispug.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "ispytyvat",
+  "word": "испытывать",
+  "duration": 1.9,
+  "clips": {
+   "male": "clips/male/ispytyvat.json",
+   "female": "clips/female/ispytyvat.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "initsiativa",
+  "word": "инициатива",
+  "duration": 3.167,
+  "clips": {
+   "male": "clips/male/initsiativa.json",
+   "female": "clips/female/initsiativa.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "isterik",
+  "word": "истерик",
+  "duration": 2.1,
+  "clips": {
+   "male": "clips/male/isterik.json",
+   "female": "clips/female/isterik.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "kletka",
+  "word": "клетка",
+  "duration": 2.1,
+  "clips": {
+   "male": "clips/male/kletka.json",
+   "female": "clips/female/kletka.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "iskrenniy",
+  "word": "искренний",
+  "duration": 2.1,
+  "clips": {
+   "male": "clips/male/iskrenniy.json",
+   "female": "clips/female/iskrenniy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "klyuv",
+  "word": "клюв",
+  "duration": 2.2,
+  "clips": {
+   "male": "clips/male/klyuv.json",
+   "female": "clips/female/klyuv.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "ispugannyy",
+  "word": "испуганный",
+  "duration": 1.7,
+  "clips": {
+   "male": "clips/male/ispugannyy.json",
+   "female": "clips/female/ispugannyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "koza",
+  "word": "коза",
+  "duration": 2.3,
+  "clips": {
+   "male": "clips/male/koza.json",
+   "female": "clips/female/koza.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "kozel",
+  "word": "козел",
+  "duration": 1.5,
+  "clips": {
+   "male": "clips/male/kozel.json",
+   "female": "clips/female/kozel.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "klevat",
+  "word": "клевать",
+  "duration": 1.8,
+  "clips": {
+   "male": "clips/male/klevat.json",
+   "female": "clips/female/klevat.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "kopyto",
+  "word": "копыто",
+  "duration": 2.433,
+  "clips": {
+   "male": "clips/male/kopyto.json",
+   "female": "clips/female/kopyto.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "korova",
+  "word": "корова",
+  "duration": 2.133,
+  "clips": {
+   "male": "clips/male/korova.json",
+   "female": "clips/female/korova.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "kogot",
+  "word": "коготь",
+  "duration": 2.933,
+  "clips": {
+   "male": "clips/male/kogot.json",
+   "female": "clips/female/kogot.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "koshka",
+  "word": "кошка",
+  "duration": 2.9,
+  "clips": {
+   "male": "clips/male/koshka.json",
+   "female": "clips/female/koshka.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "komar",
+  "word": "комар",
+  "duration": 2.433,
+  "clips": {
+   "male": "clips/male/komar.json",
+   "female": "clips/female/komar.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "krasnovatyy",
+  "word": "красноватый",
+  "duration": 3.3,
+  "clips": {
+   "male": "clips/male/krasnovatyy.json",
+   "female": "clips/female/krasnovatyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "krolik",
+  "word": "кролик",
+  "duration": 1.733,
+  "clips": {
+   "male": "clips/male/krolik.json",
+   "female": "clips/female/krolik.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "krokodil",
+  "word": "крокодил",
+  "duration": 2.133,
+  "clips": {
+   "male": "clips/male/krokodil.json",
+   "female": "clips/female/krokodil.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "krysa",
+  "word": "крыса",
+  "duration": 2.4,
+  "clips": {
+   "male": "clips/male/krysa.json",
+   "female": "clips/female/krysa.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "korm-dlya-domashnikh-zhivotnykh",
+  "word": "корм для домашних животных",
+  "duration": 5.0,
+  "clips": {
+   "male": "clips/male/korm-dlya-domashnikh-zhivotnykh.json",
+   "female": "clips/female/korm-dlya-domashnikh-zhivotnykh.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "krylo",
+  "word": "крыло",
+  "duration": 2.4,
+  "clips": {
+   "male": "clips/male/krylo.json",
+   "female": "clips/female/krylo.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "lev",
+  "word": "лев",
+  "duration": 2.3,
+  "clips": {
+   "male": "clips/male/lev.json",
+   "female": "clips/female/lev.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "krasivyy",
+  "word": "красивый",
+  "duration": 2.1,
+  "clips": {
+   "male": "clips/male/krasivyy.json",
+   "female": "clips/female/krasivyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "lebed",
+  "word": "лебедь",
+  "duration": 3.067,
+  "clips": {
+   "male": "clips/male/lebed.json",
+   "female": "clips/female/lebed.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "krevetka",
+  "word": "креветка",
+  "duration": 1.933,
+  "clips": {
+   "male": "clips/male/krevetka.json",
+   "female": "clips/female/krevetka.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "letuchaya-mysh",
+  "word": "летучая мышь",
+  "duration": 2.9,
+  "clips": {
+   "male": "clips/male/letuchaya-mysh.json",
+   "female": "clips/female/letuchaya-mysh.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "lennost",
+  "word": "ленность",
+  "duration": 1.8,
+  "clips": {
+   "male": "clips/male/lennost.json",
+   "female": "clips/female/lennost.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "krotost",
+  "word": "кротость",
+  "duration": 2.4,
+  "clips": {
+   "male": "clips/male/krotost.json",
+   "female": "clips/female/krotost.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "lichnye-kachestva",
+  "word": "личные качества",
+  "duration": 2.8,
+  "clips": {
+   "male": "clips/male/lichnye-kachestva.json",
+   "female": "clips/female/lichnye-kachestva.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "litsemernyy",
+  "word": "лицемерный",
+  "duration": 2.333,
+  "clips": {
+   "male": "clips/male/litsemernyy.json",
+   "female": "clips/female/litsemernyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "loshad",
+  "word": "лошадь",
+  "duration": 1.767,
+  "clips": {
+   "male": "clips/male/loshad.json",
+   "female": "clips/female/loshad.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "kuritsa",
+  "word": "курица",
+  "duration": 2.433,
+  "clips": {
+   "male": "clips/male/kuritsa.json",
+   "female": "clips/female/kuritsa.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "los",
+  "word": "лось",
+  "duration": 2.167,
+  "clips": {
+   "male": "clips/male/los.json",
+   "female": "clips/female/los.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "lenivyy",
+  "word": "ленивый",
+  "duration": 1.667,
+  "clips": {
+   "male": "clips/male/lenivyy.json",
+   "female": "clips/female/lenivyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "medved",
+  "word": "медведь",
+  "duration": 2.133,
+  "clips": {
+   "male": "clips/male/medved.json",
+   "female": "clips/female/medved.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "lyagushka",
+  "word": "лягушка",
+  "duration": 2.0,
+  "clips": {
+   "male": "clips/male/lyagushka.json",
+   "female": "clips/female/lyagushka.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "lisa",
+  "word": "лиса",
+  "duration": 1.7,
+  "clips": {
+   "male": "clips/male/lisa.json",
+   "female": "clips/female/lisa.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "milenkiy",
+  "word": "миленький",
+  "duration": 1.667,
+  "clips": {
+   "male": "clips/male/milenkiy.json",
+   "female": "clips/female/milenkiy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "modnyy",
+  "word": "модный",
+  "duration": 1.967,
+  "clips": {
+   "male": "clips/male/modnyy.json",
+   "female": "clips/female/modnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "logichnyy",
+  "word": "логичный",
+  "duration": 2.533,
+  "clips": {
+   "male": "clips/male/logichnyy.json",
+   "female": "clips/female/logichnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "migratsiya",
+  "word": "миграция",
+  "duration": 4.467,
+  "clips": {
+   "male": "clips/male/migratsiya.json",
+   "female": "clips/female/migratsiya.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "lyubopytnyy",
+  "word": "любопытный",
+  "duration": 1.7,
+  "clips": {
+   "male": "clips/male/lyubopytnyy.json",
+   "female": "clips/female/lyubopytnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "murashki",
+  "word": "мурашки",
+  "duration": 2.033,
+  "clips": {
+   "male": "clips/male/murashki.json",
+   "female": "clips/female/murashki.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "milyy",
+  "word": "милый",
+  "duration": 2.0,
+  "clips": {
+   "male": "clips/male/milyy.json",
+   "female": "clips/female/milyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "muzhestvennost",
+  "word": "мужественность",
+  "duration": 1.533,
+  "clips": {
+   "male": "clips/male/muzhestvennost.json",
+   "female": "clips/female/muzhestvennost.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "nablyudatelnost",
+  "word": "наблюдательность",
+  "duration": 2.7,
+  "clips": {
+   "male": "clips/male/nablyudatelnost.json",
+   "female": "clips/female/nablyudatelnost.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "meduza",
+  "word": "медуза",
+  "duration": 2.833,
+  "clips": {
+   "male": "clips/male/meduza.json",
+   "female": "clips/female/meduza.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "napryazhenie",
+  "word": "напряжение",
+  "duration": 1.533,
+  "clips": {
+   "male": "clips/male/napryazhenie.json",
+   "female": "clips/female/napryazhenie.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "myatezhnyy",
+  "word": "мятежный",
+  "duration": 1.833,
+  "clips": {
+   "male": "clips/male/myatezhnyy.json",
+   "female": "clips/female/myatezhnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "miloserdnyy",
+  "word": "милосердный",
+  "duration": 2.0,
+  "clips": {
+   "male": "clips/male/miloserdnyy.json",
+   "female": "clips/female/miloserdnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "nakhalnyy",
+  "word": "нахальный",
+  "duration": 2.1,
+  "clips": {
+   "male": "clips/male/nakhalnyy.json",
+   "female": "clips/female/nakhalnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "mudryy",
+  "word": "мудрый",
+  "duration": 1.833,
+  "clips": {
+   "male": "clips/male/mudryy.json",
+   "female": "clips/female/mudryy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "naivnyy",
+  "word": "наивный",
+  "duration": 2.5,
+  "clips": {
+   "male": "clips/male/naivnyy.json",
+   "female": "clips/female/naivnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "nevinovnyy",
+  "word": "невиновный",
+  "duration": 2.3,
+  "clips": {
+   "male": "clips/male/nevinovnyy.json",
+   "female": "clips/female/nevinovnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "mysh",
+  "word": "мышь",
+  "duration": 2.033,
+  "clips": {
+   "male": "clips/male/mysh.json",
+   "female": "clips/female/mysh.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "naselyat",
+  "word": "населять",
+  "duration": 1.9,
+  "clips": {
+   "male": "clips/male/naselyat.json",
+   "female": "clips/female/naselyat.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "nezhnyy",
+  "word": "нежный",
+  "duration": 1.767,
+  "clips": {
+   "male": "clips/male/nezhnyy.json",
+   "female": "clips/female/nezhnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "naglost",
+  "word": "наглость",
+  "duration": 1.7,
+  "clips": {
+   "male": "clips/male/naglost.json",
+   "female": "clips/female/naglost.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "ne-vynosit",
+  "word": "не выносить",
+  "duration": 1.967,
+  "clips": {
+   "male": "clips/male/ne-vynosit.json",
+   "female": "clips/female/ne-vynosit.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "neposlushnyy",
+  "word": "непослушный",
+  "duration": 1.9,
+  "clips": {
+   "male": "clips/male/neposlushnyy.json",
+   "female": "clips/female/neposlushnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "nedovolnyy",
+  "word": "недовольный",
+  "duration": 1.5,
+  "clips": {
+   "male": "clips/male/nedovolnyy.json",
+   "female": "clips/female/nedovolnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "napugannyy",
+  "word": "напуганный",
+  "duration": 2.2,
+  "clips": {
+   "male": "clips/male/napugannyy.json",
+   "female": "clips/female/napugannyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "nenavidet",
+  "word": "ненавидеть",
+  "duration": 2.1,
+  "clips": {
+   "male": "clips/male/nenavidet.json",
+   "female": "clips/female/nenavidet.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "nashestvie",
+  "word": "нашествие",
+  "duration": 2.7,
+  "clips": {
+   "male": "clips/male/nashestvie.json",
+   "female": "clips/female/nashestvie.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "neradivyy",
+  "word": "нерадивый",
+  "duration": 3.8,
+  "clips": {
+   "male": "clips/male/neradivyy.json",
+   "female": "clips/female/neradivyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "neprozrachnost",
+  "word": "непрозрачность",
+  "duration": 2.2,
+  "clips": {
+   "male": "clips/male/neprozrachnost.json",
+   "female": "clips/female/neprozrachnost.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "nedobryy",
+  "word": "недобрый",
+  "duration": 1.767,
+  "clips": {
+   "male": "clips/male/nedobryy.json",
+   "female": "clips/female/nedobryy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "neschaste",
+  "word": "несчастье",
+  "duration": 2.1,
+  "clips": {
+   "male": "clips/male/neschaste.json",
+   "female": "clips/female/neschaste.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "nervnyy",
+  "word": "нервный",
+  "duration": 2.4,
+  "clips": {
+   "male": "clips/male/nervnyy.json",
+   "female": "clips/female/nervnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "nelovkiy-neuklyuzhiy",
+  "word": "неловкий; неуклюжий",
+  "duration": 2.533,
+  "clips": {
+   "male": "clips/male/nelovkiy-neuklyuzhiy.json",
+   "female": "clips/female/nelovkiy-neuklyuzhiy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "nosorog",
+  "word": "носорог",
+  "duration": 2.3,
+  "clips": {
+   "male": "clips/male/nosorog.json",
+   "female": "clips/female/nosorog.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "nepriyatnyy",
+  "word": "неприятный",
+  "duration": 1.8,
+  "clips": {
+   "male": "clips/male/nepriyatnyy.json",
+   "female": "clips/female/nepriyatnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "neudobstvo",
+  "word": "неудобство",
+  "duration": 2.8,
+  "clips": {
+   "male": "clips/male/neudobstvo.json",
+   "female": "clips/female/neudobstvo.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "oblegchenie",
+  "word": "облегчение",
+  "duration": 2.267,
+  "clips": {
+   "male": "clips/male/oblegchenie.json",
+   "female": "clips/female/oblegchenie.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "obezyana",
+  "word": "обезьяна",
+  "duration": 2.0,
+  "clips": {
+   "male": "clips/male/obezyana.json",
+   "female": "clips/female/obezyana.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "neraskrashennyy",
+  "word": "нераскрашенный",
+  "duration": 3.1,
+  "clips": {
+   "male": "clips/male/neraskrashennyy.json",
+   "female": "clips/female/neraskrashennyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "obychnyy",
+  "word": "обычный",
+  "duration": 2.4,
+  "clips": {
+   "male": "clips/male/obychnyy.json",
+   "female": "clips/female/obychnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "obektivnyy",
+  "word": "объективный",
+  "duration": 1.333,
+  "clips": {
+   "male": "clips/male/obektivnyy.json",
+   "female": "clips/female/obektivnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "neudobno",
+  "word": "неудобно",
+  "duration": 2.367,
+  "clips": {
+   "male": "clips/male/neudobno.json",
+   "female": "clips/female/neudobno.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "odarennyy",
+  "word": "одаренный",
+  "duration": 1.8,
+  "clips": {
+   "male": "clips/male/odarennyy.json",
+   "female": "clips/female/odarennyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "ozhivlennyy",
+  "word": "оживленный",
+  "duration": 3.967,
+  "clips": {
+   "male": "clips/male/ozhivlennyy.json",
+   "female": "clips/female/ozhivlennyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "ozabochennyy",
+  "word": "озабоченный",
+  "duration": 2.1,
+  "clips": {
+   "male": "clips/male/ozabochennyy.json",
+   "female": "clips/female/ozabochennyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "olen",
+  "word": "олень",
+  "duration": 1.9,
+  "clips": {
+   "male": "clips/male/olen.json",
+   "female": "clips/female/olen.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "obrazovannyy",
+  "word": "образованный",
+  "duration": 2.0,
+  "clips": {
+   "male": "clips/male/obrazovannyy.json",
+   "female": "clips/female/obrazovannyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "ovtsa",
+  "word": "овца",
+  "duration": 2.467,
+  "clips": {
+   "male": "clips/male/ovtsa.json",
+   "female": "clips/female/ovtsa.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "osnovnoy-tsvet",
+  "word": "основной цвет",
+  "duration": 2.167,
+  "clips": {
+   "male": "clips/male/osnovnoy-tsvet.json",
+   "female": "clips/female/osnovnoy-tsvet.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "orel",
+  "word": "орел",
+  "duration": 3.333,
+  "clips": {
+   "male": "clips/male/orel.json",
+   "female": "clips/female/orel.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "ozhidat",
+  "word": "ожидать",
+  "duration": 1.833,
+  "clips": {
+   "male": "clips/male/ozhidat.json",
+   "female": "clips/female/ozhidat.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "osobennyy",
+  "word": "особенный",
+  "duration": 2.1,
+  "clips": {
+   "male": "clips/male/osobennyy.json",
+   "female": "clips/female/osobennyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "ostroumie",
+  "word": "остроумие",
+  "duration": 2.9,
+  "clips": {
+   "male": "clips/male/ostroumie.json",
+   "female": "clips/female/ostroumie.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "opytnyy",
+  "word": "опытный",
+  "duration": 1.533,
+  "clips": {
+   "male": "clips/male/opytnyy.json",
+   "female": "clips/female/opytnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "ostryy",
+  "word": "острый",
+  "duration": 1.933,
+  "clips": {
+   "male": "clips/male/ostryy.json",
+   "female": "clips/female/ostryy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "otvetstvennyy",
+  "word": "ответственный",
+  "duration": 1.9,
+  "clips": {
+   "male": "clips/male/otvetstvennyy.json",
+   "female": "clips/female/otvetstvennyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "osel",
+  "word": "осел",
+  "duration": 2.7,
+  "clips": {
+   "male": "clips/male/osel.json",
+   "female": "clips/female/osel.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "otvratitelnyy",
+  "word": "отвратительный",
+  "duration": 1.767,
+  "clips": {
+   "male": "clips/male/otvratitelnyy.json",
+   "female": "clips/female/otvratitelnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "otlichnyy",
+  "word": "отличный",
+  "duration": 1.733,
+  "clips": {
+   "male": "clips/male/otlichnyy.json",
+   "female": "clips/female/otlichnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "ostorozhnyy",
+  "word": "осторожный",
+  "duration": 1.933,
+  "clips": {
+   "male": "clips/male/ostorozhnyy.json",
+   "female": "clips/female/ostorozhnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "otnoshenie",
+  "word": "отношение",
+  "duration": 2.0,
+  "clips": {
+   "male": "clips/male/otnoshenie.json",
+   "female": "clips/female/otnoshenie.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "ottenok",
+  "word": "оттенок",
+  "duration": 2.6,
+  "clips": {
+   "male": "clips/male/ottenok.json",
+   "female": "clips/female/ottenok.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "otvazhitsya",
+  "word": "отважиться",
+  "duration": 2.167,
+  "clips": {
+   "male": "clips/male/otvazhitsya.json",
+   "female": "clips/female/otvazhitsya.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "otchayannyy",
+  "word": "отчаянный",
+  "duration": 3.033,
+  "clips": {
+   "male": "clips/male/otchayannyy.json",
+   "female": "clips/female/otchayannyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "otvrashchenie",
+  "word": "отвращение",
+  "duration": 1.6,
+  "clips": {
+   "male": "clips/male/otvrashchenie.json",
+   "female": "clips/female/otvrashchenie.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "oshelomit",
+  "word": "ошеломить",
+  "duration": 3.533,
+  "clips": {
+   "male": "clips/male/oshelomit.json",
+   "female": "clips/female/oshelomit.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "otritsatelnyy",
+  "word": "отрицательный",
+  "duration": 1.633,
+  "clips": {
+   "male": "clips/male/otritsatelnyy.json",
+   "female": "clips/female/otritsatelnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "pavlin",
+  "word": "павлин",
+  "duration": 3.433,
+  "clips": {
+   "male": "clips/male/pavlin.json",
+   "female": "clips/female/pavlin.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "pauk",
+  "word": "паук",
+  "duration": 2.233,
+  "clips": {
+   "male": "clips/male/pauk.json",
+   "female": "clips/female/pauk.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "otchayatsya",
+  "word": "отчаяться",
+  "duration": 2.933,
+  "clips": {
+   "male": "clips/male/otchayatsya.json",
+   "female": "clips/female/otchayatsya.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "petukh",
+  "word": "петух",
+  "duration": 1.867,
+  "clips": {
+   "male": "clips/male/petukh.json",
+   "female": "clips/female/petukh.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "panda",
+  "word": "панда",
+  "duration": 3.1,
+  "clips": {
+   "male": "clips/male/panda.json",
+   "female": "clips/female/panda.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "pauchya-set",
+  "word": "паучья сеть",
+  "duration": 5.0,
+  "clips": {
+   "male": "clips/male/pauchya-set.json",
+   "female": "clips/female/pauchya-set.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "plavnik",
+  "word": "плавник",
+  "duration": 3.0,
+  "clips": {
+   "male": "clips/male/plavnik.json",
+   "female": "clips/female/plavnik.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "podlinnyy",
+  "word": "подлинный",
+  "duration": 1.667,
+  "clips": {
+   "male": "clips/male/podlinnyy.json",
+   "female": "clips/female/podlinnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "pechal",
+  "word": "печаль",
+  "duration": 1.867,
+  "clips": {
+   "male": "clips/male/pechal.json",
+   "female": "clips/female/pechal.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "pero",
+  "word": "перо",
+  "duration": 2.4,
+  "clips": {
+   "male": "clips/male/pero.json",
+   "female": "clips/female/pero.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "pingvin",
+  "word": "пингвин",
+  "duration": 2.3,
+  "clips": {
+   "male": "clips/male/pingvin.json",
+   "female": "clips/female/pingvin.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "poverkhnostnyy",
+  "word": "поверхностный",
+  "duration": 2.467,
+  "clips": {
+   "male": "clips/male/poverkhnostnyy.json",
+   "female": "clips/female/poverkhnostnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "polzane",
+  "word": "ползанье",
+  "duration": 2.9,
+  "clips": {
+   "male": "clips/male/polzane.json",
+   "female": "clips/female/polzane.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "podozrevat",
+  "word": "подозревать",
+  "duration": 2.167,
+  "clips": {
+   "male": "clips/male/podozrevat.json",
+   "female": "clips/female/podozrevat.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "podavlennyy",
+  "word": "подавленный",
+  "duration": 2.167,
+  "clips": {
+   "male": "clips/male/podavlennyy.json",
+   "female": "clips/female/podavlennyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "pomes",
+  "word": "помесь",
+  "duration": 2.3,
+  "clips": {
+   "male": "clips/male/pomes.json",
+   "female": "clips/female/pomes.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "polozhitelnyy",
+  "word": "положительный",
+  "duration": 2.167,
+  "clips": {
+   "male": "clips/male/polozhitelnyy.json",
+   "female": "clips/female/polozhitelnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "pokayanie",
+  "word": "покаяние",
+  "duration": 2.433,
+  "clips": {
+   "male": "clips/male/pokayanie.json",
+   "female": "clips/female/pokayanie.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "potryasayushchiy",
+  "word": "потрясающий",
+  "duration": 2.633,
+  "clips": {
+   "male": "clips/male/potryasayushchiy.json",
+   "female": "clips/female/potryasayushchiy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "popugay",
+  "word": "попугай",
+  "duration": 2.167,
+  "clips": {
+   "male": "clips/male/popugay.json",
+   "female": "clips/female/popugay.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "poluchayushchiy-udovolstvie",
+  "word": "получающий удовольствие",
+  "duration": 3.1,
+  "clips": {
+   "male": "clips/male/poluchayushchiy-udovolstvie.json",
+   "female": "clips/female/poluchayushchiy-udovolstvie.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "pravsha",
+  "word": "правша",
+  "duration": 1.6,
+  "clips": {
+   "male": "clips/male/pravsha.json",
+   "female": "clips/female/pravsha.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "predannyy",
+  "word": "преданный",
+  "duration": 2.767,
+  "clips": {
+   "male": "clips/male/predannyy.json",
+   "female": "clips/female/predannyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "prezrenie",
+  "word": "презрение",
+  "duration": 1.667,
+  "clips": {
+   "male": "clips/male/prezrenie.json",
+   "female": "clips/female/prezrenie.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "poslushnyy",
+  "word": "послушный",
+  "duration": 2.6,
+  "clips": {
+   "male": "clips/male/poslushnyy.json",
+   "female": "clips/female/poslushnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "predpochitat",
+  "word": "предпочитать",
+  "duration": 2.1,
+  "clips": {
+   "male": "clips/male/predpochitat.json",
+   "female": "clips/female/predpochitat.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "prilichnyy",
+  "word": "приличный",
+  "duration": 1.4,
+  "clips": {
+   "male": "clips/male/prilichnyy.json",
+   "female": "clips/female/prilichnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "rasslablenie",
+  "word": "расслабление",
+  "duration": 1.9,
+  "clips": {
+   "male": "clips/male/rasslablenie.json",
+   "female": "clips/female/rasslablenie.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "roga",
+  "word": "рога",
+  "duration": 1.967,
+  "clips": {
+   "male": "clips/male/roga.json",
+   "female": "clips/female/roga.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "produmannyy",
+  "word": "продуманный",
+  "duration": 2.7,
+  "clips": {
+   "male": "clips/male/produmannyy.json",
+   "female": "clips/female/produmannyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "ryba",
+  "word": "рыба",
+  "duration": 1.5,
+  "clips": {
+   "male": "clips/male/ryba.json",
+   "female": "clips/female/ryba.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "samovospriyatie",
+  "word": "самовосприятие",
+  "duration": 2.933,
+  "clips": {
+   "male": "clips/male/samovospriyatie.json",
+   "female": "clips/female/samovospriyatie.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "ptitsa",
+  "word": "птица",
+  "duration": 2.967,
+  "clips": {
+   "male": "clips/male/ptitsa.json",
+   "female": "clips/female/ptitsa.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "samoanaliz",
+  "word": "самоанализ",
+  "duration": 3.333,
+  "clips": {
+   "male": "clips/male/samoanaliz.json",
+   "female": "clips/female/samoanaliz.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "razumnyy",
+  "word": "разумный",
+  "duration": 1.733,
+  "clips": {
+   "male": "clips/male/razumnyy.json",
+   "female": "clips/female/razumnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "rasstroennyy",
+  "word": "расстроенный",
+  "duration": 2.0,
+  "clips": {
+   "male": "clips/male/rasstroennyy.json",
+   "female": "clips/female/rasstroennyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "rasslabitsya",
+  "word": "расслабиться",
+  "duration": 2.4,
+  "clips": {
+   "male": "clips/male/rasslabitsya.json",
+   "female": "clips/female/rasslabitsya.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "samoproverka",
+  "word": "самопроверка",
+  "duration": 2.8,
+  "clips": {
+   "male": "clips/male/samoproverka.json",
+   "female": "clips/female/samoproverka.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "rasseyannyy",
+  "word": "рассеянный",
+  "duration": 2.933,
+  "clips": {
+   "male": "clips/male/rasseyannyy.json",
+   "female": "clips/female/rasseyannyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "rebyacheskiy",
+  "word": "ребяческий",
+  "duration": 1.7,
+  "clips": {
+   "male": "clips/male/rebyacheskiy.json",
+   "female": "clips/female/rebyacheskiy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "serebro",
+  "word": "серебро",
+  "duration": 2.3,
+  "clips": {
+   "male": "clips/male/serebro.json",
+   "female": "clips/female/serebro.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "predusmotritelnyy",
+  "word": "предусмотрительный",
+  "duration": 2.9,
+  "clips": {
+   "male": "clips/male/predusmotritelnyy.json",
+   "female": "clips/female/predusmotritelnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "skuchnyy",
+  "word": "скучный",
+  "duration": 1.8,
+  "clips": {
+   "male": "clips/male/skuchnyy.json",
+   "female": "clips/female/skuchnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "rychat",
+  "word": "рычать",
+  "duration": 2.2,
+  "clips": {
+   "male": "clips/male/rychat.json",
+   "female": "clips/female/rychat.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "smelost",
+  "word": "смелость",
+  "duration": 1.7,
+  "clips": {
+   "male": "clips/male/smelost.json",
+   "female": "clips/female/smelost.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "pronyra",
+  "word": "проныра",
+  "duration": 2.467,
+  "clips": {
+   "male": "clips/male/pronyra.json",
+   "female": "clips/female/pronyra.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "samoosoznanie",
+  "word": "самоосознание",
+  "duration": 2.6,
+  "clips": {
+   "male": "clips/male/samoosoznanie.json",
+   "female": "clips/female/samoosoznanie.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "sobaka",
+  "word": "собака",
+  "duration": 1.9,
+  "clips": {
+   "male": "clips/male/sobaka.json",
+   "female": "clips/female/sobaka.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "tigr",
+  "word": "тигр",
+  "duration": 2.0,
+  "clips": {
+   "male": "clips/male/tigr.json",
+   "female": "clips/female/tigr.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "svinya",
+  "word": "свинья",
+  "duration": 3.2,
+  "clips": {
+   "male": "clips/male/svinya.json",
+   "female": "clips/female/svinya.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "somnenie",
+  "word": "сомнение",
+  "duration": 2.533,
+  "clips": {
+   "male": "clips/male/somnenie.json",
+   "female": "clips/female/somnenie.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "pragmatichnyy",
+  "word": "прагматичный",
+  "duration": 2.8,
+  "clips": {
+   "male": "clips/male/pragmatichnyy.json",
+   "female": "clips/female/pragmatichnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "silnyy",
+  "word": "сильный",
+  "duration": 1.633,
+  "clips": {
+   "male": "clips/male/silnyy.json",
+   "female": "clips/female/silnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "spokoynyy",
+  "word": "спокойный",
+  "duration": 1.8,
+  "clips": {
+   "male": "clips/male/spokoynyy.json",
+   "female": "clips/female/spokoynyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "skorbet",
+  "word": "скорбеть",
+  "duration": 1.9,
+  "clips": {
+   "male": "clips/male/skorbet.json",
+   "female": "clips/female/skorbet.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "skromnyy",
+  "word": "скромный",
+  "duration": 1.7,
+  "clips": {
+   "male": "clips/male/skromnyy.json",
+   "female": "clips/female/skromnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "stoykost",
+  "word": "стойкость",
+  "duration": 1.3,
+  "clips": {
+   "male": "clips/male/stoykost.json",
+   "female": "clips/female/stoykost.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "strakh",
+  "word": "страх",
+  "duration": 2.2,
+  "clips": {
+   "male": "clips/male/strakh.json",
+   "female": "clips/female/strakh.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "slon",
+  "word": "слон",
+  "duration": 1.933,
+  "clips": {
+   "male": "clips/male/slon.json",
+   "female": "clips/female/slon.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "slabyy",
+  "word": "слабый",
+  "duration": 1.767,
+  "clips": {
+   "male": "clips/male/slabyy.json",
+   "female": "clips/female/slabyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "schastlivyy",
+  "word": "счастливый",
+  "duration": 2.0,
+  "clips": {
+   "male": "clips/male/schastlivyy.json",
+   "female": "clips/female/schastlivyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "smushchennyy",
+  "word": "смущенный",
+  "duration": 1.667,
+  "clips": {
+   "male": "clips/male/smushchennyy.json",
+   "female": "clips/female/smushchennyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "sozhalet",
+  "word": "сожалеть",
+  "duration": 1.467,
+  "clips": {
+   "male": "clips/male/sozhalet.json",
+   "female": "clips/female/sozhalet.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "rozovato-lilovyy",
+  "word": "розовато-лиловый",
+  "duration": 2.567,
+  "clips": {
+   "male": "clips/male/rozovato-lilovyy.json",
+   "female": "clips/female/rozovato-lilovyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "terpet",
+  "word": "терпеть",
+  "duration": 2.5,
+  "clips": {
+   "male": "clips/male/terpet.json",
+   "female": "clips/female/terpet.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "priruchennyy",
+  "word": "прирученный",
+  "duration": 1.9,
+  "clips": {
+   "male": "clips/male/priruchennyy.json",
+   "female": "clips/female/priruchennyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "sochuvstvie",
+  "word": "сочувствие",
+  "duration": 2.5,
+  "clips": {
+   "male": "clips/male/sochuvstvie.json",
+   "female": "clips/female/sochuvstvie.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "trus",
+  "word": "трус",
+  "duration": 2.867,
+  "clips": {
+   "male": "clips/male/trus.json",
+   "female": "clips/female/trus.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "smeshnoy",
+  "word": "смешной",
+  "duration": 1.6,
+  "clips": {
+   "male": "clips/male/smeshnoy.json",
+   "female": "clips/female/smeshnoy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "strannyy",
+  "word": "странный",
+  "duration": 1.7,
+  "clips": {
+   "male": "clips/male/strannyy.json",
+   "female": "clips/female/strannyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "temnyy",
+  "word": "тёмный",
+  "duration": 1.767,
+  "clips": {
+   "male": "clips/male/temnyy.json",
+   "female": "clips/female/temnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "uverennyy",
+  "word": "уверенный",
+  "duration": 1.6,
+  "clips": {
+   "male": "clips/male/uverennyy.json",
+   "female": "clips/female/uverennyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "strogiy",
+  "word": "строгий",
+  "duration": 2.1,
+  "clips": {
+   "male": "clips/male/strogiy.json",
+   "female": "clips/female/strogiy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "truslivo",
+  "word": "трусливо",
+  "duration": 2.3,
+  "clips": {
+   "male": "clips/male/truslivo.json",
+   "female": "clips/female/truslivo.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "temnota",
+  "word": "темнота",
+  "duration": 1.9,
+  "clips": {
+   "male": "clips/male/temnota.json",
+   "female": "clips/female/temnota.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "rychanie",
+  "word": "рычание",
+  "duration": 2.4,
+  "clips": {
+   "male": "clips/male/rychanie.json",
+   "female": "clips/female/rychanie.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "torzhestvennyy",
+  "word": "торжественный",
+  "duration": 2.4,
+  "clips": {
+   "male": "clips/male/torzhestvennyy.json",
+   "female": "clips/female/torzhestvennyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "tshcheslavnyy",
+  "word": "тщеславный",
+  "duration": 2.3,
+  "clips": {
+   "male": "clips/male/tshcheslavnyy.json",
+   "female": "clips/female/tshcheslavnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "sobachiy-domik",
+  "word": "собачий домик",
+  "duration": 4.0,
+  "clips": {
+   "male": "clips/male/sobachiy-domik.json",
+   "female": "clips/female/sobachiy-domik.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "ugryumyy",
+  "word": "угрюмый",
+  "duration": 1.833,
+  "clips": {
+   "male": "clips/male/ugryumyy.json",
+   "female": "clips/female/ugryumyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "soty",
+  "word": "соты",
+  "duration": 2.1,
+  "clips": {
+   "male": "clips/male/soty.json",
+   "female": "clips/female/soty.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "tsvetovoy-ottenok",
+  "word": "цветовой оттенок",
+  "duration": 2.833,
+  "clips": {
+   "male": "clips/male/tsvetovoy-ottenok.json",
+   "female": "clips/female/tsvetovoy-ottenok.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "strashnyy",
+  "word": "страшный",
+  "duration": 2.833,
+  "clips": {
+   "male": "clips/male/strashnyy.json",
+   "female": "clips/female/strashnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "pchela",
+  "word": "пчела",
+  "duration": 2.5,
+  "clips": {
+   "male": "clips/male/pchela.json",
+   "female": "clips/female/pchela.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "sarkazm",
+  "word": "сарказм",
+  "duration": 2.733,
+  "clips": {
+   "male": "clips/male/sarkazm.json",
+   "female": "clips/female/sarkazm.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "razyarennyy",
+  "word": "разъяренный",
+  "duration": 2.067,
+  "clips": {
+   "male": "clips/male/razyarennyy.json",
+   "female": "clips/female/razyarennyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "prozrachnyy",
+  "word": "прозрачный",
+  "duration": 2.2,
+  "clips": {
+   "male": "clips/male/prozrachnyy.json",
+   "female": "clips/female/prozrachnyy.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "talant",
+  "word": "талант",
+  "duration": 1.8,
+  "clips": {
+   "male": "clips/male/talant.json",
+   "female": "clips/female/talant.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "prichinyat-rezkuyu-bol",
+  "word": "причинять резкую боль",
+  "duration": 2.933,
+  "clips": {
+   "male": "clips/male/prichinyat-rezkuyu-bol.json",
+   "female": "clips/female/prichinyat-rezkuyu-bol.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
+ },
+ {
+  "slug": "razrydatsya",
+  "word": "разрыдаться",
+  "duration": 2.267,
+  "clips": {
+   "male": "clips/male/razrydatsya.json",
+   "female": "clips/female/razrydatsya.json"
+  },
+  "source": "Slovo dataset (github.com/hukenovs/slovo), CC BY-SA 4.0"
  }
 ]
