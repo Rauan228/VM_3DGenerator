@@ -25,6 +25,14 @@ type Entry = {
   expression_frames: number;
 };
 
+/** Which batch the page shows (`?set=`): signflow.ru (tools/signflow_batch.py) or the Slovo dataset (tools/slovo_batch.py). */
+const SETS = {
+  signflow: { manifest: "/gallery/signflow.json", source: "signflow.ru", about: "видео signflow.ru (спереди, обычная скорость)", tool: "tools/signflow_batch.py" },
+  slovo: { manifest: "/gallery/slovo.json", source: "Slovo", about: "видео из датасета Slovo (выбранное исполнение, CC BY-SA 4.0)", tool: "tools/slovo_batch.py" },
+} as const;
+type SetName = keyof typeof SETS;
+const SET: SetName = new URLSearchParams(window.location.search).get("set") === "slovo" ? "slovo" : "signflow";
+
 type Avatar = "male" | "female";
 type Angle = "front" | "side";
 
@@ -42,7 +50,8 @@ const SHOWN_MARGIN = "100px";
 /** Fired by a card that starts playing, so the others pause. */
 const PLAY_EVENT = "gallery-play";
 /** The reviewer's notes, kept in this browser as they are typed (slug → text; "" is the note on the whole gallery). */
-const NOTES_KEY = "gallery-notes-v1";
+// Each set keeps its own notes.
+const NOTES_KEY = SET === "slovo" ? "gallery-notes-slovo-v1" : "gallery-notes-v1";
 const GENERAL = "";
 const AVATAR_NAMES: Record<Avatar, string> = { male: "Парень", female: "Девушка" };
 const ANGLE_NAMES: Record<Angle, string> = { front: "Спереди", side: "Сбоку" };
@@ -65,7 +74,7 @@ function saveNotes(notes: Record<string, string>) {
 
 /** All notes as one text to paste back into the chat: each sign by its number, word, slug and gesture id. */
 function notesText(entries: Entry[], notes: Record<string, string>, avatar: Avatar, angle: Angle) {
-  const lines = [`Замечания по галерее signflow (${entries.length} жестов; смотрел: ${AVATAR_NAMES[avatar]}, ${ANGLE_NAMES[angle]})`];
+  const lines = [`Замечания по галерее ${SET} (${entries.length} жестов; смотрел: ${AVATAR_NAMES[avatar]}, ${ANGLE_NAMES[angle]})`];
   const general = notes[GENERAL]?.trim();
   if (general) lines.push("", "### Общее", general);
   entries.forEach((entry, index) => {
@@ -208,7 +217,7 @@ function Card({ entry, index, avatar, angle, note, onNote }: CardProps) {
         <span className="number">{index + 1}</span>
         <h2>{entry.word}</h2>
         <a href={entry.page} target="_blank" rel="noreferrer">
-          signflow.ru
+          {SETS[SET].source}
         </a>
       </header>
       <div className="media" onClick={toggle}>
@@ -327,7 +336,7 @@ function Gallery() {
   };
 
   useEffect(() => {
-    fetch("/gallery/signflow.json", { cache: "no-store" })
+    fetch(SETS[SET].manifest, { cache: "no-store" })
       .then((response) => response.json())
       .then(setEntries, () => setEntries([]));
   }, []);
@@ -338,7 +347,7 @@ function Gallery() {
         <div>
           <h1>Галерея жестов</h1>
           <p>
-            {entries ? `${entries.length} жестов` : "Загрузка списка…"} · видео signflow.ru (спереди, обычная скорость) и
+            {entries ? `${entries.length} жестов` : "Загрузка списка…"} · {SETS[SET].about} и
             3D-аватар рядом · нажмите на карточку, чтобы проиграть
           </p>
         </div>
@@ -364,7 +373,7 @@ function Gallery() {
           rows={2}
         />
       </div>
-      {entries && entries.length === 0 && <p className="empty">Список пуст: запустите tools/signflow_batch.py.</p>}
+      {entries && entries.length === 0 && <p className="empty">Список пуст: запустите {SETS[SET].tool}.</p>}
       <main className="grid">
         {entries?.map((entry, index) => (
           <Card
