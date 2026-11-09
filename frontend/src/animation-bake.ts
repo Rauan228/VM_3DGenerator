@@ -3,6 +3,7 @@ import { aimArm, relaxArm, restPlan, solveArm, type ArmPlan, type ArmRig, type A
 import { armTorsoPush, buildContactRig, faceTouchPull, MAX_TOUCH_SLIDE, type ContactRig, type FaceTouch } from "./body-contact";
 import { faceShift, signerFaceLine, type FaceLine } from "./face-anchor";
 import { handAt, interpolateFrame } from "./gesture-utils";
+import { handsAheadOfFace } from "./hand-distance";
 import { relaxHand, resetHandFit, solveHand, type HandRig } from "./hand-solver";
 import { angleBetween, smoothCurve, type CurveFilter } from "./motion-filter";
 import type { GestureJson, Landmark, LandmarkFrame } from "./types";
@@ -209,6 +210,13 @@ const TOUCH_POINTS: [number, string][] = [
 const TOUCH_NEAR = 0.02;
 const TOUCH_FAR = 0.07;
 
+/**
+ * A hand measured this far in front of the eyes (shoulder widths, see `handsAheadOfFace`) starts not to count as
+ * touching the face, and from TOUCH_AHEAD_END on does not: the eye plane to the lips and a fingertip's thickness is
+ * about the start, and the measurement scatters by about as much again.
+ */
+const TOUCH_AHEAD_START = 0.2;
+const TOUCH_AHEAD_END = 0.4;
 /** Half window (bake samples) over which a face touch is eased in time: about 0.15 s each way. */
 const TOUCH_EASE_HALF = 9;
 
@@ -667,6 +675,11 @@ export function bakeAnimation({ gesture, aspect, arms, hands, body, root, toWorl
     const hand = hands[side];
     if (hand) resetHandFit(hand);
   }
+  const aheadOfFace = handsAheadOfFace(gesture, aspect, count, BAKE_FPS);
+  const aheadAt = (side: Side, k: number) => {
+    const ahead = aheadOfFace?.[side][k];
+    return ahead === undefined || Number.isNaN(ahead) ? undefined : ahead;
+  };
 
   const contact: Partial<Record<Side, ContactRig>> = {};
   if (root) for (const side of sides) contact[side] = buildContactRig(root, side);
@@ -848,7 +861,9 @@ export function bakeAnimation({ gesture, aspect, arms, hands, body, root, toWorl
       const together = apart !== undefined && apart < HANDS_CLOSE_START;
       const touch = together ? undefined : faceTouchOf(faces[k], hand[k], touchBones[side]);
       const passingThroat = Boolean(touch?.at && faces[k] && touch.at.y < faces[k]!.chinY && fast[k]);
-      raw[k] = passingThroat ? undefined : touch;
+      // A hand that looks bigger than one at the face is in front of it: over the face in the picture, but not on it.
+      if (touch) touch.weight *= 1 - THREE.MathUtils.smoothstep(aheadAt(side, k) ?? 0, TOUCH_AHEAD_START, TOUCH_AHEAD_END);
+      raw[k] = passingThroat || !touch || touch.weight <= 0 ? undefined : touch;
     }
     const weights = raw.map((touch) => touch?.weight ?? 0);
     for (const [start, end] of touchRuns(weights)) {
@@ -917,6 +932,7 @@ export function bakeAnimation({ gesture, aspect, arms, hands, body, root, toWorl
           // avatar's chin); otherwise by its centre.
           handCenter: anchorOf(touch[side], handCenterOf(handFrames[side]?.landmarks)),
           palmCenter: handCenterOf(handFrames[side]?.landmarks),
+          aheadOfFace: handFrames[side] ? aheadAt(side, k) : undefined,
           offset,
           record: asked[side],
         });

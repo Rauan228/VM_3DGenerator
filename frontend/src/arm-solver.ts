@@ -51,6 +51,8 @@ export type ArmSolveOptions = {
   handCenter?: { x: number; y: number };
   /** The middle of the signer's palm in the picture, when the hand was seen: what says whether the hand is at the head. */
   palmCenter?: { x: number; y: number };
+  /** How far the palm is in front of the signer's eyes (shoulder widths), measured from its size in the picture (see `handsAheadOfFace`). */
+  aheadOfFace?: number;
   /** Receives the wrist target and elbow direction this frame asked for, before `offset`: what `aimArm` takes to pose the arm again. */
   record?: ArmPlan;
   /** Added to the wrist target and the elbow direction, in the avatar's units: how the body-contact pass moves the arm off the torso. */
@@ -198,6 +200,9 @@ function applyDirections(rig: ArmRig, upper: THREE.Vector3, fore: THREE.Vector3,
   aim(rig.fore, fore, damping);
 }
 
+/** A hand's size says little beyond this far before the face (shoulder widths): the arm is about outstretched. */
+const MAX_MEASURED_AHEAD = 1.2;
+
 /**
  * Where the wrist should be, in the avatar's units. The signer's wrist offset from their shoulder is scaled by
  * shoulder width, then corrected for the two ways a sign and an avatar body disagree: the faces sit at different
@@ -216,8 +221,17 @@ function wristTarget(rig: ArmRig, body: BodyFrame, landmarks: Landmark[], should
     // ... and a hand at the head is not left floating far in front of it by the pose model's depth.
     // By the palm, not by a fingertip reaching up to the chin from a hand held before the chest.
     const limit = headDepthLimit(options.palmCenter ?? point, options.face);
-    const deepest = body.eyeCenter.z + limit.ahead * body.shoulderWidth;
+    // Where the hand's size says how far before the face it is, that depth is taken: the pose model's is the weaker cue
+    // there, and a hand held out before the mouth ("волк") would otherwise be pressed onto it.
+    const measured = options.aheadOfFace !== undefined && Number.isFinite(options.aheadOfFace)
+      ? THREE.MathUtils.clamp(options.aheadOfFace, 0, MAX_MEASURED_AHEAD)
+      : undefined;
+    const deepest = body.eyeCenter.z + Math.max(limit.ahead, measured ?? 0) * body.shoulderWidth;
     if (target.z > deepest) target.z = THREE.MathUtils.lerp(target.z, deepest, limit.weight);
+    if (measured !== undefined) {
+      const ahead = body.eyeCenter.z + measured * body.shoulderWidth;
+      if (target.z < ahead) target.z = THREE.MathUtils.lerp(target.z, ahead, limit.weight);
+    }
   }
   return target;
 }

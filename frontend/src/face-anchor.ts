@@ -86,6 +86,9 @@ export function signerFaceLine(body: Landmark[], mesh: Landmark[] | undefined, a
   };
 }
 
+/** Over the eyes a hand is placed by the face's size up to this many eye-to-chin heights above them. */
+const OVER_EYES_REACH = 1.5;
+
 /**
  * How far the avatar's wrist target has to move, in shoulder widths, for a hand at `point` (the signer's hand centre in
  * the same units) to land on the same facial feature. Heights are mapped piecewise through shoulder line, chin and
@@ -94,7 +97,13 @@ export function signerFaceLine(body: Landmark[], mesh: Landmark[] | undefined, a
 export function faceShift(point: { x: number; y: number }, signer: FaceLine, avatar: FaceLine): { x: number; y: number } {
   let mapped: number;
   if (point.y >= signer.eyeY) {
-    mapped = point.y + (avatar.eyeY - signer.eyeY);
+    // Over the eyes the hand keeps its place against the size of the face, as below them, up to a little over the top
+    // of the head (a hand on the crown stays on it, horns at the temples stay there); higher, an arm held up, it is moved
+    // with the head. A phone close by shows a head a fifth bigger against the shoulders than a studio camera does.
+    const scale = THREE.MathUtils.clamp((avatar.eyeY - avatar.chinY) / (signer.eyeY - signer.chinY), 0.75, 1.25);
+    const reach = OVER_EYES_REACH * (signer.eyeY - signer.chinY);
+    const over = point.y - signer.eyeY;
+    mapped = avatar.eyeY + scale * Math.min(over, reach) + Math.max(over - reach, 0);
   } else if (point.y >= signer.chinY) {
     mapped = avatar.chinY + ((point.y - signer.chinY) * (avatar.eyeY - avatar.chinY)) / (signer.eyeY - signer.chinY);
   } else if (point.y > 0) {
