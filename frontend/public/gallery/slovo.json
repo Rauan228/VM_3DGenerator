@@ -8,8 +8,8 @@
    13,
    66
   ],
-  "gesture_id": "rsl-25fbe39406234026a3e039405f813247",
-  "source_video": "data/uploads/462eb631-аллигатор.mp4",
+  "gesture_id": "rsl-9391bb84adcd4c1dafd3456d13715021",
+  "source_video": "data/uploads/f46856e4-аллигатор.mp4",
   "duration": 1.8,
   "expression_frames": 54
  },
@@ -22,8 +22,8 @@
    12,
    66
   ],
-  "gesture_id": "rsl-757db7f366d44df7b624ab087135c1fe",
-  "source_video": "data/uploads/e6d19347-агрессивный.mp4",
+  "gesture_id": "rsl-171174574be5415c902bab67c4ef7b5c",
+  "source_video": "data/uploads/c22321e1-агрессивный.mp4",
   "duration": 1.8,
   "expression_frames": 54
  },
@@ -36,8 +36,8 @@
    1,
    69
   ],
-  "gesture_id": "rsl-9c2736968953450296bce0c80627218e",
-  "source_video": "data/uploads/33b8bc4f-бабочка.mp4",
+  "gesture_id": "rsl-30d5b0edec0f4eb094e9163daf8aa80f",
+  "source_video": "data/uploads/720ddc8d-бабочка.mp4",
   "duration": 2.3,
   "expression_frames": 69
  },
@@ -50,8 +50,8 @@
    22,
    93
   ],
-  "gesture_id": "rsl-e8d1351d08e747adacba07f07ae19ca9",
-  "source_video": "data/uploads/c8e7b583-белка.mp4",
+  "gesture_id": "rsl-c44c104e561c414c883d38cc3bfdd850",
+  "source_video": "data/uploads/c16258b4-белка.mp4",
   "duration": 2.4,
   "expression_frames": 72
  },
@@ -64,8 +64,8 @@
    2,
    56
   ],
-  "gesture_id": "rsl-cec356fc3e154c3586271d0643724b43",
-  "source_video": "data/uploads/60c059a3-волк.mp4",
+  "gesture_id": "rsl-940c9a1204464199bf8dbd8ef55e8638",
+  "source_video": "data/uploads/f3f47d48-волк.mp4",
   "duration": 1.7666666666666666,
   "expression_frames": 53
  },
@@ -78,8 +78,8 @@
    39,
    88
   ],
-  "gesture_id": "rsl-fc15a4f9f430421da1c80712c9090aa8",
-  "source_video": "data/uploads/49d11459-черный.mp4",
+  "gesture_id": "rsl-c35d889c62ad40cda6620edb89c235d7",
+  "source_video": "data/uploads/54c3ef42-черный.mp4",
   "duration": 1.6333333333333333,
   "expression_frames": 49
  },
@@ -92,8 +92,8 @@
    17,
    72
   ],
-  "gesture_id": "rsl-39a5777a246746f6a079abbad20a977d",
-  "source_video": "data/uploads/e2852468-цвет.mp4",
+  "gesture_id": "rsl-4531689b93bf4957baaa8676bb487df1",
+  "source_video": "data/uploads/076d6f46-цвет.mp4",
   "duration": 1.8,
   "expression_frames": 54
  },
@@ -106,8 +106,8 @@
    8,
    81
   ],
-  "gesture_id": "rsl-ad2e67e469ff457dab8a578aedbdf79a",
-  "source_video": "data/uploads/4a888023-вежливый.mp4",
+  "gesture_id": "rsl-6d43a644cf234ab8bc03e80430241636",
+  "source_video": "data/uploads/b10b835d-вежливый.mp4",
   "duration": 2.4,
   "expression_frames": 72
  },
@@ -120,8 +120,8 @@
    22,
    88
   ],
-  "gesture_id": "rsl-37d8fd91d26a49eba7928076a15dc420",
-  "source_video": "data/uploads/3e9f8c62-беспокоиться.mp4",
+  "gesture_id": "rsl-2349801806df454386b5f11f536caee2",
+  "source_video": "data/uploads/dce352d1-беспокоиться.mp4",
   "duration": 2.2,
   "expression_frames": 66
  },
@@ -134,8 +134,8 @@
    6,
    74
   ],
-  "gesture_id": "rsl-4d4a4f1a91a340d483327efdbfa4ae2e",
-  "source_video": "data/uploads/9663f24b-верблюд.mp4",
+  "gesture_id": "rsl-e42e1a9c121249679d554ade52fb4225",
+  "source_video": "data/uploads/0a51c718-верблюд.mp4",
   "duration": 2.3,
   "expression_frames": 69
  },
@@ -148,8 +148,8 @@
    81,
    141
   ],
-  "gesture_id": "rsl-4d0f7bc5e3ae45df8ed032c372de628f",
-  "source_video": "data/uploads/1631684f-влюбиться.mp4",
+  "gesture_id": "rsl-0ac3d5ac4b3f432e841047a6a8082cbc",
+  "source_video": "data/uploads/93feb497-влюбиться.mp4",
   "duration": 2.0,
   "expression_frames": 60
  },
@@ -162,8 +162,8 @@
    9,
    71
   ],
-  "gesture_id": "rsl-a57a69c5530241f585efaa85bc36725c",
-  "source_video": "data/uploads/1e92fe41-акула.mp4",
+  "gesture_id": "rsl-7996e6065aac4646a2d0d816ac76edab",
+  "source_video": "data/uploads/822c8afd-акула.mp4",
   "duration": 2.1,
   "expression_frames": 63
  },
@@ -176,8 +176,8 @@
    0,
    101
   ],
-  "gesture_id": "rsl-f7ccc12d335747fd96416be4b867b849",
-  "source_video": "data/uploads/c40d4a90-бегемот.mp4",
+  "gesture_id": "rsl-5db40ac0fe624d27b62bb92ab11b27e5",
+  "source_video": "data/uploads/63c63211-бегемот.mp4",
   "duration": 3.4,
   "expression_frames": 102
  },
@@ -190,8 +190,8 @@
    0,
    116
   ],
-  "gesture_id": "rsl-992ffe754acc4725ae590d8f90f1f5f0",
-  "source_video": "data/uploads/fceecbd4-адаптивное поведение.mp4",
+  "gesture_id": "rsl-8c9aab206f674fb58073d3151ff2f3de",
+  "source_video": "data/uploads/a0ead426-адаптивное поведение.mp4",
   "duration": 3.9,
   "expression_frames": 117
  },
@@ -204,8 +204,8 @@
    16,
    68
   ],
-  "gesture_id": "rsl-4c5f84b6e8284e71876a04b653f93950",
-  "source_video": "data/uploads/941c1c1d-адаптивность.mp4",
+  "gesture_id": "rsl-d0207d07fd034ddf8d4d2b6d33741545",
+  "source_video": "data/uploads/3415365d-адаптивность.mp4",
   "duration": 1.7333333333333334,
   "expression_frames": 52
  },
@@ -218,8 +218,8 @@
    0,
    77
   ],
-  "gesture_id": "rsl-859fdc153ce84ce3b26c607441c95d7f",
-  "source_video": "data/uploads/403d883f-адаптивный.mp4",
+  "gesture_id": "rsl-e13688093aa5413f90f42904498c9e82",
+  "source_video": "data/uploads/9551560e-адаптивный.mp4",
   "duration": 2.6,
   "expression_frames": 78
  },
@@ -232,8 +232,8 @@
    24,
    71
   ],
-  "gesture_id": "rsl-ec7ab6cc38dd4e37bacd071ae5df7a75",
-  "source_video": "data/uploads/19390c64-аккуратный.mp4",
+  "gesture_id": "rsl-9ec266456a42476490905b4313f18b5e",
+  "source_video": "data/uploads/8907a53f-аккуратный.mp4",
   "duration": 1.6,
   "expression_frames": 48
  },
@@ -246,8 +246,8 @@
    0,
    66
   ],
-  "gesture_id": "rsl-2b76241367374ca7ad72bc6fbcb3ee6f",
-  "source_video": "data/uploads/0bc2cd1f-активный.mp4",
+  "gesture_id": "rsl-92d8737f8c244473915467d18869c6e4",
+  "source_video": "data/uploads/092697fe-активный.mp4",
   "duration": 2.2,
   "expression_frames": 66
  },
@@ -260,8 +260,8 @@
    7,
    118
   ],
-  "gesture_id": "rsl-708e218238d94ec38307ad415f2d88f7",
-  "source_video": "data/uploads/1b492790-амбициозный.mp4",
+  "gesture_id": "rsl-e648386ef3874f0ba117d42af53e47f3",
+  "source_video": "data/uploads/42d0bd2f-амбициозный.mp4",
   "duration": 3.7,
   "expression_frames": 111
  },
@@ -274,8 +274,8 @@
    17,
    70
   ],
-  "gesture_id": "rsl-3cfc8c2110804af991e1267af397bc12",
-  "source_video": "data/uploads/47676a37-аниматор.mp4",
+  "gesture_id": "rsl-15fa0735b4ac4a09b1caae86af614eb7",
+  "source_video": "data/uploads/3cd7ca2e-аниматор.mp4",
   "duration": 1.7666666666666666,
   "expression_frames": 53
  },
@@ -288,8 +288,8 @@
    4,
    44
   ],
-  "gesture_id": "rsl-70dd59ce7b8f4be6bd0e3723b4837d20",
-  "source_video": "data/uploads/b314d044-бежевый.mp4",
+  "gesture_id": "rsl-97d6baa21633435cbd681b17614a02d2",
+  "source_video": "data/uploads/aa63aa05-бежевый.mp4",
   "duration": 1.3333333333333333,
   "expression_frames": 40
  },
@@ -302,8 +302,8 @@
    5,
    70
   ],
-  "gesture_id": "rsl-e81acbd7b18e49e5a6b8908ca2c40caf",
-  "source_video": "data/uploads/6cefd5ba-белый.mp4",
+  "gesture_id": "rsl-c8224ce3b8084ff19c0570f037a63975",
+  "source_video": "data/uploads/826afadf-белый.mp4",
   "duration": 2.1666666666666665,
   "expression_frames": 65
  },
@@ -316,8 +316,8 @@
    6,
    87
   ],
-  "gesture_id": "rsl-97a9b6b803e34842816c383f3dd759f8",
-  "source_video": "data/uploads/d40defd6-беспокоящий.mp4",
+  "gesture_id": "rsl-7a410845234040598efbd7180fb735dd",
+  "source_video": "data/uploads/f9e88230-беспокоящий.mp4",
   "duration": 2.7,
   "expression_frames": 81
  },
@@ -330,8 +330,8 @@
    16,
    104
   ],
-  "gesture_id": "rsl-8de4e294163f486cb1b48cb8386bb39a",
-  "source_video": "data/uploads/8726267e-бледный.mp4",
+  "gesture_id": "rsl-001955b17e09469f8d89e19fa82f9296",
+  "source_video": "data/uploads/793f39a0-бледный.mp4",
   "duration": 2.933333333333333,
   "expression_frames": 87
  },
@@ -344,8 +344,8 @@
    0,
    89
   ],
-  "gesture_id": "rsl-a058c691cf5f4e69a54b9eac76c4a56a",
-  "source_video": "data/uploads/b7695a7e-брюзжать.mp4",
+  "gesture_id": "rsl-61b27c2101b74122808a479203e44fc8",
+  "source_video": "data/uploads/7165c9d4-брюзжать.mp4",
   "duration": 3.0,
   "expression_frames": 90
  },
@@ -358,8 +358,8 @@
    0,
    54
   ],
-  "gesture_id": "rsl-473bd0f218074d799877452566b7c666",
-  "source_video": "data/uploads/283273b1-бык.mp4",
+  "gesture_id": "rsl-bd6a12befbb048cf93737daed966ca8b",
+  "source_video": "data/uploads/66b17b38-бык.mp4",
   "duration": 1.8,
   "expression_frames": 54
  },
@@ -372,8 +372,8 @@
    3,
    59
   ],
-  "gesture_id": "rsl-9ea40a766ce0457b85c7fc9facbbdbed",
-  "source_video": "data/uploads/525ec1a1-быть потрясенным.mp4",
+  "gesture_id": "rsl-b0482df9d0f643b0ae9e346c5d6fbd81",
+  "source_video": "data/uploads/40db1fbb-быть потрясенным.mp4",
   "duration": 1.9,
   "expression_frames": 57
  },
@@ -386,8 +386,8 @@
    9,
    53
   ],
-  "gesture_id": "rsl-c13aaefa25754e5489dc205a6b6a66e9",
-  "source_video": "data/uploads/d8347427-верный.mp4",
+  "gesture_id": "rsl-e5983784110741779515dc380adb120a",
+  "source_video": "data/uploads/fa3612a5-верный.mp4",
   "duration": 1.5,
   "expression_frames": 45
  },
@@ -400,8 +400,8 @@
    11,
    68
   ],
-  "gesture_id": "rsl-a263946dd06440e39513b852f649ebbc",
-  "source_video": "data/uploads/61860ba2-веселый.mp4",
+  "gesture_id": "rsl-9a9c437c634242c2813e8919e0c34647",
+  "source_video": "data/uploads/7e59e00d-веселый.mp4",
   "duration": 1.8666666666666667,
   "expression_frames": 56
  },
@@ -414,8 +414,8 @@
    17,
    95
   ],
-  "gesture_id": "rsl-3e4ca523cae24520bb6805e08b4b9fae",
-  "source_video": "data/uploads/9634ebfe-весенняя.mp4",
+  "gesture_id": "rsl-30304f8604ab457cb5f91d479d3d547d",
+  "source_video": "data/uploads/66c9f2c5-весенняя.mp4",
   "duration": 2.566666666666667,
   "expression_frames": 77
  },
@@ -428,8 +428,8 @@
    0,
    66
   ],
-  "gesture_id": "rsl-92724b0e97c9439ca653b11ccbe2abe0",
-  "source_video": "data/uploads/c1213a49-вилять.mp4",
+  "gesture_id": "rsl-9e2605fe324f4875b51744e667de5ef3",
+  "source_video": "data/uploads/f440573c-вилять.mp4",
   "duration": 2.2,
   "expression_frames": 66
  },
@@ -442,8 +442,8 @@
    18,
    94
   ],
-  "gesture_id": "rsl-dd5cca5c150f419aab4f3cae03a06fb0",
-  "source_video": "data/uploads/761c0ff0-водоплавающее.mp4",
+  "gesture_id": "rsl-f8788c00106446fa8fa80beb69ee3464",
+  "source_video": "data/uploads/dc1ab69e-водоплавающее.mp4",
   "duration": 2.533333333333333,
   "expression_frames": 76
  },
@@ -456,8 +456,8 @@
    6,
    61
   ],
-  "gesture_id": "rsl-fcfca3eaed7b498db36c249299c81ed7",
-  "source_video": "data/uploads/f25bad8a-возбуждение.mp4",
+  "gesture_id": "rsl-254b7d24b5d44409b1fe179db80f00c6",
+  "source_video": "data/uploads/2a3df0d4-возбуждение.mp4",
   "duration": 1.8333333333333333,
   "expression_frames": 55
  },
@@ -470,8 +470,8 @@
    0,
    56
   ],
-  "gesture_id": "rsl-21abe938327244e5bbac454b47ea5f73",
-  "source_video": "data/uploads/da548b6e-вой.mp4",
+  "gesture_id": "rsl-0a8db623600c4de6ac0343bc1e7323ff",
+  "source_video": "data/uploads/07dfd784-вой.mp4",
   "duration": 1.9,
   "expression_frames": 57
  },
@@ -484,8 +484,8 @@
    1,
    67
   ],
-  "gesture_id": "rsl-73089610d0514eb99b699049ef468b17",
-  "source_video": "data/uploads/6dc7107a-вол.mp4",
+  "gesture_id": "rsl-bd31db4ff7344e38af919588a5e95749",
+  "source_video": "data/uploads/bbe5b78a-вол.mp4",
   "duration": 2.2,
   "expression_frames": 66
  },
@@ -498,8 +498,8 @@
    9,
    82
   ],
-  "gesture_id": "rsl-5ff3b7b560f040cd8d4101cf67194c90",
-  "source_video": "data/uploads/651d1290-возрадоваться.mp4",
+  "gesture_id": "rsl-27a877852e494974aa3a3c5b1b6c80ce",
+  "source_video": "data/uploads/08de63e8-возрадоваться.mp4",
   "duration": 2.433333333333333,
   "expression_frames": 73
  },
@@ -512,8 +512,8 @@
    12,
    70
   ],
-  "gesture_id": "rsl-ef2d5ee3cbbf49f8b7741e04f26f6213",
-  "source_video": "data/uploads/a622cc22-воротник.mp4",
+  "gesture_id": "rsl-66820b7011ca441f8546645566d3b62d",
+  "source_video": "data/uploads/4cffbc69-воротник.mp4",
   "duration": 1.9333333333333333,
   "expression_frames": 58
  },
@@ -526,8 +526,8 @@
    2,
    54
   ],
-  "gesture_id": "rsl-05c94f4c24a54620a4812fe4e1ce6f94",
-  "source_video": "data/uploads/94a43d3d-восхищаться.mp4",
+  "gesture_id": "rsl-39c6770bbdd342b68c63969349945938",
+  "source_video": "data/uploads/d07e4309-восхищаться.mp4",
   "duration": 1.7,
   "expression_frames": 51
  },
@@ -540,8 +540,8 @@
    12,
    82
   ],
-  "gesture_id": "rsl-b92964b8bfe440b89c01eae9ceda8f0c",
-  "source_video": "data/uploads/34b46f3b-враждебный.mp4",
+  "gesture_id": "rsl-fc2a203780834607af13ae4e68a0b66d",
+  "source_video": "data/uploads/1b7fd919-враждебный.mp4",
   "duration": 2.3333333333333335,
   "expression_frames": 68
  },
@@ -554,8 +554,8 @@
    4,
    83
   ],
-  "gesture_id": "rsl-bdaaa71b641a4c0b986f23a8a828d51c",
-  "source_video": "data/uploads/0c3204a7-вскружить.mp4",
+  "gesture_id": "rsl-2d05114eef0349c29362566ad6edc3e3",
+  "source_video": "data/uploads/3114bec3-вскружить.mp4",
   "duration": 2.6333333333333333,
   "expression_frames": 79
  },
@@ -568,8 +568,8 @@
    0,
    92
   ],
-  "gesture_id": "rsl-84a2493d04c5418c8f5e38f5742e4cd9",
-  "source_video": "data/uploads/591bce49-вредный; озорной.mp4",
+  "gesture_id": "rsl-97e3f4d1937947e58088824bf96a3bc6",
+  "source_video": "data/uploads/f287d5de-вредный; озорной.mp4",
   "duration": 3.1,
   "expression_frames": 93
  },
@@ -582,8 +582,8 @@
    4,
    43
   ],
-  "gesture_id": "rsl-0c67d64ec84b4571a934b972fc81f7d4",
-  "source_video": "data/uploads/1467fd2f-высокомерный.mp4",
+  "gesture_id": "rsl-1f42bfc949fb42a2bc55fe4f40082fe8",
+  "source_video": "data/uploads/6a614a6c-высокомерный.mp4",
   "duration": 1.3,
   "expression_frames": 34
  },
@@ -596,8 +596,8 @@
    16,
    78
   ],
-  "gesture_id": "rsl-2405076ad79e49f59f95bee1bd08b3d4",
-  "source_video": "data/uploads/fc0fe2e4-гений.mp4",
+  "gesture_id": "rsl-3e7fcb8d77a44d439ad862099c841cee",
+  "source_video": "data/uploads/f608d648-гений.mp4",
   "duration": 2.1,
   "expression_frames": 63
  },
@@ -610,8 +610,8 @@
    3,
    57
   ],
-  "gesture_id": "rsl-250e304afcd64eff8f53d96e9234c2af",
-  "source_video": "data/uploads/d0d6c6b4-гавканье.mp4",
+  "gesture_id": "rsl-c13ccfb6d29b4e418cc3b2020dd6d847",
+  "source_video": "data/uploads/4a62a92e-гавканье.mp4",
   "duration": 1.8,
   "expression_frames": 54
  },
@@ -624,8 +624,8 @@
    7,
    87
   ],
-  "gesture_id": "rsl-061dfcc076be4fc690d104ec74b36957",
-  "source_video": "data/uploads/b7188c71-глупый.mp4",
+  "gesture_id": "rsl-91cac14a11bf4b41b7f22a7fce4b8448",
+  "source_video": "data/uploads/9927773e-глупый.mp4",
   "duration": 2.7,
   "expression_frames": 81
  },
@@ -638,8 +638,8 @@
    0,
    66
   ],
-  "gesture_id": "rsl-89febd87eb214a44a476cd74fbee061b",
-  "source_video": "data/uploads/aac8f711-гнев.mp4",
+  "gesture_id": "rsl-23ecb4333b134a9182acc13a741d6dfe",
+  "source_video": "data/uploads/55a82234-гнев.mp4",
   "duration": 2.2,
   "expression_frames": 66
  },
@@ -652,8 +652,8 @@
    0,
    37
   ],
-  "gesture_id": "rsl-63acf4b9c1e8449d96c8cb5d125a92ec",
-  "source_video": "data/uploads/9dd160ab-голова.mp4",
+  "gesture_id": "rsl-a698f0fb8bd542248151538c16532370",
+  "source_video": "data/uploads/27acec84-голова.mp4",
   "duration": 1.2333333333333334,
   "expression_frames": 37
  },
@@ -666,8 +666,8 @@
    8,
    114
   ],
-  "gesture_id": "rsl-6b61dfa3b4744ada914a078bdf3efe1e",
-  "source_video": "data/uploads/03d0eb69-гнездо.mp4",
+  "gesture_id": "rsl-d773d60824c8408b8bb9f424246304a1",
+  "source_video": "data/uploads/ba4d968b-гнездо.mp4",
   "duration": 3.5,
   "expression_frames": 105
  },
@@ -680,8 +680,8 @@
    7,
    61
   ],
-  "gesture_id": "rsl-60e8c34c75da4c9c985c460a568892c9",
-  "source_video": "data/uploads/d51e2f09-гордый.mp4",
+  "gesture_id": "rsl-121a93e2900b4010be0c6b73efa5127b",
+  "source_video": "data/uploads/e4e3a414-гордый.mp4",
   "duration": 1.8,
   "expression_frames": 54
  },
@@ -694,8 +694,8 @@
    9,
    71
   ],
-  "gesture_id": "rsl-4fa7e071ee4b41a99698c11afc2a4e98",
-  "source_video": "data/uploads/29ed9efd-грустный.mp4",
+  "gesture_id": "rsl-48d6e9776bcc4c64aca8933a1b7a10a5",
+  "source_video": "data/uploads/25218ea8-грустный.mp4",
   "duration": 2.1,
   "expression_frames": 63
  },
@@ -708,8 +708,8 @@
    21,
    74
   ],
-  "gesture_id": "rsl-186b7406aa454a12b85f59ffb5911135",
-  "source_video": "data/uploads/3f2f1557-грубый.mp4",
+  "gesture_id": "rsl-8fd9757623dd4012bb01264afa68666c",
+  "source_video": "data/uploads/d61e3cb8-грубый.mp4",
   "duration": 1.8,
   "expression_frames": 54
  },
@@ -722,8 +722,8 @@
    7,
    51
   ],
-  "gesture_id": "rsl-168ded60592a4fc1bee3e7bb62eda5f4",
-  "source_video": "data/uploads/769dfe7a-детский.mp4",
+  "gesture_id": "rsl-00e51f0a4c794fac8154c7f856fbf520",
+  "source_video": "data/uploads/15a072d6-детский.mp4",
   "duration": 1.5,
   "expression_frames": 45
  },
@@ -736,8 +736,8 @@
    11,
    101
   ],
-  "gesture_id": "rsl-ddc01a2a080a487b81fb29516ae1a5c9",
-  "source_video": "data/uploads/63499817-делать выводы.mp4",
+  "gesture_id": "rsl-7f7740c4910349f2bd6b65e347d44649",
+  "source_video": "data/uploads/2ff9f3e4-делать выводы.mp4",
   "duration": 2.966666666666667,
   "expression_frames": 89
  },
@@ -750,8 +750,8 @@
    12,
    87
   ],
-  "gesture_id": "rsl-c140c9c47e4a46c79f3fdb1b9d26660c",
-  "source_video": "data/uploads/56617195-дельфин.mp4",
+  "gesture_id": "rsl-15068c07f637476ca8bb0f1bd30872b4",
+  "source_video": "data/uploads/c0b94b3d-дельфин.mp4",
   "duration": 2.5,
   "expression_frames": 75
  },
@@ -764,8 +764,8 @@
    1,
    56
   ],
-  "gesture_id": "rsl-76fdf974ba8d42f0a5c4963925376501",
-  "source_video": "data/uploads/d4db4ab6-дистресс.mp4",
+  "gesture_id": "rsl-3567850bd66f4c89a573afa7f4dca3fe",
+  "source_video": "data/uploads/b8ae5e53-дистресс.mp4",
   "duration": 1.8333333333333333,
   "expression_frames": 55
  },
@@ -778,8 +778,8 @@
    3,
    86
   ],
-  "gesture_id": "rsl-1940ccd1bd6748d391c50fda3584d5fd",
-  "source_video": "data/uploads/829c074e-дикое животное.mp4",
+  "gesture_id": "rsl-ba07fb201ce948539ebf839e8f097d4a",
+  "source_video": "data/uploads/c0c459bb-дикое животное.mp4",
   "duration": 2.8,
   "expression_frames": 84
  },
@@ -792,8 +792,8 @@
    0,
    93
   ],
-  "gesture_id": "rsl-ac489f2f889b4372906c4ede61158e00",
-  "source_video": "data/uploads/7c192e9e-динозавр.mp4",
+  "gesture_id": "rsl-a49bf9be5c7a4c9bb1915a0178330262",
+  "source_video": "data/uploads/9c6dd19b-динозавр.mp4",
   "duration": 3.1,
   "expression_frames": 93
  },
@@ -806,8 +806,8 @@
    6,
    80
   ],
-  "gesture_id": "rsl-52be3e47986c439298e30d45476aa810",
-  "source_video": "data/uploads/16b7fa3e-доверять.mp4",
+  "gesture_id": "rsl-99019e0d879743659ac9f4c57149988c",
+  "source_video": "data/uploads/6d6ccfca-доверять.mp4",
   "duration": 2.5,
   "expression_frames": 75
  },
@@ -820,8 +820,8 @@
    10,
    74
   ],
-  "gesture_id": "rsl-ec4c8677e4d547859788dede6658d038",
-  "source_video": "data/uploads/3a0e7c34-доброта.mp4",
+  "gesture_id": "rsl-bd206c986fe5462687934891e1827777",
+  "source_video": "data/uploads/872e539c-доброта.mp4",
   "duration": 2.1333333333333333,
   "expression_frames": 64
  },
@@ -834,8 +834,8 @@
    20,
    99
   ],
-  "gesture_id": "rsl-b69c7ece48f649f5a866b90afbcb6b0f",
-  "source_video": "data/uploads/ac0807d3-добрый.mp4",
+  "gesture_id": "rsl-25ee050a8d1940c6b895b94b8c686677",
+  "source_video": "data/uploads/59285834-добрый.mp4",
   "duration": 2.6,
   "expression_frames": 78
  },
@@ -848,8 +848,8 @@
    3,
    75
   ],
-  "gesture_id": "rsl-6042b2ce86c54d508867b7897ed7a097",
-  "source_video": "data/uploads/b3b15d60-доминантный.mp4",
+  "gesture_id": "rsl-cdea48e1d2a54574a424333ae31d9b1c",
+  "source_video": "data/uploads/305883b0-доминантный.mp4",
   "duration": 2.4,
   "expression_frames": 72
  },
@@ -862,8 +862,8 @@
    5,
    60
   ],
-  "gesture_id": "rsl-aa184ee9cd334ecf9171eb3e4b0433bb",
-  "source_video": "data/uploads/0c1d8ceb-довольный.mp4",
+  "gesture_id": "rsl-2055246d2599448391f5e0e52e7ec2c0",
+  "source_video": "data/uploads/4325dc7a-довольный.mp4",
   "duration": 1.8,
   "expression_frames": 54
  },
@@ -876,8 +876,8 @@
    13,
    63
   ],
-  "gesture_id": "rsl-943c8a754e7441788431937c52dc4173",
-  "source_video": "data/uploads/6d815112-доминирующий.mp4",
+  "gesture_id": "rsl-57c281a527eb43278901891e917879d5",
+  "source_video": "data/uploads/28e0fc90-доминирующий.mp4",
   "duration": 1.7,
   "expression_frames": 51
  },
@@ -890,8 +890,8 @@
    23,
    114
   ],
-  "gesture_id": "rsl-244b3f70753648439ae3cfec3100c574",
-  "source_video": "data/uploads/955aa81c-домашнее животное.mp4",
+  "gesture_id": "rsl-cb47fba2d41543509c029c838c5ca15b",
+  "source_video": "data/uploads/7b84753b-домашнее животное.mp4",
   "duration": 3.0,
   "expression_frames": 90
  },
@@ -904,8 +904,8 @@
    10,
    53
   ],
-  "gesture_id": "rsl-32588cab2e67454092bc3ac7d2c0bdd4",
-  "source_video": "data/uploads/9265a955-дружелюбный.mp4",
+  "gesture_id": "rsl-fc8edf00f75449799cf148a33dcd2535",
+  "source_video": "data/uploads/a8f35b41-дружелюбный.mp4",
   "duration": 1.4333333333333333,
   "expression_frames": 43
  },
@@ -918,8 +918,8 @@
    15,
    93
   ],
-  "gesture_id": "rsl-981210ef8f7e4f7fac1477f5e685740e",
-  "source_video": "data/uploads/fa80bf53-ежик.mp4",
+  "gesture_id": "rsl-37e0f5bb434d4a70905aeb69b67a50ca",
+  "source_video": "data/uploads/9fcd45d7-ежик.mp4",
   "duration": 2.6,
   "expression_frames": 78
  },
@@ -932,8 +932,8 @@
    8,
    59
   ],
-  "gesture_id": "rsl-d600d272f0d148f3a8d2fedea70bc03c",
-  "source_video": "data/uploads/66a18e29-жадность.mp4",
+  "gesture_id": "rsl-35390483c32149c885d393a727a16f3b",
+  "source_video": "data/uploads/8bba692a-жадность.mp4",
   "duration": 1.6666666666666667,
   "expression_frames": 50
  },
@@ -946,8 +946,8 @@
    21,
    208
   ],
-  "gesture_id": "rsl-b5f1bf94362e4577adfcc19516ded791",
-  "source_video": "data/uploads/c724acac-дятел.mp4",
+  "gesture_id": "rsl-da5c0a591f084da1bd81823965487839",
+  "source_video": "data/uploads/10b766ba-дятел.mp4",
   "duration": 6.233333333333333,
   "expression_frames": 187
  },
@@ -960,8 +960,8 @@
    1,
    49
   ],
-  "gesture_id": "rsl-e408efb17cea42b7b4337cdeb5e803dc",
-  "source_video": "data/uploads/6f25a020-жажда.mp4",
+  "gesture_id": "rsl-10a9b5405e024164902af5d6ae284f30",
+  "source_video": "data/uploads/9a9aa6dc-жажда.mp4",
   "duration": 1.6,
   "expression_frames": 48
  },
@@ -974,8 +974,8 @@
    7,
    51
   ],
-  "gesture_id": "rsl-9c136a891055470f9fc39d028e62d28e",
-  "source_video": "data/uploads/0d8659a1-жадный.mp4",
+  "gesture_id": "rsl-8921755773814a62a606b53560803662",
+  "source_video": "data/uploads/28ce6ac1-жадный.mp4",
   "duration": 1.5,
   "expression_frames": 45
  },
@@ -988,8 +988,8 @@
    27,
    86
   ],
-  "gesture_id": "rsl-1ba1f59ce3cf40d1aa30d1ac153b56a1",
-  "source_video": "data/uploads/9b4e6172-желание.mp4",
+  "gesture_id": "rsl-86bb1b39fba04de28121e64a73327e7c",
+  "source_video": "data/uploads/75aa938b-желание.mp4",
   "duration": 2.0,
   "expression_frames": 60
  },
@@ -1002,8 +1002,8 @@
    6,
    65
   ],
-  "gesture_id": "rsl-521437067e2c4f6eb516a88a46376806",
-  "source_video": "data/uploads/4f1776b8-желтый.mp4",
+  "gesture_id": "rsl-9ca5615215ba4a5aabae731ea359e55e",
+  "source_video": "data/uploads/dc642ba2-желтый.mp4",
   "duration": 2.0,
   "expression_frames": 60
  },
@@ -1016,8 +1016,8 @@
    6,
    52
   ],
-  "gesture_id": "rsl-e854c6dd510541e0a3bd8c199eac7075",
-  "source_video": "data/uploads/054ab79a-жестокий.mp4",
+  "gesture_id": "rsl-974622abdf15449485af440c13dcc0cf",
+  "source_video": "data/uploads/ac0b3f84-жестокий.mp4",
   "duration": 1.5333333333333334,
   "expression_frames": 46
  },
@@ -1030,8 +1030,8 @@
    4,
    66
   ],
-  "gesture_id": "rsl-ee7bbab0b4294d529f11e2a396086566",
-  "source_video": "data/uploads/8f341890-желать.mp4",
+  "gesture_id": "rsl-89a0760e393e4d248b1d27bbc5a68bc0",
+  "source_video": "data/uploads/9a12e710-желать.mp4",
   "duration": 2.1,
   "expression_frames": 63
  },
@@ -1044,8 +1044,8 @@
    10,
    97
   ],
-  "gesture_id": "rsl-36d5f5d0cfd74cfba0a99e98216ebba7",
-  "source_video": "data/uploads/1e280cd9-жираф.mp4",
+  "gesture_id": "rsl-67fa9ed31f844ab290d303f3efb5bf4b",
+  "source_video": "data/uploads/cf27360b-жираф.mp4",
   "duration": 2.9,
   "expression_frames": 87
  },
@@ -1058,8 +1058,8 @@
    9,
    63
   ],
-  "gesture_id": "rsl-9a9678bc0f2a406b8fe4cad6184114f3",
-  "source_video": "data/uploads/3873f3a3-животное.mp4",
+  "gesture_id": "rsl-82cec398736b40eaaea6983c0aff4fd6",
+  "source_video": "data/uploads/107f2dc6-животное.mp4",
   "duration": 1.8,
   "expression_frames": 54
  },
@@ -1072,8 +1072,8 @@
    10,
    63
   ],
-  "gesture_id": "rsl-31f430217b8c4568a20d9e148f925daf",
-  "source_video": "data/uploads/6193c572-жёсткий.mp4",
+  "gesture_id": "rsl-156588f50c5243b4bd51e5d051b6af13",
+  "source_video": "data/uploads/28b7ae95-жёсткий.mp4",
   "duration": 1.8,
   "expression_frames": 54
  },
@@ -1086,8 +1086,8 @@
    8,
    127
   ],
-  "gesture_id": "rsl-e1bcdefef9e44f98bd184b6dc70bb79b",
-  "source_video": "data/uploads/875cd48c-жуткий.mp4",
+  "gesture_id": "rsl-71a7e8359e4a4ab1a7fdb32704d671d6",
+  "source_video": "data/uploads/a341a443-жуткий.mp4",
   "duration": 3.966666666666667,
   "expression_frames": 119
  },
@@ -1100,8 +1100,8 @@
    0,
    77
   ],
-  "gesture_id": "rsl-a41c2096b9ac4f90baa5ad2c7ef5840e",
-  "source_video": "data/uploads/f6d76003-зависть.mp4",
+  "gesture_id": "rsl-dd7e24487a0446e98d72ef4ae44fb8b9",
+  "source_video": "data/uploads/0662add0-зависть.mp4",
   "duration": 2.6,
   "expression_frames": 78
  },
@@ -1114,8 +1114,8 @@
    16,
    69
   ],
-  "gesture_id": "rsl-d645f4f2d0d9495a9c5599b8b0ffe013",
-  "source_video": "data/uploads/b8fbfe80-застенчивый.mp4",
+  "gesture_id": "rsl-030f0aa769eb41f5927acd1aee67773a",
+  "source_video": "data/uploads/c2414564-застенчивый.mp4",
   "duration": 1.8,
   "expression_frames": 54
  },
@@ -1128,8 +1128,8 @@
    16,
    74
   ],
-  "gesture_id": "rsl-2c2c0f33b9bb4de2afab168eb3a8b161",
-  "source_video": "data/uploads/2a1e4e3d-заяц.mp4",
+  "gesture_id": "rsl-389c9976988641cea14fc6befa2686aa",
+  "source_video": "data/uploads/07c02d53-заяц.mp4",
   "duration": 1.9333333333333333,
   "expression_frames": 58
  },
@@ -1142,8 +1142,8 @@
    19,
    104
   ],
-  "gesture_id": "rsl-d3a91804897942baa6812bf7459f9271",
-  "source_video": "data/uploads/e16014fe-запасливый.mp4",
+  "gesture_id": "rsl-a3a6943ee0884f778e2d74fab4e931fa",
+  "source_video": "data/uploads/f59184eb-запасливый.mp4",
   "duration": 2.8333333333333335,
   "expression_frames": 85
  },
@@ -1156,8 +1156,8 @@
    12,
    60
   ],
-  "gesture_id": "rsl-d585e73aa72a4237a86f6ed9bf3b6300",
-  "source_video": "data/uploads/7dac43ca-зелёный.mp4",
+  "gesture_id": "rsl-53451a65b270474fb33f6effdf48f96e",
+  "source_video": "data/uploads/d05e9b52-зелёный.mp4",
   "duration": 1.6,
   "expression_frames": 48
  },
@@ -1170,8 +1170,8 @@
    2,
    57
   ],
-  "gesture_id": "rsl-20899ed4443d423e81fed7cbc83c31ae",
-  "source_video": "data/uploads/71c8f111-зло.mp4",
+  "gesture_id": "rsl-bf6950b602c349418fd3c7e177678ac2",
+  "source_video": "data/uploads/18ea5206-зло.mp4",
   "duration": 1.8,
   "expression_frames": 54
  },
@@ -1184,8 +1184,8 @@
    16,
    57
   ],
-  "gesture_id": "rsl-fdf0467f215b4b058e5982358c7bdeae",
-  "source_video": "data/uploads/5bfb67d8-злой.mp4",
+  "gesture_id": "rsl-cbf08ae497df4fc1a82004f5237c8419",
+  "source_video": "data/uploads/622d5b90-злой.mp4",
   "duration": 1.4,
   "expression_frames": 42
  },
@@ -1198,8 +1198,8 @@
    6,
    80
   ],
-  "gesture_id": "rsl-f1308f25a1b04dc3b8b87e3feb8df959",
-  "source_video": "data/uploads/73285ee7-зверь.mp4",
+  "gesture_id": "rsl-7b514b1a19af4e00981685dcaf0ea6ab",
+  "source_video": "data/uploads/1cc0c9ea-зверь.mp4",
   "duration": 2.5,
   "expression_frames": 75
  },
@@ -1212,8 +1212,8 @@
    13,
    75
   ],
-  "gesture_id": "rsl-609746a5f62644beac8f882801bbb203",
-  "source_video": "data/uploads/23663906-злость.mp4",
+  "gesture_id": "rsl-241607895577488d99b749afa1156ef7",
+  "source_video": "data/uploads/a2c98b8e-злость.mp4",
   "duration": 2.1,
   "expression_frames": 63
  },
@@ -1226,8 +1226,8 @@
    3,
    56
   ],
-  "gesture_id": "rsl-6214e513a0f948d9b2692014a61f2a99",
-  "source_video": "data/uploads/61dfdd8a-золотой.mp4",
+  "gesture_id": "rsl-12ceb44a94c64197854fa9843179788c",
+  "source_video": "data/uploads/017b9cfd-золотой.mp4",
   "duration": 1.8,
   "expression_frames": 54
  },
@@ -1240,8 +1240,8 @@
    15,
    74
   ],
-  "gesture_id": "rsl-bc5a449e67dd4f9f9c32755d8b067556",
-  "source_video": "data/uploads/ca985e62-злобный.mp4",
+  "gesture_id": "rsl-94234f7cf0c14d7397b25983c51b6189",
+  "source_video": "data/uploads/1fcc71e9-злобный.mp4",
   "duration": 2.0,
   "expression_frames": 60
  },
@@ -1254,8 +1254,8 @@
    0,
    47
   ],
-  "gesture_id": "rsl-68ae1f50baeb4d84949fa14a5096b86e",
-  "source_video": "data/uploads/3785121a-зоопарк.mp4",
+  "gesture_id": "rsl-48e824ffb2f44cc1bcfc2a6ec4a8237b",
+  "source_video": "data/uploads/056eb313-зоопарк.mp4",
   "duration": 1.6,
   "expression_frames": 48
  },
@@ -1268,8 +1268,8 @@
    16,
    73
   ],
-  "gesture_id": "rsl-8cb7777c2a5e46488e2594b6cee99d28",
-  "source_video": "data/uploads/8e6d1c4c-зубы.mp4",
+  "gesture_id": "rsl-eb54cdc6366c44bcbe3e7dce809441a3",
+  "source_video": "data/uploads/17fdf4d7-зубы.mp4",
   "duration": 1.9,
   "expression_frames": 57
  },
@@ -1282,8 +1282,8 @@
    1,
    67
   ],
-  "gesture_id": "rsl-847693bd87534453bed5e97a29542208",
-  "source_video": "data/uploads/bdf80371-змея.mp4",
+  "gesture_id": "rsl-d8b970c9f1ae4143be0cdcd443856649",
+  "source_video": "data/uploads/498d97e4-змея.mp4",
   "duration": 2.2,
   "expression_frames": 66
  },
@@ -1296,8 +1296,8 @@
    17,
    87
   ],
-  "gesture_id": "rsl-f8eaf50e983945909f0071765fe147ec",
-  "source_video": "data/uploads/398636af-импульс.mp4",
+  "gesture_id": "rsl-690f87eba7974d9ea7c9fea067cebf22",
+  "source_video": "data/uploads/3c87dea2-импульс.mp4",
   "duration": 2.3,
   "expression_frames": 69
  },
@@ -1310,8 +1310,8 @@
    11,
    61
   ],
-  "gesture_id": "rsl-dfa1f479d4e544ba8f0235797a7f1ad7",
-  "source_video": "data/uploads/6211f171-интеллектуальный.mp4",
+  "gesture_id": "rsl-a2fea604196d4500bb7c09f6e95825c3",
+  "source_video": "data/uploads/35e2b5f0-интеллектуальный.mp4",
   "duration": 1.6666666666666667,
   "expression_frames": 50
  },
@@ -1324,8 +1324,8 @@
    25,
    72
   ],
-  "gesture_id": "rsl-e9a131ce3c394eb88176689b3f2d4b33",
-  "source_video": "data/uploads/12ea9d11-интересный.mp4",
+  "gesture_id": "rsl-86932181c9044a1b8672a49e836e1646",
+  "source_video": "data/uploads/47ff227a-интересный.mp4",
   "duration": 1.6,
   "expression_frames": 48
  },
@@ -1338,8 +1338,8 @@
    15,
    83
   ],
-  "gesture_id": "rsl-645fe2106c96404f9a31e32e09d43195",
-  "source_video": "data/uploads/ff01b04a-зрелищный.mp4",
+  "gesture_id": "rsl-cd6154dab14a49578caf7db474c650f5",
+  "source_video": "data/uploads/6a7bceb8-зрелищный.mp4",
   "duration": 2.3,
   "expression_frames": 69
  },
@@ -1352,8 +1352,8 @@
    12,
    90
   ],
-  "gesture_id": "rsl-d62dd82dc64b4504b9a056255be7afb8",
-  "source_video": "data/uploads/a30cb2be-испорченный.mp4",
+  "gesture_id": "rsl-b3a7b73006b7454d87b3706d8ba47b24",
+  "source_video": "data/uploads/01b2b7f8-испорченный.mp4",
   "duration": 2.6,
   "expression_frames": 78
  },
@@ -1366,8 +1366,8 @@
    0,
    58
   ],
-  "gesture_id": "rsl-cdbcd4e24ed346aa960945823d2db4b2",
-  "source_video": "data/uploads/1724cae1-испуг.mp4",
+  "gesture_id": "rsl-8db87a6e15b849d3bc4c460a4e05eedf",
+  "source_video": "data/uploads/851d66f7-испуг.mp4",
   "duration": 1.9333333333333333,
   "expression_frames": 58
  },
@@ -1380,8 +1380,8 @@
    2,
    60
   ],
-  "gesture_id": "rsl-f9ddf108241f40b18b2401f3f0158b5a",
-  "source_video": "data/uploads/25f00fa6-испытывать.mp4",
+  "gesture_id": "rsl-d6e096ef43174ae4a2840dab84201501",
+  "source_video": "data/uploads/bb6c713b-испытывать.mp4",
   "duration": 1.9,
   "expression_frames": 57
  },
@@ -1394,8 +1394,8 @@
    2,
    97
   ],
-  "gesture_id": "rsl-a1cc362de8054d5799366dd56c7fadf5",
-  "source_video": "data/uploads/416fd3dc-инициатива.mp4",
+  "gesture_id": "rsl-52ee0f5656e14a108ded153e4d21d64f",
+  "source_video": "data/uploads/d3cbb1ac-инициатива.mp4",
   "duration": 3.1666666666666665,
   "expression_frames": 95
  },
@@ -1408,8 +1408,8 @@
    4,
    67
   ],
-  "gesture_id": "rsl-5a2f2efd62cc4a6f8c7e9d70d7b17dbe",
-  "source_video": "data/uploads/31a81940-истерик.mp4",
+  "gesture_id": "rsl-3c1b088045f8483d9e159dbea4d1f49c",
+  "source_video": "data/uploads/c41f8d46-истерик.mp4",
   "duration": 2.1,
   "expression_frames": 63
  },
@@ -1422,8 +1422,8 @@
    11,
    75
   ],
-  "gesture_id": "rsl-fb6c730930d44a4d92431c8c5a213801",
-  "source_video": "data/uploads/262e69e1-клетка.mp4",
+  "gesture_id": "rsl-87eaec62cd3f452eb54e65c0d51da297",
+  "source_video": "data/uploads/89251d5c-клетка.mp4",
   "duration": 2.1,
   "expression_frames": 63
  },
@@ -1436,8 +1436,8 @@
    9,
    72
   ],
-  "gesture_id": "rsl-414298a9d1a34a67933024a1edaac5ff",
-  "source_video": "data/uploads/55287485-искренний.mp4",
+  "gesture_id": "rsl-d9bcc6a6c4e048938b69c0ee9c38caf5",
+  "source_video": "data/uploads/f9885b71-искренний.mp4",
   "duration": 2.1,
   "expression_frames": 63
  },
@@ -1450,8 +1450,8 @@
    2,
    69
   ],
-  "gesture_id": "rsl-fa1a7bec666541709c825eba9fd85e87",
-  "source_video": "data/uploads/183e627b-клюв.mp4",
+  "gesture_id": "rsl-2b0f1005a0ee4790bbc8167be3328356",
+  "source_video": "data/uploads/b6d2d22a-клюв.mp4",
   "duration": 2.2,
   "expression_frames": 66
  },
@@ -1464,8 +1464,8 @@
    18,
    69
   ],
-  "gesture_id": "rsl-a6409f94d99f4a5f8f442b853d8194d0",
-  "source_video": "data/uploads/5dfa142e-испуганный.mp4",
+  "gesture_id": "rsl-e7f526139385489b81834848541734bf",
+  "source_video": "data/uploads/a92e04da-испуганный.mp4",
   "duration": 1.7,
   "expression_frames": 51
  },
@@ -1478,8 +1478,8 @@
    0,
    68
   ],
-  "gesture_id": "rsl-c2d58e952fc948cc8369928ab274a12a",
-  "source_video": "data/uploads/50c12194-коза.mp4",
+  "gesture_id": "rsl-76cd2b497d7a41c1a66a0b0fedb5c128",
+  "source_video": "data/uploads/f95261a3-коза.mp4",
   "duration": 2.3,
   "expression_frames": 69
  },
@@ -1492,8 +1492,8 @@
    4,
    48
   ],
-  "gesture_id": "rsl-71d9f98e976840ee83df4eb6cf6b911e",
-  "source_video": "data/uploads/ba6139c7-козел.mp4",
+  "gesture_id": "rsl-59fc28fdc0f7456d87ef9ad770fb99d8",
+  "source_video": "data/uploads/4c794684-козел.mp4",
   "duration": 1.5,
   "expression_frames": 45
  },
@@ -1506,8 +1506,8 @@
    1,
    54
   ],
-  "gesture_id": "rsl-3ebb96ca745d4390a51da62144a3706f",
-  "source_video": "data/uploads/19739988-клевать.mp4",
+  "gesture_id": "rsl-ede2b25f60aa47bfbcc124393cc675a0",
+  "source_video": "data/uploads/52ea898e-клевать.mp4",
   "duration": 1.8,
   "expression_frames": 54
  },
@@ -1520,8 +1520,8 @@
    4,
    77
   ],
-  "gesture_id": "rsl-14559bfe417d4c39ac6e2d4c3ab5637a",
-  "source_video": "data/uploads/1a2e09e8-копыто.mp4",
+  "gesture_id": "rsl-899542b8e5a8461a9f30b169dfdc67de",
+  "source_video": "data/uploads/debd20b9-копыто.mp4",
   "duration": 2.433333333333333,
   "expression_frames": 73
  },
@@ -1534,8 +1534,8 @@
    7,
    71
   ],
-  "gesture_id": "rsl-e9366ff676254e24892e6adac81b6501",
-  "source_video": "data/uploads/fe2e0201-коричневый.mp4",
+  "gesture_id": "rsl-8b5c5f62178d44bfbf8c857deee28190",
+  "source_video": "data/uploads/d0e93983-коричневый.mp4",
   "duration": 2.1333333333333333,
   "expression_frames": 64
  },
@@ -1548,8 +1548,8 @@
    9,
    73
   ],
-  "gesture_id": "rsl-e9db320618fc48c9840c81251a98e0a1",
-  "source_video": "data/uploads/5ff3636e-корова.mp4",
+  "gesture_id": "rsl-65b639e36c354e5caaf3e97960332d48",
+  "source_video": "data/uploads/a3f61ff2-корова.mp4",
   "duration": 2.1333333333333333,
   "expression_frames": 64
  },
@@ -1562,8 +1562,8 @@
    3,
    91
   ],
-  "gesture_id": "rsl-3bfd0c1bb2a34ee7812f693e7c0616b1",
-  "source_video": "data/uploads/30aea8c9-коготь.mp4",
+  "gesture_id": "rsl-1aaf7a849ae640bfbd92306b526c793a",
+  "source_video": "data/uploads/668b4c69-коготь.mp4",
   "duration": 2.933333333333333,
   "expression_frames": 88
  },
@@ -1576,8 +1576,8 @@
    15,
    102
   ],
-  "gesture_id": "rsl-c53f78ef6c204f1896540da5c55ede9d",
-  "source_video": "data/uploads/6be11491-кошка.mp4",
+  "gesture_id": "rsl-8634602d2b6e425598cd1bab9d386a20",
+  "source_video": "data/uploads/ef5489d3-кошка.mp4",
   "duration": 2.9,
   "expression_frames": 87
  },
@@ -1590,8 +1590,8 @@
    0,
    73
   ],
-  "gesture_id": "rsl-471716e6501b44bc91e20ed07230e5b0",
-  "source_video": "data/uploads/3a996501-комар.mp4",
+  "gesture_id": "rsl-685ff7368f0d454c819285ab5de70895",
+  "source_video": "data/uploads/d755474b-комар.mp4",
   "duration": 2.433333333333333,
   "expression_frames": 73
  },
@@ -1604,8 +1604,8 @@
    2,
    49
   ],
-  "gesture_id": "rsl-1d7cd9af2e994fe28bb8f7d4f9c19cc1",
-  "source_video": "data/uploads/7257f2de-красный.mp4",
+  "gesture_id": "rsl-1dccc7fa00c04b378b1043d5a7e72966",
+  "source_video": "data/uploads/a598d1a4-красный.mp4",
   "duration": 1.5666666666666667,
   "expression_frames": 47
  },
@@ -1618,8 +1618,8 @@
    9,
    108
   ],
-  "gesture_id": "rsl-1b09a924e89a4ef8b9eadc1727af4063",
-  "source_video": "data/uploads/4319a228-красноватый.mp4",
+  "gesture_id": "rsl-08d55b4ec8514894a29e2df6896e2b8f",
+  "source_video": "data/uploads/83cd95e2-красноватый.mp4",
   "duration": 3.3,
   "expression_frames": 99
  },
@@ -1632,8 +1632,8 @@
    0,
    52
   ],
-  "gesture_id": "rsl-060a5386e2024b698b9a3339ec931a0d",
-  "source_video": "data/uploads/07b746a7-кролик.mp4",
+  "gesture_id": "rsl-ab07c52460664e60b3a6c233d933225a",
+  "source_video": "data/uploads/d9a94336-кролик.mp4",
   "duration": 1.7333333333333334,
   "expression_frames": 52
  },
@@ -1646,8 +1646,8 @@
    9,
    73
   ],
-  "gesture_id": "rsl-904e9110bccf492b9beda7ee73c4c2c9",
-  "source_video": "data/uploads/2cf3d9e7-крокодил.mp4",
+  "gesture_id": "rsl-39b760da25b2426fbc70c33daf93d17a",
+  "source_video": "data/uploads/bbdd191c-крокодил.mp4",
   "duration": 2.1333333333333333,
   "expression_frames": 64
  },
@@ -1660,8 +1660,8 @@
    18,
    90
   ],
-  "gesture_id": "rsl-2652500371b748a7967bbe8de9de2954",
-  "source_video": "data/uploads/a1742799-крыса.mp4",
+  "gesture_id": "rsl-a0a38ef908c2436da5b42549666d6123",
+  "source_video": "data/uploads/272b1c85-крыса.mp4",
   "duration": 2.4,
   "expression_frames": 72
  },
@@ -1674,8 +1674,8 @@
    18,
    168
   ],
-  "gesture_id": "rsl-bb621374c3134a83a8e825fcc4a4529f",
-  "source_video": "data/uploads/456723e8-корм для домашних животных.mp4",
+  "gesture_id": "rsl-d204c7ad93874fa3bd3a667dd1540d4f",
+  "source_video": "data/uploads/9314bbf5-корм для домашних животных.mp4",
   "duration": 5.0,
   "expression_frames": 150
  },
@@ -1688,8 +1688,8 @@
    13,
    84
   ],
-  "gesture_id": "rsl-d5d2e66c913b4eb0a359013c4bf78211",
-  "source_video": "data/uploads/1e451631-крыло.mp4",
+  "gesture_id": "rsl-c72ed50f1eed406ea382b7365487e311",
+  "source_video": "data/uploads/f623bd6d-крыло.mp4",
   "duration": 2.4,
   "expression_frames": 72
  },
@@ -1702,8 +1702,8 @@
    12,
    81
   ],
-  "gesture_id": "rsl-748e28ee5ed54655a5c7399ef53f41a5",
-  "source_video": "data/uploads/bd1a4a01-лев.mp4",
+  "gesture_id": "rsl-43f3c1227b754b25b818b3d289d67eb2",
+  "source_video": "data/uploads/434f8b3a-лев.mp4",
   "duration": 2.3,
   "expression_frames": 69
  },
@@ -1716,8 +1716,8 @@
    15,
    77
   ],
-  "gesture_id": "rsl-70bbf387152f49b6b1fb39d5cdd0e5d5",
-  "source_video": "data/uploads/13305e9b-красивый.mp4",
+  "gesture_id": "rsl-cf6bc2c2d9bf4a0583fcc1e8b6b9df83",
+  "source_video": "data/uploads/91297260-красивый.mp4",
   "duration": 2.1,
   "expression_frames": 63
  },
@@ -1730,8 +1730,8 @@
    17,
    109
   ],
-  "gesture_id": "rsl-ed3de4bd1da0411cbf644618c04a9f63",
-  "source_video": "data/uploads/792fdca0-лебедь.mp4",
+  "gesture_id": "rsl-cf452f924eec4233a6630f4bc7003248",
+  "source_video": "data/uploads/a9715ffc-лебедь.mp4",
   "duration": 3.066666666666667,
   "expression_frames": 92
  },
@@ -1744,8 +1744,8 @@
    15,
    73
   ],
-  "gesture_id": "rsl-200be5ee79b74928b677d8a85fea3b35",
-  "source_video": "data/uploads/0dd14982-креветка.mp4",
+  "gesture_id": "rsl-2a0dc060af0d4be6adc9e06fab12b533",
+  "source_video": "data/uploads/e55aa381-креветка.mp4",
   "duration": 1.9333333333333333,
   "expression_frames": 58
  },
@@ -1758,8 +1758,8 @@
    0,
    87
   ],
-  "gesture_id": "rsl-cecfb7480df44a3aa43dbdd88f3a85cb",
-  "source_video": "data/uploads/d660bccf-летучая мышь.mp4",
+  "gesture_id": "rsl-c29581cffff14438a9c9ba42ba1335a3",
+  "source_video": "data/uploads/6780afdc-летучая мышь.mp4",
   "duration": 2.9,
   "expression_frames": 87
  },
@@ -1772,8 +1772,8 @@
    20,
    75
   ],
-  "gesture_id": "rsl-2d2e236c933d4202bf8b306482a77da3",
-  "source_video": "data/uploads/e916d0a2-ленность.mp4",
+  "gesture_id": "rsl-187ec5a66baa48c48d6d2cfff3ff3f87",
+  "source_video": "data/uploads/dec074fa-ленность.mp4",
   "duration": 1.8,
   "expression_frames": 54
  },
@@ -1786,8 +1786,8 @@
    30,
    101
   ],
-  "gesture_id": "rsl-25fe3ef555b646fca8f8e36231e5e2d6",
-  "source_video": "data/uploads/a7bd2043-кротость.mp4",
+  "gesture_id": "rsl-370264c49cbd4ada9e02dd1876112be7",
+  "source_video": "data/uploads/c0ee680a-кротость.mp4",
   "duration": 2.4,
   "expression_frames": 72
  },
@@ -1800,8 +1800,8 @@
    19,
    103
   ],
-  "gesture_id": "rsl-b778772bf3234654a6f2a12adc2478cc",
-  "source_video": "data/uploads/584d313d-личные качества.mp4",
+  "gesture_id": "rsl-7642b2a5ba3845cea60c463e3db6877b",
+  "source_video": "data/uploads/fb471bbe-личные качества.mp4",
   "duration": 2.8,
   "expression_frames": 83
  },
@@ -1814,8 +1814,8 @@
    12,
    82
   ],
-  "gesture_id": "rsl-9fc022d1e5fe43fb9ba4577f413b9962",
-  "source_video": "data/uploads/56022f6b-лицемерный.mp4",
+  "gesture_id": "rsl-a716a8fe2e254d6c97262c75afbe229b",
+  "source_video": "data/uploads/baf6dce6-лицемерный.mp4",
   "duration": 2.3333333333333335,
   "expression_frames": 70
  },
@@ -1828,8 +1828,8 @@
    5,
    58
   ],
-  "gesture_id": "rsl-d9740cb30c794522aa4be72ff8e34e26",
-  "source_video": "data/uploads/e0ca8fd7-лошадь.mp4",
+  "gesture_id": "rsl-b775f164d24542928af9c9eee7041ff3",
+  "source_video": "data/uploads/937c72a4-лошадь.mp4",
   "duration": 1.7666666666666666,
   "expression_frames": 53
  },
@@ -1842,8 +1842,8 @@
    0,
    73
   ],
-  "gesture_id": "rsl-11600113cc2d478eb1accf71e1e7caf6",
-  "source_video": "data/uploads/ed3e506d-курица.mp4",
+  "gesture_id": "rsl-3c9f4f8668d440d49756182da09eda58",
+  "source_video": "data/uploads/4d372674-курица.mp4",
   "duration": 2.433333333333333,
   "expression_frames": 73
  },
@@ -1856,8 +1856,8 @@
    5,
    71
   ],
-  "gesture_id": "rsl-fe75b040cae545f18f9b59a19baa9d8c",
-  "source_video": "data/uploads/988ba616-лось.mp4",
+  "gesture_id": "rsl-e4044eec1aa4411aa5ca655c48b68a88",
+  "source_video": "data/uploads/f32f7e4c-лось.mp4",
   "duration": 2.1666666666666665,
   "expression_frames": 65
  },
@@ -1870,8 +1870,8 @@
    14,
    65
   ],
-  "gesture_id": "rsl-f2e8c1ec437e4abbb5ba963ec0f5477e",
-  "source_video": "data/uploads/43bb7658-ленивый.mp4",
+  "gesture_id": "rsl-a3e4c55db465462abc205a17001cc7e2",
+  "source_video": "data/uploads/e93303d5-ленивый.mp4",
   "duration": 1.6666666666666667,
   "expression_frames": 50
  },
@@ -1884,8 +1884,8 @@
    6,
    70
   ],
-  "gesture_id": "rsl-5b193d3fb3894ea6b87faaa9de3d4802",
-  "source_video": "data/uploads/bf23da46-медведь.mp4",
+  "gesture_id": "rsl-dd20fad6e76c47bb8a7b31db65b4b2b5",
+  "source_video": "data/uploads/08ce085b-медведь.mp4",
   "duration": 2.1333333333333333,
   "expression_frames": 64
  },
@@ -1898,8 +1898,8 @@
    9,
    69
   ],
-  "gesture_id": "rsl-c4690c65df3a42a8bfce5f6f042b8420",
-  "source_video": "data/uploads/c67c5326-лягушка.mp4",
+  "gesture_id": "rsl-a8f6807f557d41b79bff1701c7412d49",
+  "source_video": "data/uploads/3f9ce884-лягушка.mp4",
   "duration": 2.0,
   "expression_frames": 60
  },
@@ -1912,8 +1912,8 @@
    18,
    68
   ],
-  "gesture_id": "rsl-dc12872634604c1ea68e578f348f7d10",
-  "source_video": "data/uploads/ddfb8c21-лиса.mp4",
+  "gesture_id": "rsl-e68317188cec440d8ba00619c7b9b238",
+  "source_video": "data/uploads/cfd0509d-лиса.mp4",
   "duration": 1.7,
   "expression_frames": 51
  },
@@ -1926,8 +1926,8 @@
    14,
    65
   ],
-  "gesture_id": "rsl-83ed9cf7f3e74fd9931947dea396b91d",
-  "source_video": "data/uploads/b40cc8e1-миленький.mp4",
+  "gesture_id": "rsl-8328099f41f34d96a0e69ec43b73d834",
+  "source_video": "data/uploads/8a980407-миленький.mp4",
   "duration": 1.6666666666666667,
   "expression_frames": 50
  },
@@ -1940,8 +1940,8 @@
    2,
    62
   ],
-  "gesture_id": "rsl-ef67a84a8a7e4489b760aaca958d0727",
-  "source_video": "data/uploads/3be76d8e-модный.mp4",
+  "gesture_id": "rsl-c4f5dc4c541f4c358ec5cf267a7e993a",
+  "source_video": "data/uploads/007917aa-модный.mp4",
   "duration": 1.9666666666666666,
   "expression_frames": 59
  },
@@ -1954,8 +1954,8 @@
    0,
    76
   ],
-  "gesture_id": "rsl-90aa02b295c34da5a54bf21a860bd20e",
-  "source_video": "data/uploads/b39c27ee-логичный.mp4",
+  "gesture_id": "rsl-7dbf9c78b64142b7aeb797e2d1df5c6d",
+  "source_video": "data/uploads/0b24f3b8-логичный.mp4",
   "duration": 2.533333333333333,
   "expression_frames": 76
  },
@@ -1968,8 +1968,8 @@
    8,
    143
   ],
-  "gesture_id": "rsl-03ddfad74c4247f39b13aaace3b72d1c",
-  "source_video": "data/uploads/b1a0ac10-миграция.mp4",
+  "gesture_id": "rsl-cf9ca04ebc064ac2ad1ae1e0ff205edb",
+  "source_video": "data/uploads/c9b1918a-миграция.mp4",
   "duration": 4.466666666666667,
   "expression_frames": 134
  },
@@ -1982,8 +1982,8 @@
    19,
    69
   ],
-  "gesture_id": "rsl-a90a7e21d56a4d268fe0cfdeb05a5dd8",
-  "source_video": "data/uploads/e6506187-любопытный.mp4",
+  "gesture_id": "rsl-df99769ae5eb410f8789594341a2c118",
+  "source_video": "data/uploads/b594c219-любопытный.mp4",
   "duration": 1.7,
   "expression_frames": 51
  },
@@ -1996,8 +1996,8 @@
    46,
    107
   ],
-  "gesture_id": "rsl-7c34fb19c8774116bfac3b097d6502b8",
-  "source_video": "data/uploads/eea30df5-мурашки.mp4",
+  "gesture_id": "rsl-1802bc2bff0d4f6cba23363af6082777",
+  "source_video": "data/uploads/e635dcfc-мурашки.mp4",
   "duration": 2.033333333333333,
   "expression_frames": 61
  },
@@ -2010,8 +2010,8 @@
    0,
    59
   ],
-  "gesture_id": "rsl-373bb99df04c4fc9b93dc28a598a1fbe",
-  "source_video": "data/uploads/0530a575-милый.mp4",
+  "gesture_id": "rsl-c9a95496bf7f4ba2a7b658cb50583929",
+  "source_video": "data/uploads/99ddf211-милый.mp4",
   "duration": 2.0,
   "expression_frames": 60
  },
@@ -2024,8 +2024,8 @@
    10,
    56
   ],
-  "gesture_id": "rsl-a55c0b411c0748848111ae58e6c5691c",
-  "source_video": "data/uploads/0f4b34a2-мужественность.mp4",
+  "gesture_id": "rsl-e45ad24ffd1542f1b0e7e0ce55c98cf9",
+  "source_video": "data/uploads/d239790c-мужественность.mp4",
   "duration": 1.5333333333333334,
   "expression_frames": 46
  },
@@ -2038,8 +2038,8 @@
    6,
    86
   ],
-  "gesture_id": "rsl-aca9901d1c154388943fdbcf50dcf634",
-  "source_video": "data/uploads/1bb7f334-наблюдательность.mp4",
+  "gesture_id": "rsl-8e91eef39a6d4367a9a04d26ff34d453",
+  "source_video": "data/uploads/35377c17-наблюдательность.mp4",
   "duration": 2.7,
   "expression_frames": 81
  },
@@ -2052,8 +2052,8 @@
    6,
    91
   ],
-  "gesture_id": "rsl-0893cc400f3b4199b4b50e9ee04ea1cf",
-  "source_video": "data/uploads/7d989781-медуза.mp4",
+  "gesture_id": "rsl-cfe89bac99694bd9b888c89b302ab2cb",
+  "source_video": "data/uploads/a19fa134-медуза.mp4",
   "duration": 2.8333333333333335,
   "expression_frames": 85
  },
@@ -2066,8 +2066,8 @@
    7,
    53
   ],
-  "gesture_id": "rsl-97958d27d02c445a98aaef04167ad385",
-  "source_video": "data/uploads/29ad1ec5-напряжение.mp4",
+  "gesture_id": "rsl-e5c6e8175644498abbf6b72e86f4de09",
+  "source_video": "data/uploads/d448eae8-напряжение.mp4",
   "duration": 1.5333333333333334,
   "expression_frames": 46
  },
@@ -2080,8 +2080,8 @@
    12,
    67
   ],
-  "gesture_id": "rsl-c5e30d1d644e48e8a890557af838908d",
-  "source_video": "data/uploads/7f7e48c7-мятежный.mp4",
+  "gesture_id": "rsl-e1d7b6e00bcd443aa1da5539b10c1743",
+  "source_video": "data/uploads/8d17d58c-мятежный.mp4",
   "duration": 1.8333333333333333,
   "expression_frames": 55
  },
@@ -2094,8 +2094,8 @@
    0,
    59
   ],
-  "gesture_id": "rsl-cb79fb22eb7d40a6940f554b0903a795",
-  "source_video": "data/uploads/ba5c89ff-милосердный.mp4",
+  "gesture_id": "rsl-2a823a363371482c8f5e8dd39c85b204",
+  "source_video": "data/uploads/d978f0a7-милосердный.mp4",
   "duration": 2.0,
   "expression_frames": 60
  },
@@ -2108,8 +2108,8 @@
    0,
    63
   ],
-  "gesture_id": "rsl-e033258cccd54843bcc479ff7fedcf21",
-  "source_video": "data/uploads/e4d55a09-нахальный.mp4",
+  "gesture_id": "rsl-6f1197d4d1dc431ea6c802abcd005230",
+  "source_video": "data/uploads/d568cc18-нахальный.mp4",
   "duration": 2.1,
   "expression_frames": 63
  },
@@ -2122,8 +2122,8 @@
    9,
    64
   ],
-  "gesture_id": "rsl-2d5c07e6e3cf473982596b8a582667cd",
-  "source_video": "data/uploads/eb78f301-мудрый.mp4",
+  "gesture_id": "rsl-322ecaaaf3444937ad511bf299220d61",
+  "source_video": "data/uploads/56a3885a-мудрый.mp4",
   "duration": 1.8333333333333333,
   "expression_frames": 55
  },
@@ -2136,8 +2136,8 @@
    31,
    106
   ],
-  "gesture_id": "rsl-57409aae3a104a0faf46fdf712b528c7",
-  "source_video": "data/uploads/8c5d62d0-наивный.mp4",
+  "gesture_id": "rsl-7b9bb3c154b043fc9b60a30a5e4b3c33",
+  "source_video": "data/uploads/6623c1cf-наивный.mp4",
   "duration": 2.5,
   "expression_frames": 75
  },
@@ -2150,8 +2150,8 @@
    0,
    68
   ],
-  "gesture_id": "rsl-fb297b1fbf06465d990e7e26acf1c200",
-  "source_video": "data/uploads/35f0619b-невиновный.mp4",
+  "gesture_id": "rsl-c64cec570c474253940fcbb1bcb095ea",
+  "source_video": "data/uploads/c72854d7-невиновный.mp4",
   "duration": 2.3,
   "expression_frames": 69
  },
@@ -2164,8 +2164,8 @@
    6,
    67
   ],
-  "gesture_id": "rsl-4a91a6cfd54545beaf25ec79a471918b",
-  "source_video": "data/uploads/920ff29a-мышь.mp4",
+  "gesture_id": "rsl-f61f6862ff04469f9087338ca206eb3b",
+  "source_video": "data/uploads/4ab01e02-мышь.mp4",
   "duration": 2.033333333333333,
   "expression_frames": 61
  },
@@ -2178,8 +2178,8 @@
    3,
    60
   ],
-  "gesture_id": "rsl-e19b820ec0e1468499d29414afa0db4a",
-  "source_video": "data/uploads/ab8db208-населять.mp4",
+  "gesture_id": "rsl-5d5b2b6634c34cf889aae16a08f82ca0",
+  "source_video": "data/uploads/e69e6685-населять.mp4",
   "duration": 1.9,
   "expression_frames": 57
  },
@@ -2192,8 +2192,8 @@
    11,
    65
   ],
-  "gesture_id": "rsl-8fda581ba3cf41ffb7de91d3e41c4597",
-  "source_video": "data/uploads/5b8ee982-нежный.mp4",
+  "gesture_id": "rsl-3b32e04ba9544d38a5ede1759137ce38",
+  "source_video": "data/uploads/c4831a94-нежный.mp4",
   "duration": 1.7666666666666666,
   "expression_frames": 53
  },
@@ -2206,8 +2206,8 @@
    11,
    63
   ],
-  "gesture_id": "rsl-505b6fb51c744085916397f55db835b0",
-  "source_video": "data/uploads/e5ab07db-наглость.mp4",
+  "gesture_id": "rsl-fc93d55d9c8b41c4b0ffa5175ebbb0f7",
+  "source_video": "data/uploads/e2c040ad-наглость.mp4",
   "duration": 1.7,
   "expression_frames": 51
  },
@@ -2220,8 +2220,8 @@
    11,
    71
   ],
-  "gesture_id": "rsl-af27637bd42541348d17aecece420d46",
-  "source_video": "data/uploads/cf627338-не выносить.mp4",
+  "gesture_id": "rsl-ad6def77a0654213a4a4d650d66e8dcf",
+  "source_video": "data/uploads/da36096b-не выносить.mp4",
   "duration": 1.9666666666666666,
   "expression_frames": 59
  },
@@ -2234,8 +2234,8 @@
    0,
    56
   ],
-  "gesture_id": "rsl-b3ab0f1136954fb291de27ecaa778477",
-  "source_video": "data/uploads/edc657f1-непослушный.mp4",
+  "gesture_id": "rsl-bbc20f8bfc834ad087480648e9e8ac71",
+  "source_video": "data/uploads/4322030e-непослушный.mp4",
   "duration": 1.9,
   "expression_frames": 57
  },
@@ -2248,8 +2248,8 @@
    13,
    57
   ],
-  "gesture_id": "rsl-e0f02fb47f6c4db29df3e3af93ca9347",
-  "source_video": "data/uploads/9ef1f62b-недовольный.mp4",
+  "gesture_id": "rsl-c3e2bbba90a9486e89852f947a1c2d3c",
+  "source_video": "data/uploads/bb90562c-недовольный.mp4",
   "duration": 1.5,
   "expression_frames": 45
  },
@@ -2262,8 +2262,8 @@
    4,
    69
   ],
-  "gesture_id": "rsl-06b364b908104105a2b33f9e6602b461",
-  "source_video": "data/uploads/fa2d5dc4-напуганный.mp4",
+  "gesture_id": "rsl-dc47f977d1eb4cb0a53197322a228f0a",
+  "source_video": "data/uploads/0cb8b96f-напуганный.mp4",
   "duration": 2.2,
   "expression_frames": 66
  },
@@ -2276,8 +2276,8 @@
    0,
    62
   ],
-  "gesture_id": "rsl-0e05c1c24fd04747ab54f1295de5cec4",
-  "source_video": "data/uploads/0f722c2f-ненавидеть.mp4",
+  "gesture_id": "rsl-9687d08ad70544208bce6983f9d0e730",
+  "source_video": "data/uploads/16203423-ненавидеть.mp4",
   "duration": 2.1,
   "expression_frames": 63
  },
@@ -2290,8 +2290,8 @@
    8,
    90
   ],
-  "gesture_id": "rsl-007d53eb8656405dabdcbd356be1084b",
-  "source_video": "data/uploads/0e229283-нашествие.mp4",
+  "gesture_id": "rsl-5c3fa31c739140a7a729b53182336766",
+  "source_video": "data/uploads/5c81aae9-нашествие.mp4",
   "duration": 2.7,
   "expression_frames": 81
  },
@@ -2304,8 +2304,8 @@
    9,
    123
   ],
-  "gesture_id": "rsl-3fc1d33990404b11b294499c5724c38a",
-  "source_video": "data/uploads/9b1b03d9-нерадивый.mp4",
+  "gesture_id": "rsl-618fa31113d54e5b8cfa3523768d12eb",
+  "source_video": "data/uploads/49efbec9-нерадивый.mp4",
   "duration": 3.8,
   "expression_frames": 114
  },
@@ -2318,8 +2318,8 @@
    18,
    83
   ],
-  "gesture_id": "rsl-7299729efeca407f8ec524e668f2fb9b",
-  "source_video": "data/uploads/c430cc84-непрозрачность.mp4",
+  "gesture_id": "rsl-ec573b72f5c04be881ee6c0b0b636331",
+  "source_video": "data/uploads/9fed5d42-непрозрачность.mp4",
   "duration": 2.2,
   "expression_frames": 66
  },
@@ -2332,8 +2332,8 @@
    14,
    67
   ],
-  "gesture_id": "rsl-252a9f37fdd04703a4e2033f25b47bab",
-  "source_video": "data/uploads/74d9461c-недобрый.mp4",
+  "gesture_id": "rsl-b7ae582bd8784c1a931832fdc55d05df",
+  "source_video": "data/uploads/7b587831-недобрый.mp4",
   "duration": 1.7666666666666666,
   "expression_frames": 53
  },
@@ -2346,8 +2346,8 @@
    25,
    88
   ],
-  "gesture_id": "rsl-98afe16636ef4f1e9e85af30fa2e7059",
-  "source_video": "data/uploads/954d12af-несчастье.mp4",
+  "gesture_id": "rsl-11de3d8a9de24735ac088bef9cadda90",
+  "source_video": "data/uploads/36319e48-несчастье.mp4",
   "duration": 2.1,
   "expression_frames": 63
  },
@@ -2360,8 +2360,8 @@
    0,
    72
   ],
-  "gesture_id": "rsl-be2681195ccc4347955ce1b35d87b2a5",
-  "source_video": "data/uploads/b4cfeda3-нервный.mp4",
+  "gesture_id": "rsl-d9af6ed775824fd1ad7c86135cdb4fc6",
+  "source_video": "data/uploads/1d2e8342-нервный.mp4",
   "duration": 2.4,
   "expression_frames": 72
  },
@@ -2374,8 +2374,8 @@
    15,
    91
   ],
-  "gesture_id": "rsl-018d3ef57a4e48cc978d5c32497df8b7",
-  "source_video": "data/uploads/6c0b8e85-неловкий; неуклюжий.mp4",
+  "gesture_id": "rsl-e6563dad318b4a37802050e16fceee60",
+  "source_video": "data/uploads/da05fde7-неловкий; неуклюжий.mp4",
   "duration": 2.533333333333333,
   "expression_frames": 76
  },
@@ -2388,8 +2388,8 @@
    6,
    75
   ],
-  "gesture_id": "rsl-e7bea7b1f13d47a3bb61754ef98d7729",
-  "source_video": "data/uploads/791f9ecc-носорог.mp4",
+  "gesture_id": "rsl-3001a97147a447eda40aa70b7eee51d0",
+  "source_video": "data/uploads/13620819-носорог.mp4",
   "duration": 2.3,
   "expression_frames": 69
  },
@@ -2402,8 +2402,8 @@
    13,
    67
   ],
-  "gesture_id": "rsl-0cbdf5528b31427fb623e7792fb0c5d0",
-  "source_video": "data/uploads/6ec015a4-неприятный.mp4",
+  "gesture_id": "rsl-cfcf0230e15a4591bcedabd6e1f7101f",
+  "source_video": "data/uploads/2f0ef07e-неприятный.mp4",
   "duration": 1.8,
   "expression_frames": 54
  },
@@ -2416,8 +2416,8 @@
    10,
    94
   ],
-  "gesture_id": "rsl-9d1688f0fabf40a1860a1061eae49866",
-  "source_video": "data/uploads/5307117c-неудобство.mp4",
+  "gesture_id": "rsl-7562127e6e5249288742785eccd8bc8d",
+  "source_video": "data/uploads/5165ff3b-неудобство.mp4",
   "duration": 2.8,
   "expression_frames": 84
  },
@@ -2430,8 +2430,8 @@
    8,
    77
   ],
-  "gesture_id": "rsl-a9d85861a9f44e1c9dc6e77a4af88139",
-  "source_video": "data/uploads/35aeb11e-облегчение.mp4",
+  "gesture_id": "rsl-335e907920ff47a8810546e48a10e1a8",
+  "source_video": "data/uploads/a599c799-облегчение.mp4",
   "duration": 2.2666666666666666,
   "expression_frames": 68
  },
@@ -2444,8 +2444,8 @@
    13,
    72
   ],
-  "gesture_id": "rsl-3b2bcf1c93a447d7a660ff190cb75748",
-  "source_video": "data/uploads/570f5f72-обезьяна.mp4",
+  "gesture_id": "rsl-3708f57a5e644cc5bbf3ab641256a989",
+  "source_video": "data/uploads/ea60846b-обезьяна.mp4",
   "duration": 2.0,
   "expression_frames": 60
  },
@@ -2458,8 +2458,8 @@
    0,
    93
   ],
-  "gesture_id": "rsl-f90220bf92b84e2eb6146d43fff74b4a",
-  "source_video": "data/uploads/bb0cee05-нераскрашенный.mp4",
+  "gesture_id": "rsl-484511af76b241319d2fa45a072b7cda",
+  "source_video": "data/uploads/aacf2f19-нераскрашенный.mp4",
   "duration": 3.1,
   "expression_frames": 93
  },
@@ -2472,8 +2472,8 @@
    4,
    75
   ],
-  "gesture_id": "rsl-22d2af43e89f47239b46e3274224bac6",
-  "source_video": "data/uploads/d48fe5c6-обычный.mp4",
+  "gesture_id": "rsl-f2496e9e719843a9932eb8c603bce0c4",
+  "source_video": "data/uploads/f60b7cf2-обычный.mp4",
   "duration": 2.4,
   "expression_frames": 72
  },
@@ -2486,8 +2486,8 @@
    12,
    52
   ],
-  "gesture_id": "rsl-419a8f916f8746d0b9fbc5e4dcb1e021",
-  "source_video": "data/uploads/4b51d381-объективный.mp4",
+  "gesture_id": "rsl-55930c8cc52b4759a66ad488525a4b78",
+  "source_video": "data/uploads/58eabbaa-объективный.mp4",
   "duration": 1.3333333333333333,
   "expression_frames": 40
  },
@@ -2500,8 +2500,8 @@
    11,
    82
   ],
-  "gesture_id": "rsl-ce93a23ce2a64d029da28604a9e98fb3",
-  "source_video": "data/uploads/ffb17b5a-неудобно.mp4",
+  "gesture_id": "rsl-4303d066622c4178a3feaa12fcf4c25a",
+  "source_video": "data/uploads/2356eeb6-неудобно.mp4",
   "duration": 2.3666666666666667,
   "expression_frames": 71
  },
@@ -2514,8 +2514,8 @@
    18,
    71
   ],
-  "gesture_id": "rsl-8e726c67663447529ee998259bd7dcae",
-  "source_video": "data/uploads/548ba2ea-одаренный.mp4",
+  "gesture_id": "rsl-f92c93eaa6a740c1b817a8f08ff338e3",
+  "source_video": "data/uploads/85cc3c53-одаренный.mp4",
   "duration": 1.8,
   "expression_frames": 54
  },
@@ -2528,8 +2528,8 @@
    11,
    130
   ],
-  "gesture_id": "rsl-1727af51f8d641938dfb47e62d90cd0e",
-  "source_video": "data/uploads/57d9df32-оживленный.mp4",
+  "gesture_id": "rsl-7b2b193ee170453cacbafc2867425f00",
+  "source_video": "data/uploads/70ad556c-оживленный.mp4",
   "duration": 3.966666666666667,
   "expression_frames": 119
  },
@@ -2542,8 +2542,8 @@
    14,
    70
   ],
-  "gesture_id": "rsl-34b241505650445aa4d3e5a0ef53d53c",
-  "source_video": "data/uploads/06b8468d-нравиться.mp4",
+  "gesture_id": "rsl-dd1239f4962640829acbc5b61a8c02ef",
+  "source_video": "data/uploads/1ea870f2-нравиться.mp4",
   "duration": 1.8666666666666667,
   "expression_frames": 56
  },
@@ -2556,8 +2556,8 @@
    2,
    66
   ],
-  "gesture_id": "rsl-da17c89845444302a4ae361ca5e3543a",
-  "source_video": "data/uploads/bd57eb73-озабоченный.mp4",
+  "gesture_id": "rsl-857b30594aff48ceacf940d0ef95eeb7",
+  "source_video": "data/uploads/bfd52dd4-озабоченный.mp4",
   "duration": 2.1,
   "expression_frames": 63
  },
@@ -2570,8 +2570,8 @@
    5,
    63
   ],
-  "gesture_id": "rsl-73b52eb001644705a6c693336d7756be",
-  "source_video": "data/uploads/f8620ef9-олень.mp4",
+  "gesture_id": "rsl-bf8b6eb68ffc40eea4b88064c7222f5a",
+  "source_video": "data/uploads/44fbab64-олень.mp4",
   "duration": 1.9,
   "expression_frames": 57
  },
@@ -2584,8 +2584,8 @@
    12,
    71
   ],
-  "gesture_id": "rsl-b782918ab1c8420ca891beb2ce149eff",
-  "source_video": "data/uploads/fc7345d0-образованный.mp4",
+  "gesture_id": "rsl-f08af4bf2cf840d79c3b4d3c92d07ec8",
+  "source_video": "data/uploads/bfb83dba-образованный.mp4",
   "duration": 2.0,
   "expression_frames": 60
  },
@@ -2598,8 +2598,8 @@
    10,
    60
   ],
-  "gesture_id": "rsl-6a06009a7c054c5da323c6cab6439811",
-  "source_video": "data/uploads/f50b4b9d-оранжевый.mp4",
+  "gesture_id": "rsl-48b3e0cd398c48059fcf89f75f63f3e5",
+  "source_video": "data/uploads/4aa8a276-оранжевый.mp4",
   "duration": 1.7,
   "expression_frames": 51
  },
@@ -2612,8 +2612,8 @@
    2,
    76
   ],
-  "gesture_id": "rsl-dfef13bbd5c1480db0244d8832043ea1",
-  "source_video": "data/uploads/ee4b26e6-овца.mp4",
+  "gesture_id": "rsl-b6cb902b62294a02b9a171d6e0fae466",
+  "source_video": "data/uploads/50833068-овца.mp4",
   "duration": 2.466666666666667,
   "expression_frames": 74
  },
@@ -2626,8 +2626,8 @@
    17,
    82
   ],
-  "gesture_id": "rsl-fbe7a48f77064425a5ad4f6ba52379e1",
-  "source_video": "data/uploads/bf930eb8-основной цвет.mp4",
+  "gesture_id": "rsl-41ac6a72ae494976b847d20b5607cc1d",
+  "source_video": "data/uploads/26edfb15-основной цвет.mp4",
   "duration": 2.1666666666666665,
   "expression_frames": 65
  },
@@ -2640,8 +2640,8 @@
    0,
    100
   ],
-  "gesture_id": "rsl-de24ac4c1b024494bb20ace2ead1bf8f",
-  "source_video": "data/uploads/66bad040-орел.mp4",
+  "gesture_id": "rsl-2736b54818b549fca9f6c721b064a678",
+  "source_video": "data/uploads/55428c9c-орел.mp4",
   "duration": 3.3333333333333335,
   "expression_frames": 100
  },
@@ -2654,8 +2654,8 @@
    0,
    55
   ],
-  "gesture_id": "rsl-af3c654c65a0491bb4f0efb2724c2d8a",
-  "source_video": "data/uploads/026fbd6e-ожидать.mp4",
+  "gesture_id": "rsl-3776a222ff084c6d8489f6554f96dce0",
+  "source_video": "data/uploads/a06b5414-ожидать.mp4",
   "duration": 1.8333333333333333,
   "expression_frames": 55
  },
@@ -2668,8 +2668,8 @@
    9,
    72
   ],
-  "gesture_id": "rsl-c007c2bdb38b488190657ce5443eba04",
-  "source_video": "data/uploads/961b2233-особенный.mp4",
+  "gesture_id": "rsl-a43dbd4498284bd8adc897a38ddd5563",
+  "source_video": "data/uploads/6e885e31-особенный.mp4",
   "duration": 2.1,
   "expression_frames": 63
  },
@@ -2682,8 +2682,8 @@
    0,
    87
   ],
-  "gesture_id": "rsl-c8b2e5e9ae164a028a0e315876599820",
-  "source_video": "data/uploads/856e63b1-остроумие.mp4",
+  "gesture_id": "rsl-43272246299f44608e43398e14e7cf7f",
+  "source_video": "data/uploads/e4d6abd9-остроумие.mp4",
   "duration": 2.9,
   "expression_frames": 87
  },
@@ -2696,8 +2696,8 @@
    12,
    58
   ],
-  "gesture_id": "rsl-625a2d0ce3ca45d0ba68284c469bccc9",
-  "source_video": "data/uploads/39c96346-опытный.mp4",
+  "gesture_id": "rsl-1560524f25104e70a1d9a8e680c81fce",
+  "source_video": "data/uploads/be02ab0c-опытный.mp4",
   "duration": 1.5333333333333334,
   "expression_frames": 46
  },
@@ -2710,8 +2710,8 @@
    22,
    80
   ],
-  "gesture_id": "rsl-ee8ba68b801f47f991ac0e1b513b897e",
-  "source_video": "data/uploads/ccf3561e-острый.mp4",
+  "gesture_id": "rsl-113c61269d0b4eab86539d1662dc94f9",
+  "source_video": "data/uploads/c035a2f8-острый.mp4",
   "duration": 1.9333333333333333,
   "expression_frames": 58
  },
@@ -2724,8 +2724,8 @@
    6,
    62
   ],
-  "gesture_id": "rsl-35da486852d449eaa24f95dde794e338",
-  "source_video": "data/uploads/a7ea4d7f-ответственный.mp4",
+  "gesture_id": "rsl-c3849e06e83146cbbc49e1470b02ad90",
+  "source_video": "data/uploads/94a63b3f-ответственный.mp4",
   "duration": 1.9,
   "expression_frames": 57
  },
@@ -2738,8 +2738,8 @@
    4,
    84
   ],
-  "gesture_id": "rsl-748224bda0da4a5a969685432938443e",
-  "source_video": "data/uploads/01e8ba58-осел.mp4",
+  "gesture_id": "rsl-063dec674c25481f9b3de82a918c6336",
+  "source_video": "data/uploads/2d44fa14-осел.mp4",
   "duration": 2.7,
   "expression_frames": 81
  },
@@ -2752,8 +2752,8 @@
    14,
    67
   ],
-  "gesture_id": "rsl-b11378ec36fd4360a83f76206e1fb124",
-  "source_video": "data/uploads/c6c5db92-отвратительный.mp4",
+  "gesture_id": "rsl-215d6bdf5021458f9f1b547669705bcd",
+  "source_video": "data/uploads/d6820fde-отвратительный.mp4",
   "duration": 1.7666666666666666,
   "expression_frames": 53
  },
@@ -2766,8 +2766,8 @@
    10,
    62
   ],
-  "gesture_id": "rsl-547897fd06a64786bb388013962375e4",
-  "source_video": "data/uploads/ee67a4b9-отличный.mp4",
+  "gesture_id": "rsl-e87a621999ac4a809d763e976dec55f5",
+  "source_video": "data/uploads/7f58ca3a-отличный.mp4",
   "duration": 1.7333333333333334,
   "expression_frames": 52
  },
@@ -2780,8 +2780,8 @@
    22,
    80
   ],
-  "gesture_id": "rsl-d4871b5939994579a4afbf37c8e87ac8",
-  "source_video": "data/uploads/2f162140-осторожный.mp4",
+  "gesture_id": "rsl-42a231e5b86c4c76913eae10d8d974fb",
+  "source_video": "data/uploads/30ee65a1-осторожный.mp4",
   "duration": 1.9333333333333333,
   "expression_frames": 58
  },
@@ -2794,8 +2794,8 @@
    19,
    79
   ],
-  "gesture_id": "rsl-ccbbe6fcb9764a1e8f0a7e86d05417d8",
-  "source_video": "data/uploads/637a7675-отношение.mp4",
+  "gesture_id": "rsl-aedd98acf275489681e6c7bbbb65062b",
+  "source_video": "data/uploads/50aad426-отношение.mp4",
   "duration": 2.0,
   "expression_frames": 60
  },
@@ -2808,8 +2808,8 @@
    20,
    99
   ],
-  "gesture_id": "rsl-25d0b82f27e54088af0cfb9f047e11d3",
-  "source_video": "data/uploads/c4a895df-оттенок.mp4",
+  "gesture_id": "rsl-cae9f638738e457dbf12ce1adce6c954",
+  "source_video": "data/uploads/93992698-оттенок.mp4",
   "duration": 2.6,
   "expression_frames": 78
  },
@@ -2822,8 +2822,8 @@
    11,
    77
   ],
-  "gesture_id": "rsl-09e608ed9f06468a8ec3bfcb08b727a6",
-  "source_video": "data/uploads/2e87b5e4-отважиться.mp4",
+  "gesture_id": "rsl-55aa19afc5354411b8ed14bd2ece2806",
+  "source_video": "data/uploads/90fd1178-отважиться.mp4",
   "duration": 2.1666666666666665,
   "expression_frames": 65
  },
@@ -2836,8 +2836,8 @@
    6,
    97
   ],
-  "gesture_id": "rsl-45fd520e4a1a4b21a1f629f86e8c6bec",
-  "source_video": "data/uploads/2ba53cf8-отчаянный.mp4",
+  "gesture_id": "rsl-83d74dd8a58042e8bd6b4538415a41ff",
+  "source_video": "data/uploads/118ae240-отчаянный.mp4",
   "duration": 3.033333333333333,
   "expression_frames": 91
  },
@@ -2850,8 +2850,8 @@
    27,
    74
   ],
-  "gesture_id": "rsl-f16e70dc629447a8b307a129512ac680",
-  "source_video": "data/uploads/0cf515e2-отвращение.mp4",
+  "gesture_id": "rsl-01480b8942114eeb9d6774f172854c2e",
+  "source_video": "data/uploads/5645577a-отвращение.mp4",
   "duration": 1.6,
   "expression_frames": 48
  },
@@ -2864,8 +2864,8 @@
    19,
    125
   ],
-  "gesture_id": "rsl-063a2c30c59e48d296adc84fefbb8f44",
-  "source_video": "data/uploads/cba332b0-ошеломить.mp4",
+  "gesture_id": "rsl-b50b68a026d247b78a157ecf6fd741bb",
+  "source_video": "data/uploads/46211471-ошеломить.mp4",
   "duration": 3.533333333333333,
   "expression_frames": 106
  },
@@ -2878,8 +2878,8 @@
    6,
    55
   ],
-  "gesture_id": "rsl-25ec975934f44538a7d0eb72b9c04e50",
-  "source_video": "data/uploads/d433a9f7-отрицательный.mp4",
+  "gesture_id": "rsl-f470694774ac4f38bf4ecf9df9583e84",
+  "source_video": "data/uploads/42bce7bd-отрицательный.mp4",
   "duration": 1.6333333333333333,
   "expression_frames": 49
  },
@@ -2892,8 +2892,8 @@
    28,
    131
   ],
-  "gesture_id": "rsl-ebc516d239f54ba39d80e11946696e76",
-  "source_video": "data/uploads/60686aa4-павлин.mp4",
+  "gesture_id": "rsl-b4839ef6d22144eeb047d60eafd9b639",
+  "source_video": "data/uploads/ea251d61-павлин.mp4",
   "duration": 3.433333333333333,
   "expression_frames": 94
  },
@@ -2906,8 +2906,8 @@
    0,
    67
   ],
-  "gesture_id": "rsl-224d8f4b69af41c594c3ad7c578ca847",
-  "source_video": "data/uploads/c2b2a0cb-паук.mp4",
+  "gesture_id": "rsl-836c014266c84b5b8710103d417eaf4d",
+  "source_video": "data/uploads/56c5e6b6-паук.mp4",
   "duration": 2.2333333333333334,
   "expression_frames": 67
  },
@@ -2920,8 +2920,8 @@
    16,
    104
   ],
-  "gesture_id": "rsl-819690e57251423980bb9cc0c10bf375",
-  "source_video": "data/uploads/bcf94d0e-отчаяться.mp4",
+  "gesture_id": "rsl-14f93cb122c540c396d921a3123c31b7",
+  "source_video": "data/uploads/60d5664c-отчаяться.mp4",
   "duration": 2.933333333333333,
   "expression_frames": 88
  },
@@ -2934,8 +2934,8 @@
    8,
    64
   ],
-  "gesture_id": "rsl-de4e855d99c94a52952d8b555dd1ce5a",
-  "source_video": "data/uploads/6e04a12e-петух.mp4",
+  "gesture_id": "rsl-f67bf7ed5e61417fb0a1d2ea35689c14",
+  "source_video": "data/uploads/29968c90-петух.mp4",
   "duration": 1.8666666666666667,
   "expression_frames": 56
  },
@@ -2948,8 +2948,8 @@
    12,
    104
   ],
-  "gesture_id": "rsl-8404dc0073234105988ab925044e6550",
-  "source_video": "data/uploads/d2b8bcc6-панда.mp4",
+  "gesture_id": "rsl-8bc35371acd74c5abb63da91e5d0283a",
+  "source_video": "data/uploads/6aa23aee-панда.mp4",
   "duration": 3.1,
   "expression_frames": 93
  },
@@ -2962,8 +2962,8 @@
    0,
    149
   ],
-  "gesture_id": "rsl-d376e75f08144fb881bf7b864a1afa94",
-  "source_video": "data/uploads/3e8d6dc2-паучья сеть.mp4",
+  "gesture_id": "rsl-3b329b4da1b64bbab3a03846e96e733a",
+  "source_video": "data/uploads/61827a81-паучья сеть.mp4",
   "duration": 5.0,
   "expression_frames": 126
  },
@@ -2976,8 +2976,8 @@
    13,
    102
   ],
-  "gesture_id": "rsl-b7fef90d6bf3450cb8d9b5850eeb6a2f",
-  "source_video": "data/uploads/edd2eb7b-плавник.mp4",
+  "gesture_id": "rsl-36a6e41125c6417cb6f95ce094092772",
+  "source_video": "data/uploads/4afccffe-плавник.mp4",
   "duration": 3.0,
   "expression_frames": 90
  },
@@ -2990,8 +2990,8 @@
    23,
    73
   ],
-  "gesture_id": "rsl-51ba842c8684481ead9c548f0e012b55",
-  "source_video": "data/uploads/87cd966e-подлинный.mp4",
+  "gesture_id": "rsl-ac39e49d55ff4a628ca6e506b8121b99",
+  "source_video": "data/uploads/4fa693ec-подлинный.mp4",
   "duration": 1.6666666666666667,
   "expression_frames": 50
  },
@@ -3004,8 +3004,8 @@
    5,
    62
   ],
-  "gesture_id": "rsl-cea8e341371b4644a11de01944724b76",
-  "source_video": "data/uploads/cad94395-печаль.mp4",
+  "gesture_id": "rsl-b71210f9be5a4f67b048f0a7b775cf05",
+  "source_video": "data/uploads/3822ec6a-печаль.mp4",
   "duration": 1.8666666666666667,
   "expression_frames": 56
  },
@@ -3018,8 +3018,8 @@
    0,
    72
   ],
-  "gesture_id": "rsl-d1b26eefb6ac4c148cf80587b7df8d7a",
-  "source_video": "data/uploads/ad167160-перо.mp4",
+  "gesture_id": "rsl-d51adcef2afb4adfa86fab3d4b5e73b0",
+  "source_video": "data/uploads/51fab5f8-перо.mp4",
   "duration": 2.4,
   "expression_frames": 72
  },
@@ -3032,8 +3032,8 @@
    17,
    87
   ],
-  "gesture_id": "rsl-8ee67f8e19b64758ae7190d6464756a5",
-  "source_video": "data/uploads/f345f602-пингвин.mp4",
+  "gesture_id": "rsl-2334f1bd7af54936a6fa1fca254127ed",
+  "source_video": "data/uploads/7bd093d4-пингвин.mp4",
   "duration": 2.3,
   "expression_frames": 69
  },
@@ -3046,8 +3046,8 @@
    5,
    80
   ],
-  "gesture_id": "rsl-79269657f38c4b0eaae6cb195368dd08",
-  "source_video": "data/uploads/4e7ab4e7-поверхностный.mp4",
+  "gesture_id": "rsl-12dd20ec413c49a9a6a392d48ebc8462",
+  "source_video": "data/uploads/494830eb-поверхностный.mp4",
   "duration": 2.466666666666667,
   "expression_frames": 74
  },
@@ -3060,8 +3060,8 @@
    15,
    101
   ],
-  "gesture_id": "rsl-411eab79c73847ae9ad737e8687c9a7e",
-  "source_video": "data/uploads/dda838f2-ползанье.mp4",
+  "gesture_id": "rsl-9d5ef11ffa474202ae8b6fd62706eafd",
+  "source_video": "data/uploads/d3827c9b-ползанье.mp4",
   "duration": 2.9,
   "expression_frames": 87
  },
@@ -3074,8 +3074,8 @@
    11,
    76
   ],
-  "gesture_id": "rsl-8f4572e7304f41e683d693fc1fc579ba",
-  "source_video": "data/uploads/8ff437e5-подозревать.mp4",
+  "gesture_id": "rsl-ca2efbfaea1a4dbe8f67263b909b32b9",
+  "source_video": "data/uploads/bd9a002f-подозревать.mp4",
   "duration": 2.1666666666666665,
   "expression_frames": 65
  },
@@ -3088,8 +3088,8 @@
    17,
    83
   ],
-  "gesture_id": "rsl-3b8b21609e2f442797b1afa54a77dfd2",
-  "source_video": "data/uploads/72f93a0f-подавленный.mp4",
+  "gesture_id": "rsl-1fb5235c2ede46728810bab9b27deaf2",
+  "source_video": "data/uploads/8e287619-подавленный.mp4",
   "duration": 2.1666666666666665,
   "expression_frames": 65
  },
@@ -3102,8 +3102,8 @@
    9,
    78
   ],
-  "gesture_id": "rsl-45c33f0a498d4aca819a75fef08d00af",
-  "source_video": "data/uploads/d44e4492-помесь.mp4",
+  "gesture_id": "rsl-d45e279d686f4df58bb4d7d89a9515c7",
+  "source_video": "data/uploads/6a892f03-помесь.mp4",
   "duration": 2.3,
   "expression_frames": 69
  },
@@ -3116,8 +3116,8 @@
    11,
    76
   ],
-  "gesture_id": "rsl-70236586d95745879a36872a73f17840",
-  "source_video": "data/uploads/55b838fb-положительный.mp4",
+  "gesture_id": "rsl-f63a3945dba0487787a4c078280adffd",
+  "source_video": "data/uploads/237c3ff5-положительный.mp4",
   "duration": 2.1666666666666665,
   "expression_frames": 65
  },
@@ -3130,8 +3130,8 @@
    9,
    82
   ],
-  "gesture_id": "rsl-b8d8d5c6564f44c793cfbe0862a5ae1f",
-  "source_video": "data/uploads/efa68bca-покаяние.mp4",
+  "gesture_id": "rsl-d4830f9ddaaa48b8bd810d1bd4082d07",
+  "source_video": "data/uploads/0dde26fe-покаяние.mp4",
   "duration": 2.433333333333333,
   "expression_frames": 73
  },
@@ -3144,8 +3144,8 @@
    12,
    91
   ],
-  "gesture_id": "rsl-ddc03e06c9bc4416a0fa23716ed884dc",
-  "source_video": "data/uploads/0405828c-потрясающий.mp4",
+  "gesture_id": "rsl-5014d16f0bc5471bb48fd4081f085009",
+  "source_video": "data/uploads/8eb74407-потрясающий.mp4",
   "duration": 2.6333333333333333,
   "expression_frames": 79
  },
@@ -3158,8 +3158,8 @@
    11,
    77
   ],
-  "gesture_id": "rsl-e27a8384d33e4250bece2604c8611a5a",
-  "source_video": "data/uploads/bc2829f7-попугай.mp4",
+  "gesture_id": "rsl-8588d85a5b2d42edb5145d43a9d765e4",
+  "source_video": "data/uploads/44455b09-попугай.mp4",
   "duration": 2.1666666666666665,
   "expression_frames": 65
  },
@@ -3172,8 +3172,8 @@
    9,
    101
   ],
-  "gesture_id": "rsl-2ca850db7f7141df8cbb6c299ff0e4c6",
-  "source_video": "data/uploads/83318da0-получающий удовольствие.mp4",
+  "gesture_id": "rsl-b75518c632064c2eb48f13abc140247b",
+  "source_video": "data/uploads/0b2593e1-получающий удовольствие.mp4",
   "duration": 3.1,
   "expression_frames": 93
  },
@@ -3186,8 +3186,8 @@
    21,
    69
   ],
-  "gesture_id": "rsl-e8d8f33f45eb488097be805df1cada69",
-  "source_video": "data/uploads/89d58d53-правша.mp4",
+  "gesture_id": "rsl-50cdd0ae119548568c91b9db89a6b7b7",
+  "source_video": "data/uploads/53213d7a-правша.mp4",
   "duration": 1.6,
   "expression_frames": 48
  },
@@ -3200,8 +3200,8 @@
    17,
    101
   ],
-  "gesture_id": "rsl-52bf3f8e18e34256b4f8c54fecad2c6a",
-  "source_video": "data/uploads/8cb95065-преданный.mp4",
+  "gesture_id": "rsl-e08b0a8a1ef34120972da9694b9d7d85",
+  "source_video": "data/uploads/0481991b-преданный.mp4",
   "duration": 2.7666666666666666,
   "expression_frames": 83
  },
@@ -3214,8 +3214,8 @@
    17,
    67
   ],
-  "gesture_id": "rsl-d2cc7b9fc75d44a8b75629cef15a00d9",
-  "source_video": "data/uploads/5e741bfa-презрение.mp4",
+  "gesture_id": "rsl-19e9763000d4474797910eed9355ee9f",
+  "source_video": "data/uploads/5a7f5212-презрение.mp4",
   "duration": 1.6666666666666667,
   "expression_frames": 50
  },
@@ -3228,8 +3228,8 @@
    19,
    96
   ],
-  "gesture_id": "rsl-28e45d87706f49768ba6462980479389",
-  "source_video": "data/uploads/7541e782-послушный.mp4",
+  "gesture_id": "rsl-700d856f08a847dfbde6fe6ad24c1aad",
+  "source_video": "data/uploads/54e5874e-послушный.mp4",
   "duration": 2.6,
   "expression_frames": 78
  },
@@ -3242,8 +3242,8 @@
    6,
    69
   ],
-  "gesture_id": "rsl-524ba52a0e23443a877061857b97c631",
-  "source_video": "data/uploads/c0118e34-предпочитать.mp4",
+  "gesture_id": "rsl-78ab38482dfb449bbd2168ee5593243d",
+  "source_video": "data/uploads/fe07ca95-предпочитать.mp4",
   "duration": 2.1,
   "expression_frames": 63
  },
@@ -3256,8 +3256,8 @@
    14,
    57
   ],
-  "gesture_id": "rsl-01203429e6474d8091ef1c062e8163da",
-  "source_video": "data/uploads/f71038f3-приличный.mp4",
+  "gesture_id": "rsl-0a22a36122ed4cefac995df09a03bd4d",
+  "source_video": "data/uploads/3f1c9a3a-приличный.mp4",
   "duration": 1.4,
   "expression_frames": 42
  },
@@ -3270,8 +3270,8 @@
    29,
    87
   ],
-  "gesture_id": "rsl-20ca56cdee814d6bb417d55b7d5f2e75",
-  "source_video": "data/uploads/2f7b12dc-расслабление.mp4",
+  "gesture_id": "rsl-8c1cae4de8eb437398fc1356155845e9",
+  "source_video": "data/uploads/34d94f49-расслабление.mp4",
   "duration": 1.9,
   "expression_frames": 57
  },
@@ -3284,8 +3284,8 @@
    8,
    68
   ],
-  "gesture_id": "rsl-59249c6356cc4fef98eb2b4de83a1244",
-  "source_video": "data/uploads/58908dd7-рога.mp4",
+  "gesture_id": "rsl-d0b84972d1764cdda844d2094b3d1f4f",
+  "source_video": "data/uploads/84afd278-рога.mp4",
   "duration": 1.9666666666666666,
   "expression_frames": 59
  },
@@ -3298,8 +3298,8 @@
    21,
    101
   ],
-  "gesture_id": "rsl-375941e3c9ea4184bb8458c9569f08cb",
-  "source_video": "data/uploads/50b91438-продуманный.mp4",
+  "gesture_id": "rsl-271f5882e5bb42718285330baa74d305",
+  "source_video": "data/uploads/bcb2096a-продуманный.mp4",
   "duration": 2.7,
   "expression_frames": 81
  },
@@ -3312,8 +3312,8 @@
    7,
    51
   ],
-  "gesture_id": "rsl-31bd701e8f0d46f799a6c1de4dc659c8",
-  "source_video": "data/uploads/baceaf86-рыба.mp4",
+  "gesture_id": "rsl-ed08d5855e3c4c3897274c073354471e",
+  "source_video": "data/uploads/082c6fee-рыба.mp4",
   "duration": 1.5,
   "expression_frames": 45
  },
@@ -3326,8 +3326,8 @@
    4,
    92
   ],
-  "gesture_id": "rsl-f70561bcbcb04549ad86e54ae5bb5f04",
-  "source_video": "data/uploads/9897afe4-самовосприятие.mp4",
+  "gesture_id": "rsl-1ee17fbab0644045b813237a3af18592",
+  "source_video": "data/uploads/2e4fd893-самовосприятие.mp4",
   "duration": 2.933333333333333,
   "expression_frames": 88
  },
@@ -3340,8 +3340,8 @@
    17,
    107
   ],
-  "gesture_id": "rsl-8790f1da6cff4eaab9ef0ac7268fcdd7",
-  "source_video": "data/uploads/c7019114-птица.mp4",
+  "gesture_id": "rsl-9cf7bb51c26a4ab7a41f4fdfc87ee576",
+  "source_video": "data/uploads/919e192d-птица.mp4",
   "duration": 2.966666666666667,
   "expression_frames": 89
  },
@@ -3354,8 +3354,8 @@
    19,
    119
   ],
-  "gesture_id": "rsl-584ed14eca2b425385221ff7045763f2",
-  "source_video": "data/uploads/9eba0327-самоанализ.mp4",
+  "gesture_id": "rsl-8efe83cc4a594c60bbcbc1668d2c4469",
+  "source_video": "data/uploads/1a2c9b49-самоанализ.mp4",
   "duration": 3.3333333333333335,
   "expression_frames": 100
  },
@@ -3368,8 +3368,8 @@
    10,
    62
   ],
-  "gesture_id": "rsl-f9b4a160adf14d41ad132fbd831b6d44",
-  "source_video": "data/uploads/cf4e432a-разумный.mp4",
+  "gesture_id": "rsl-58a5473d35e4474ba85ab345394545ab",
+  "source_video": "data/uploads/0da79e68-разумный.mp4",
   "duration": 1.7333333333333334,
   "expression_frames": 52
  },
@@ -3382,8 +3382,8 @@
    15,
    75
   ],
-  "gesture_id": "rsl-ff552c632dbe49cd848a23ab3c6c6ee1",
-  "source_video": "data/uploads/53cdff9b-расстроенный.mp4",
+  "gesture_id": "rsl-0a3250859e78400b82d77164fa54c7f8",
+  "source_video": "data/uploads/a10939ea-расстроенный.mp4",
   "duration": 2.0,
   "expression_frames": 60
  },
@@ -3396,8 +3396,8 @@
    1,
    72
   ],
-  "gesture_id": "rsl-5d4fbe159a4340daa4805f3ea458ecdf",
-  "source_video": "data/uploads/3fed917c-расслабиться.mp4",
+  "gesture_id": "rsl-c06b52a1368745609f0d04bee430d3d0",
+  "source_video": "data/uploads/1e5386ca-расслабиться.mp4",
   "duration": 2.4,
   "expression_frames": 72
  },
@@ -3410,8 +3410,8 @@
    18,
    102
   ],
-  "gesture_id": "rsl-e93ab5ea3933499daa7b57a763a9ba9c",
-  "source_video": "data/uploads/6da7a9d4-самопроверка.mp4",
+  "gesture_id": "rsl-78c9b4b40eb84546aab1cb89c65e589a",
+  "source_video": "data/uploads/a6b43da7-самопроверка.mp4",
   "duration": 2.8,
   "expression_frames": 84
  },
@@ -3424,8 +3424,8 @@
    18,
    106
   ],
-  "gesture_id": "rsl-bbdac8bb48b34b9fa4a6a77aefa421f9",
-  "source_video": "data/uploads/4bf57852-рассеянный.mp4",
+  "gesture_id": "rsl-c2ae194d7ba149a79a76255db5178ff4",
+  "source_video": "data/uploads/ab11704f-рассеянный.mp4",
   "duration": 2.933333333333333,
   "expression_frames": 88
  },
@@ -3438,8 +3438,8 @@
    10,
    60
   ],
-  "gesture_id": "rsl-3ed8d89106d94829b202442dee0fa433",
-  "source_video": "data/uploads/7f1a57ca-ребяческий.mp4",
+  "gesture_id": "rsl-6149181a39764978a34c1170bd354643",
+  "source_video": "data/uploads/354abc09-ребяческий.mp4",
   "duration": 1.7,
   "expression_frames": 51
  },
@@ -3452,8 +3452,8 @@
    20,
    90
   ],
-  "gesture_id": "rsl-603ad535a6e1431a893b5f2355186ee9",
-  "source_video": "data/uploads/c754182f-серебро.mp4",
+  "gesture_id": "rsl-656ad022a1f3467c98b8bc72cfde6afa",
+  "source_video": "data/uploads/c8fe9510-серебро.mp4",
   "duration": 2.3,
   "expression_frames": 69
  },
@@ -3466,8 +3466,8 @@
    0,
    67
   ],
-  "gesture_id": "rsl-458209a12f6e49ec80bb6f9df08dc866",
-  "source_video": "data/uploads/3a9329bc-розовый.mp4",
+  "gesture_id": "rsl-3338f439e1b54a4e93a54be054231341",
+  "source_video": "data/uploads/436c1fb3-розовый.mp4",
   "duration": 2.2333333333333334,
   "expression_frames": 67
  },
@@ -3480,8 +3480,8 @@
    0,
    52
   ],
-  "gesture_id": "rsl-d5ea4daa2dd448f2a92cd25eda022f6b",
-  "source_video": "data/uploads/1b091b95-синий.mp4",
+  "gesture_id": "rsl-dab8b9b7697d4af99c2b068ec2dfbf1b",
+  "source_video": "data/uploads/e45778a9-синий.mp4",
   "duration": 1.7333333333333334,
   "expression_frames": 52
  },
@@ -3494,8 +3494,8 @@
    4,
    90
   ],
-  "gesture_id": "rsl-0d9b3bfdb0de4caf9b58b90c3b7b9304",
-  "source_video": "data/uploads/2d248a96-предусмотрительный.mp4",
+  "gesture_id": "rsl-fe8fc6eac6304d379c41e32b4161c93f",
+  "source_video": "data/uploads/b5f97b6e-предусмотрительный.mp4",
   "duration": 2.9,
   "expression_frames": 87
  },
@@ -3508,8 +3508,8 @@
    18,
    72
   ],
-  "gesture_id": "rsl-5a60981ecb59453b85487f92aa11777a",
-  "source_video": "data/uploads/6266ecbd-скучный.mp4",
+  "gesture_id": "rsl-dd5f8aebed374dfd80eba9e2b9a200dd",
+  "source_video": "data/uploads/4e7474da-скучный.mp4",
   "duration": 1.8,
   "expression_frames": 54
  },
@@ -3522,8 +3522,8 @@
    1,
    67
   ],
-  "gesture_id": "rsl-f3c99c6a6c404ed4a1c630f24cb75abd",
-  "source_video": "data/uploads/6a2e76e3-рычать.mp4",
+  "gesture_id": "rsl-5733a9a36b3444b488b5d228ace4229b",
+  "source_video": "data/uploads/29728e64-рычать.mp4",
   "duration": 2.2,
   "expression_frames": 66
  },
@@ -3536,8 +3536,8 @@
    13,
    63
   ],
-  "gesture_id": "rsl-1189c995fa554f8096cf2d848f66b2a4",
-  "source_video": "data/uploads/6b89bfd6-смелость.mp4",
+  "gesture_id": "rsl-18da79dd3e6848bca56dca141a6e74f1",
+  "source_video": "data/uploads/d6e61171-смелость.mp4",
   "duration": 1.7,
   "expression_frames": 51
  },
@@ -3550,8 +3550,8 @@
    17,
    92
   ],
-  "gesture_id": "rsl-375b9cf209bf405e81c7c35f8eab8b5b",
-  "source_video": "data/uploads/188fbced-проныра.mp4",
+  "gesture_id": "rsl-0610c6b97ea94cc383962bde62ce0d76",
+  "source_video": "data/uploads/b777ca12-проныра.mp4",
   "duration": 2.466666666666667,
   "expression_frames": 74
  },
@@ -3564,8 +3564,8 @@
    0,
    78
   ],
-  "gesture_id": "rsl-dd944685002b45ff91c8d9bf5257bacf",
-  "source_video": "data/uploads/81dae56f-самоосознание.mp4",
+  "gesture_id": "rsl-ffa4e67c7f03425a86d6b535e4599509",
+  "source_video": "data/uploads/6b081804-самоосознание.mp4",
   "duration": 2.6,
   "expression_frames": 78
  },
@@ -3578,8 +3578,8 @@
    1,
    58
   ],
-  "gesture_id": "rsl-f6db782fbcc74d4b837a63d8916144e2",
-  "source_video": "data/uploads/d44a4e8e-собака.mp4",
+  "gesture_id": "rsl-0e55028ab5cc4d728786802421f2e971",
+  "source_video": "data/uploads/65ca8cf9-собака.mp4",
   "duration": 1.9,
   "expression_frames": 57
  },
@@ -3592,8 +3592,8 @@
    10,
    69
   ],
-  "gesture_id": "rsl-dd35ca56a1544741801c13092582e962",
-  "source_video": "data/uploads/43f1a1e6-тигр.mp4",
+  "gesture_id": "rsl-97ce0ca5d89243208a0c24ba532f3093",
+  "source_video": "data/uploads/31a6162d-тигр.mp4",
   "duration": 2.0,
   "expression_frames": 60
  },
@@ -3606,8 +3606,8 @@
    7,
    103
   ],
-  "gesture_id": "rsl-6b405802129d4406a17ce9ae05bdaf33",
-  "source_video": "data/uploads/845400a0-свинья.mp4",
+  "gesture_id": "rsl-24e40bafbc984d69b1120411a8e75538",
+  "source_video": "data/uploads/de262205-свинья.mp4",
   "duration": 3.2,
   "expression_frames": 96
  },
@@ -3620,8 +3620,8 @@
    3,
    79
   ],
-  "gesture_id": "rsl-40a0d7713bba4882b5d8ae0ee7e5df9a",
-  "source_video": "data/uploads/960dc7d2-сомнение.mp4",
+  "gesture_id": "rsl-1d70b0246a38430bae5d6179c2a62b1d",
+  "source_video": "data/uploads/cf56f358-сомнение.mp4",
   "duration": 2.533333333333333,
   "expression_frames": 76
  },
@@ -3634,8 +3634,8 @@
    5,
    90
   ],
-  "gesture_id": "rsl-65a574b51b7c44d1b0253e216741d5ec",
-  "source_video": "data/uploads/6821d60a-прагматичный.mp4",
+  "gesture_id": "rsl-9b0d7b885b164521aacffdd1eae61687",
+  "source_video": "data/uploads/0b9348c4-прагматичный.mp4",
   "duration": 2.8,
   "expression_frames": 84
  },
@@ -3648,8 +3648,8 @@
    6,
    55
   ],
-  "gesture_id": "rsl-a4f2c31e9f084e5089ab15d1de393bf8",
-  "source_video": "data/uploads/0c4e127e-сильный.mp4",
+  "gesture_id": "rsl-6fb40863564b4841bfa1911ce83f429d",
+  "source_video": "data/uploads/238021fa-сильный.mp4",
   "duration": 1.6333333333333333,
   "expression_frames": 49
  },
@@ -3662,8 +3662,8 @@
    0,
    53
   ],
-  "gesture_id": "rsl-346284d64ff04862ac740f81b351807f",
-  "source_video": "data/uploads/544b0e1f-спокойный.mp4",
+  "gesture_id": "rsl-61f08a8a849d4432bdc6f1179ac8b55c",
+  "source_video": "data/uploads/ec85bf1d-спокойный.mp4",
   "duration": 1.8,
   "expression_frames": 54
  },
@@ -3676,8 +3676,8 @@
    0,
    57
   ],
-  "gesture_id": "rsl-69bfc72cffd44433bf29d65f81ed5e53",
-  "source_video": "data/uploads/bcd216c9-скорбеть.mp4",
+  "gesture_id": "rsl-da13eb8107fe49d4bd9a6d173e705f55",
+  "source_video": "data/uploads/47429e71-скорбеть.mp4",
   "duration": 1.9,
   "expression_frames": 57
  },
@@ -3690,8 +3690,8 @@
    21,
    72
   ],
-  "gesture_id": "rsl-b5404e3929a642b986476e4c01058201",
-  "source_video": "data/uploads/3171a96e-скромный.mp4",
+  "gesture_id": "rsl-49394e4d210144298db03fdc9655aae2",
+  "source_video": "data/uploads/d05df7b8-скромный.mp4",
   "duration": 1.7,
   "expression_frames": 51
  },
@@ -3704,8 +3704,8 @@
    27,
    66
   ],
-  "gesture_id": "rsl-70d6904271b448689dac14b7c3fa96af",
-  "source_video": "data/uploads/8a5e8599-стойкость.mp4",
+  "gesture_id": "rsl-e94e338d15134608a1f75216e2f1204a",
+  "source_video": "data/uploads/692ad981-стойкость.mp4",
   "duration": 1.3,
   "expression_frames": 39
  },
@@ -3718,8 +3718,8 @@
    22,
    87
   ],
-  "gesture_id": "rsl-9a843d4686d44ea7b624da008b8d6dc3",
-  "source_video": "data/uploads/e875c721-страх.mp4",
+  "gesture_id": "rsl-ea5bbd688f624c8e8e331284439812d0",
+  "source_video": "data/uploads/42252195-страх.mp4",
   "duration": 2.2,
   "expression_frames": 66
  },
@@ -3732,8 +3732,8 @@
    0,
    58
   ],
-  "gesture_id": "rsl-313bd6e394a84773a4aad6d506fa9445",
-  "source_video": "data/uploads/57b88185-слон.mp4",
+  "gesture_id": "rsl-314ceb7e33714f2d8f138926f4eaea7c",
+  "source_video": "data/uploads/5e4598ae-слон.mp4",
   "duration": 1.9333333333333333,
   "expression_frames": 58
  },
@@ -3746,8 +3746,8 @@
    5,
    59
   ],
-  "gesture_id": "rsl-804dbbfdc8de4828899a3ec9f332ea2f",
-  "source_video": "data/uploads/cccfc03f-слабый.mp4",
+  "gesture_id": "rsl-3a259eef376d44c3b011cfa23bdbed82",
+  "source_video": "data/uploads/368c8e52-слабый.mp4",
   "duration": 1.7666666666666666,
   "expression_frames": 53
  },
@@ -3760,8 +3760,8 @@
    22,
    82
   ],
-  "gesture_id": "rsl-12f436503ef1464788da808490777ec0",
-  "source_video": "data/uploads/690d2e1a-счастливый.mp4",
+  "gesture_id": "rsl-7679b464f3e345e9b37a634f6b715284",
+  "source_video": "data/uploads/5595f126-счастливый.mp4",
   "duration": 2.0,
   "expression_frames": 60
  },
@@ -3774,8 +3774,8 @@
    23,
    74
   ],
-  "gesture_id": "rsl-9327d0c44eda452dbd9d0526876dceb1",
-  "source_video": "data/uploads/2f300fca-смущенный.mp4",
+  "gesture_id": "rsl-a5cac0c0a69b4cfea555a06ffd33f2c7",
+  "source_video": "data/uploads/9fb8adc5-смущенный.mp4",
   "duration": 1.6666666666666667,
   "expression_frames": 50
  },
@@ -3788,8 +3788,8 @@
    8,
    53
   ],
-  "gesture_id": "rsl-693ce12060364be2a490f19635bc28c2",
-  "source_video": "data/uploads/4e14ecb0-сожалеть.mp4",
+  "gesture_id": "rsl-67b8b85042ac4f82b1a77cf504998957",
+  "source_video": "data/uploads/414c90f1-сожалеть.mp4",
   "duration": 1.4666666666666666,
   "expression_frames": 44
  },
@@ -3802,8 +3802,8 @@
    29,
    106
   ],
-  "gesture_id": "rsl-d75e20dd040d4b9597d65a34c5508eae",
-  "source_video": "data/uploads/3fa628fd-розовато-лиловый.mp4",
+  "gesture_id": "rsl-49d586336f52455c9d350f5ed2cc6d75",
+  "source_video": "data/uploads/1eb01115-розовато-лиловый.mp4",
   "duration": 2.566666666666667,
   "expression_frames": 77
  },
@@ -3816,8 +3816,8 @@
    12,
    86
   ],
-  "gesture_id": "rsl-decb15a1a8ca46538aa15fcdef9e39c7",
-  "source_video": "data/uploads/163d3664-терпеть.mp4",
+  "gesture_id": "rsl-b1d324275fa0415db9148bcaee76a060",
+  "source_video": "data/uploads/a3d16337-терпеть.mp4",
   "duration": 2.5,
   "expression_frames": 75
  },
@@ -3830,8 +3830,8 @@
    0,
    56
   ],
-  "gesture_id": "rsl-d14bff789c4f4c74a7fcaadf552cbed9",
-  "source_video": "data/uploads/ccad2851-прирученный.mp4",
+  "gesture_id": "rsl-dd3106dba9094a95b530b200f83acd95",
+  "source_video": "data/uploads/23a71736-прирученный.mp4",
   "duration": 1.9,
   "expression_frames": 57
  },
@@ -3844,8 +3844,8 @@
    0,
    74
   ],
-  "gesture_id": "rsl-d92698b1587b4a54a4b21b685160444a",
-  "source_video": "data/uploads/bf2e39c3-сочувствие.mp4",
+  "gesture_id": "rsl-db8e000bdae5470c8879fa36de86cde8",
+  "source_video": "data/uploads/ed92462b-сочувствие.mp4",
   "duration": 2.5,
   "expression_frames": 75
  },
@@ -3858,8 +3858,8 @@
    20,
    106
   ],
-  "gesture_id": "rsl-e2223beea6124daf881fc144470e7e5b",
-  "source_video": "data/uploads/a3113832-трус.mp4",
+  "gesture_id": "rsl-d9871bd540684259a946d9e013234097",
+  "source_video": "data/uploads/2491b350-трус.mp4",
   "duration": 2.8666666666666667,
   "expression_frames": 86
  },
@@ -3872,8 +3872,8 @@
    9,
    57
   ],
-  "gesture_id": "rsl-be3107b7e1434317b1aad88924ab08ed",
-  "source_video": "data/uploads/9951afab-смешной.mp4",
+  "gesture_id": "rsl-08a872cc069f4a1d9c208171ca09f101",
+  "source_video": "data/uploads/dbdd4e65-смешной.mp4",
   "duration": 1.6,
   "expression_frames": 48
  },
@@ -3886,8 +3886,8 @@
    40,
    90
   ],
-  "gesture_id": "rsl-3e06464142c14c8d94b62616f17ee59d",
-  "source_video": "data/uploads/84ce6743-странный.mp4",
+  "gesture_id": "rsl-029a3a0189f94ace949b7d092e4518f7",
+  "source_video": "data/uploads/b3a5fb2b-странный.mp4",
   "duration": 1.7,
   "expression_frames": 51
  },
@@ -3900,8 +3900,8 @@
    11,
    65
   ],
-  "gesture_id": "rsl-ab9376289f444c6b88bde93e7d7a8253",
-  "source_video": "data/uploads/8e4c4d06-тёмный.mp4",
+  "gesture_id": "rsl-01779b82e69549c592a46d28dd05f1f8",
+  "source_video": "data/uploads/fdf96122-тёмный.mp4",
   "duration": 1.7666666666666666,
   "expression_frames": 53
  },
@@ -3914,8 +3914,8 @@
    14,
    63
   ],
-  "gesture_id": "rsl-3b5c425b4ac744138caebbac1d18b261",
-  "source_video": "data/uploads/6f6a07d2-уверенный.mp4",
+  "gesture_id": "rsl-927aa75cce7844e5b36dd3f8683c633b",
+  "source_video": "data/uploads/c4cd5854-уверенный.mp4",
   "duration": 1.6,
   "expression_frames": 48
  },
@@ -3928,8 +3928,8 @@
    0,
    62
   ],
-  "gesture_id": "rsl-c2661600e664459e93051d3911f652d8",
-  "source_video": "data/uploads/e783ea75-строгий.mp4",
+  "gesture_id": "rsl-c310b154fae046339ef939ead5c672bf",
+  "source_video": "data/uploads/93b47c7e-строгий.mp4",
   "duration": 2.1,
   "expression_frames": 63
  },
@@ -3942,8 +3942,8 @@
    9,
    62
   ],
-  "gesture_id": "rsl-c5b3df075ad64d15857c6001ca89508f",
-  "source_video": "data/uploads/008d2c92-фиолетовый.mp4",
+  "gesture_id": "rsl-403e27d596764eb1aeee17fc83f84fba",
+  "source_video": "data/uploads/eebffa56-фиолетовый.mp4",
   "duration": 1.8,
   "expression_frames": 54
  },
@@ -3956,8 +3956,8 @@
    4,
    72
   ],
-  "gesture_id": "rsl-71b41ae001d24ed694e74d39b7d6af9e",
-  "source_video": "data/uploads/fb80a135-трусливо.mp4",
+  "gesture_id": "rsl-e46e09e37e72453ab2548840f3c2e298",
+  "source_video": "data/uploads/23a9ecb5-трусливо.mp4",
   "duration": 2.3,
   "expression_frames": 69
  },
@@ -3970,8 +3970,8 @@
    9,
    66
   ],
-  "gesture_id": "rsl-d15d5a1618df42a6946f076ffca75bba",
-  "source_video": "data/uploads/de36ab20-темнота.mp4",
+  "gesture_id": "rsl-7d79c904aecb4950a82f84e8f089d385",
+  "source_video": "data/uploads/42c300c1-темнота.mp4",
   "duration": 1.9,
   "expression_frames": 51
  },
@@ -3984,8 +3984,8 @@
    4,
    75
   ],
-  "gesture_id": "rsl-b6d09660ed5b47d896ed893c97f518b3",
-  "source_video": "data/uploads/21a3e870-рычание.mp4",
+  "gesture_id": "rsl-62c0f350336843e9badad030eab61cba",
+  "source_video": "data/uploads/30548965-рычание.mp4",
   "duration": 2.4,
   "expression_frames": 72
  },
@@ -3998,8 +3998,8 @@
    3,
    75
   ],
-  "gesture_id": "rsl-b6095695c68b42f7b6e4050a4bb35e8e",
-  "source_video": "data/uploads/53f1c493-торжественный.mp4",
+  "gesture_id": "rsl-81cd84d3df5c4bdfa3cb21da1df522c1",
+  "source_video": "data/uploads/8bc02e40-торжественный.mp4",
   "duration": 2.4,
   "expression_frames": 72
  },
@@ -4012,8 +4012,8 @@
    7,
    76
   ],
-  "gesture_id": "rsl-5ed9484a044149fd9f221fe49eb096fc",
-  "source_video": "data/uploads/63da7e25-тщеславный.mp4",
+  "gesture_id": "rsl-b327185f378044119d7b9ef14ed62e4e",
+  "source_video": "data/uploads/78be4030-тщеславный.mp4",
   "duration": 2.3,
   "expression_frames": 69
  },
@@ -4026,8 +4026,8 @@
    9,
    129
   ],
-  "gesture_id": "rsl-224e8f67e55f4eb5b83bfad83184e410",
-  "source_video": "data/uploads/66d9ce51-собачий домик.mp4",
+  "gesture_id": "rsl-74987e16190a46acb3f6eea29f124929",
+  "source_video": "data/uploads/905591b6-собачий домик.mp4",
   "duration": 4.0,
   "expression_frames": 120
  },
@@ -4040,8 +4040,8 @@
    0,
    55
   ],
-  "gesture_id": "rsl-808084888eec4d588060e760e8f07069",
-  "source_video": "data/uploads/0dc8bd9b-угрюмый.mp4",
+  "gesture_id": "rsl-14c25073ab58411887ae07af37f8bf3a",
+  "source_video": "data/uploads/0fde6d8a-угрюмый.mp4",
   "duration": 1.8333333333333333,
   "expression_frames": 55
  },
@@ -4054,8 +4054,8 @@
    0,
    63
   ],
-  "gesture_id": "rsl-b15cd63546304832aae16bba405fb728",
-  "source_video": "data/uploads/235abfe4-соты.mp4",
+  "gesture_id": "rsl-2715080bcfcc4037a20757ad5adc02d0",
+  "source_video": "data/uploads/fc2ff19c-соты.mp4",
   "duration": 2.1,
   "expression_frames": 63
  },
@@ -4068,8 +4068,8 @@
    18,
    103
   ],
-  "gesture_id": "rsl-ab340eeab9ee4f0580b8296d9da5ffe9",
-  "source_video": "data/uploads/de20fc6b-цветовой оттенок.mp4",
+  "gesture_id": "rsl-562fe56adcb445cf826d1c071149149b",
+  "source_video": "data/uploads/a07c3b2d-цветовой оттенок.mp4",
   "duration": 2.8333333333333335,
   "expression_frames": 85
  },
@@ -4082,8 +4082,8 @@
    9,
    94
   ],
-  "gesture_id": "rsl-ec289b76186a483bb042128b01892085",
-  "source_video": "data/uploads/aaeb5433-страшный.mp4",
+  "gesture_id": "rsl-93a57fc297024571887219958592230f",
+  "source_video": "data/uploads/19f09445-страшный.mp4",
   "duration": 2.8333333333333335,
   "expression_frames": 85
  },
@@ -4096,8 +4096,8 @@
    0,
    75
   ],
-  "gesture_id": "rsl-e0732f5a7a08489ea11c3f5d3ad0d3aa",
-  "source_video": "data/uploads/9cadcf02-пчела.mp4",
+  "gesture_id": "rsl-acb67a7ccd874c81a7391143a8a21ee5",
+  "source_video": "data/uploads/af426abf-пчела.mp4",
   "duration": 2.5,
   "expression_frames": 75
  },
@@ -4110,8 +4110,8 @@
    24,
    106
   ],
-  "gesture_id": "rsl-a76c597ae45643a5b5a730764321bf23",
-  "source_video": "data/uploads/d90e5c78-сарказм.mp4",
+  "gesture_id": "rsl-86d8478df01a446daa7c04378ffa00aa",
+  "source_video": "data/uploads/74be8610-сарказм.mp4",
   "duration": 2.7333333333333334,
   "expression_frames": 82
  },
@@ -4124,8 +4124,8 @@
    14,
    76
   ],
-  "gesture_id": "rsl-2545b0ece2184e1fb3a48e1f43d304d6",
-  "source_video": "data/uploads/0738951f-разъяренный.mp4",
+  "gesture_id": "rsl-b032c5005cb944d79efd99ab65d363fd",
+  "source_video": "data/uploads/5cd8cef0-разъяренный.mp4",
   "duration": 2.066666666666667,
   "expression_frames": 62
  },
@@ -4138,8 +4138,8 @@
    0,
    65
   ],
-  "gesture_id": "rsl-2f10bbf30ecb45fa9bcde831821d91d4",
-  "source_video": "data/uploads/02858561-прозрачный.mp4",
+  "gesture_id": "rsl-ae2d8bdaecb74440a74c856269ed4beb",
+  "source_video": "data/uploads/63aa019f-прозрачный.mp4",
   "duration": 2.2,
   "expression_frames": 66
  },
@@ -4152,8 +4152,8 @@
    0,
    54
   ],
-  "gesture_id": "rsl-4e48526fa2904096b02db660bdabe470",
-  "source_video": "data/uploads/dc836689-талант.mp4",
+  "gesture_id": "rsl-87a706c632dc40efa13b8c589b457154",
+  "source_video": "data/uploads/292b28fd-талант.mp4",
   "duration": 1.8,
   "expression_frames": 54
  },
@@ -4166,8 +4166,8 @@
    0,
    88
   ],
-  "gesture_id": "rsl-c11ecedae9b247e4ab69b7b196e8e69a",
-  "source_video": "data/uploads/b1d6764f-причинять резкую боль.mp4",
+  "gesture_id": "rsl-ecc8278e5ddc4f6f95638ed45ad9236b",
+  "source_video": "data/uploads/1d5b58a8-причинять резкую боль.mp4",
   "duration": 2.933333333333333,
   "expression_frames": 88
  },
@@ -4180,8 +4180,8 @@
    34,
    85
   ],
-  "gesture_id": "rsl-83c5c37ddd6c4a269e8a67481c882287",
-  "source_video": "data/uploads/8b429514-серый.mp4",
+  "gesture_id": "rsl-8d9fea1207f74bf8a7600beda6a45872",
+  "source_video": "data/uploads/b3fe1174-серый.mp4",
   "duration": 1.7,
   "expression_frames": 51
  },
@@ -4194,8 +4194,8 @@
    17,
    86
   ],
-  "gesture_id": "rsl-159dab3a252041e993e16b4f9b61fcb3",
-  "source_video": "data/uploads/66534c00-разрыдаться.mp4",
+  "gesture_id": "rsl-9dc1036659764ba0868917737108faa6",
+  "source_video": "data/uploads/92f3fc99-разрыдаться.mp4",
   "duration": 2.2666666666666666,
   "expression_frames": 68
  }

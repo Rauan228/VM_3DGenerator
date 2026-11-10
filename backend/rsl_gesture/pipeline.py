@@ -10,6 +10,7 @@ from rsl_gesture.filters import apply_filter, compare_filter_quality
 from rsl_gesture.hand_cleanup import clean_hand_tracks
 from rsl_gesture.hand_depth import add_hand_depth
 from rsl_gesture.hand_pose_fix import fix_depth_flips, split_merged_hands
+from rsl_gesture.hand_wilor import add_wilor_hands
 from rsl_gesture.models import CompressionInfo, GestureJson, GestureMetadata, NormalizationInfo
 from rsl_gesture.normalization import frame_edges, normalize_tracks
 
@@ -27,8 +28,13 @@ class GesturePipeline:
         epsilon: float = 0.003,
     ) -> GestureJson:
         raw_tracks, fps, duration, width, height = self.extractor.extract(video_path)
-        hand_depth = add_hand_depth(video_path, raw_tracks, width, height)
-        normalized_tracks = clean_hand_tracks(split_merged_hands(fix_depth_flips(normalize_tracks(raw_tracks, width, height))))
+        # WiLoR's hands are whole and already separate; the repairs below are for what MediaPipe gets wrong.
+        wilor = add_wilor_hands(video_path, raw_tracks, width, height)
+        hand_depth = wilor or add_hand_depth(video_path, raw_tracks, width, height)
+        normalized_tracks = normalize_tracks(raw_tracks, width, height)
+        if not wilor:
+            normalized_tracks = split_merged_hands(fix_depth_flips(normalized_tracks))
+        normalized_tracks = clean_hand_tracks(normalized_tracks)
         filtered_tracks = apply_filter(normalized_tracks, filter_name)
         features = build_features(filtered_tracks)
         stored_tracks = keyframe_compress_tracks(filtered_tracks, epsilon=epsilon) if compress else filtered_tracks
@@ -48,6 +54,7 @@ class GesturePipeline:
             normalization=NormalizationInfo(
                 aspect_corrected=bool(width and height),
                 hand_depth="world" if hand_depth else "image",
+                hand_source="wilor" if wilor else "mediapipe",
                 frame=frame_edges(raw_tracks.get("pose", []), width, height),
             ),
             tracks=stored_tracks,

@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { aimArm, relaxArm, restPlan, solveArm, type ArmPlan, type ArmRig, type ArmSide, type BodyFrame } from "./arm-solver";
 import { armTorsoPush, buildContactRig, faceTouchPull, MAX_TOUCH_SLIDE, type ContactRig, type FaceTouch } from "./body-contact";
+import { ontoHead } from "./body-shape";
 import { faceShift, signerFaceLine, type FaceLine } from "./face-anchor";
 import { handAt, interpolateFrame } from "./gesture-utils";
 import { handsAheadOfFace } from "./hand-distance";
@@ -52,10 +53,11 @@ const MIN_HANGING_SAMPLES = Math.round(0.3 * BAKE_FPS);
 const CONTACT_ROUNDS = 3;
 /**
  * A face touch never brings the wrist closer to the shoulder than this share of the arm's length. Touching the face the
- * arm is open about half or more (a fist at the forehead 0.63, a finger at the lips 0.45, the hand at the temple 0.44);
- * pulled onto the face from before it, "четыре" came to 0.22.
+ * arm is open a third or more (a fist at the forehead 0.63, a finger at the lips 0.45, the hand at the temple 0.44, the
+ * fingertips at the hairline from straight below in "чёрный" 0.31); pulled onto the face from before it, "четыре" came
+ * to 0.22.
  */
-const MIN_TOUCH_REACH = 0.35;
+const MIN_TOUCH_REACH = 0.3;
 
 /** Image-space pose depth is only a hint (see AvatarRig history): gestures without `pose_world` squash it by this much. */
 const LEGACY_DEPTH_SCALE = 0.3;
@@ -192,6 +194,72 @@ function seenArmLandmarks(pose: LandmarkFrame | undefined, world: LandmarkFrame,
   });
 }
 
+/** Samples over which a wrist goes from where the hand track has it to where the pose has it once the hand is lost. */
+const HAND_WRIST_EASE = 8;
+
+/**
+ * How far each sample's pose wrist is from the wrist of the hand track, in the picture. A whole-hand track (WiLoR) has
+ * the wrist of the very hand the fingers are drawn from; the pose model's wrist is a separate guess, a few centimetres
+ * off that hand and at times on the wrong arm altogether. Past the ends of a hand track the shift fades out.
+ */
+function wristShifts(gesture: GestureJson, side: Side, aspect: number, count: number): ({ x: number; y: number } | undefined)[] {
+  const index = side === "Left" ? 15 : 16;
+  const seen = Array.from({ length: count }, (_, k) => {
+    const time = k / BAKE_FPS;
+    const hand = handAt(gesture, side === "Left" ? "left_hand" : "right_hand", time, aspect)?.landmarks[0];
+    const wrist = interpolateFrame(gesture.tracks.pose, time)?.landmarks[index];
+    if (!hand || !wrist || !Number.isFinite(hand.x) || !Number.isFinite(hand.y) || !Number.isFinite(wrist.x) || !Number.isFinite(wrist.y)) return undefined;
+    return { x: hand.x - wrist.x, y: hand.y - wrist.y * aspect };
+  });
+  return seen.map((shift, k) => {
+    if (shift) return shift;
+    for (let away = 1; away <= HAND_WRIST_EASE; away += 1) {
+      const near = seen[k - away] ?? seen[k + away];
+      if (!near) continue;
+      const weight = 1 - smoothstep(away / (HAND_WRIST_EASE + 1));
+      return { x: near.x * weight, y: near.y * weight };
+    }
+    return undefined;
+  });
+}
+
+/**
+ * A hand the tracker catches only for a moment (up to GLIMPSE_SECONDS, gaps of up to GLIMPSE_GAP_SECONDS bridged), with
+ * its wrist below the chest all that time (GLIMPSE_WRIST_Y, shoulder widths), is a hand resting on the lap or meeting
+ * the other one there after the sign, not a hand signing: a signing hand has to come up, and is seen on its way. Followed,
+ * such a glimpse swings the avatar's idle arm in front of the body and back (across the belly in "лицемерный").
+ */
+const GLIMPSE_SECONDS = 0.75;
+const GLIMPSE_GAP_SECONDS = 0.1;
+const GLIMPSE_WRIST_Y = -0.6;
+
+/** The gesture with the glimpses of a resting hand (see GLIMPSE_SECONDS) taken out of the hand tracks. */
+function withoutRestingGlimpses(gesture: GestureJson, aspect: number): GestureJson {
+  const cleared = (frames: LandmarkFrame[]): LandmarkFrame[] => {
+    const out = frames.slice();
+    let start = -1;
+    let last = -1;
+    const close = () => {
+      if (start < 0) return;
+      const run = frames.slice(start, last + 1).filter((frame) => frame.landmarks.length);
+      const low = run.every((frame) => frame.landmarks[0].y * aspect < GLIMPSE_WRIST_Y);
+      if (low && frames[last].timestamp - frames[start].timestamp <= GLIMPSE_SECONDS) {
+        for (let i = start; i <= last; i += 1) out[i] = { ...frames[i], landmarks: [] };
+      }
+      start = -1;
+    };
+    frames.forEach((frame, i) => {
+      if (!frame.landmarks.length) return;
+      if (start >= 0 && frame.timestamp - frames[last].timestamp > GLIMPSE_GAP_SECONDS + 1e-6) close();
+      if (start < 0) start = i;
+      last = i;
+    });
+    close();
+    return out;
+  };
+  return { ...gesture, tracks: { ...gesture.tracks, left_hand: cleared(gesture.tracks.left_hand), right_hand: cleared(gesture.tracks.right_hand) } };
+}
+
 const HAND_CENTER_LANDMARKS = [0, 5, 9, 13, 17];
 
 /** MediaPipe hand landmarks that can touch the face, with the avatar bone at each (the side's prefix added). */
@@ -209,6 +277,8 @@ const TOUCH_POINTS: [number, string][] = [
  */
 const TOUCH_NEAR = 0.02;
 const TOUCH_FAR = 0.07;
+/** A point touching the side of the head is placed this far (shoulder widths) inside the head's outline as measured. */
+const HEAD_TOUCH_INSET = 0.04;
 
 /**
  * A hand measured this far in front of the eyes (shoulder widths, see `handsAheadOfFace`) starts not to count as
@@ -230,20 +300,26 @@ const PATH_MAX_EASE = 15;
 const PATH_SIGMA = 2;
 
 /**
- * A 3D path with its jumps (a step far beyond the speed around it) replaced by eased transitions at about the
- * surrounding speed, then lightly smoothed. Real motion keeps its timing: only outlier steps are touched.
+ * A 3D path with its jumps (a step far beyond the speed around it) spread over the samples around them, at about the
+ * surrounding speed, then lightly smoothed. Real motion keeps its timing: the path either side of a jump is shifted
+ * towards the other side, not replaced, so what the hand does there stays (in "плохо" the depth jumps as the hand
+ * comes to the chin and again as it leaves; drawn straight across both jumps, the hand never rose to the chin). A stray
+ * sample is a jump out and a jump back: the two shifts cancel around it and remove it.
  */
 function smoothPath(points: THREE.Vector3[], minJump: number): THREE.Vector3[] {
   const count = points.length;
   const out = points.map((p) => p.clone());
   if (count < 4) return out;
   const steps = points.slice(1).map((p, i) => p.distanceTo(points[i]));
-  const local = steps.map((_, k) => {
+  // The speed around a step is the higher of the speeds before and after it: where a quick movement starts or ends, one
+  // side is slow and the other fast, and its first and last steps are movement, not jumps.
+  const median = (from: number, to: number) => {
     const around: number[] = [];
-    for (let j = k - PATH_WINDOW; j <= k + PATH_WINDOW; j += 1) if (j >= 0 && j < steps.length && Math.abs(j - k) > 1) around.push(steps[j]);
+    for (let j = from; j <= to; j += 1) if (j >= 0 && j < steps.length) around.push(steps[j]);
     around.sort((a, b) => a - b);
     return around.length ? around[Math.floor(around.length / 2)] : 0;
-  });
+  };
+  const local = steps.map((_, k) => Math.max(median(k - PATH_WINDOW, k - 2), median(k + 2, k + PATH_WINDOW)));
   let k = 0;
   while (k < steps.length) {
     if (!(steps[k] > Math.max(minJump, PATH_STEP_FACTOR * local[k]))) {
@@ -257,11 +333,16 @@ function smoothPath(points: THREE.Vector3[], minJump: number): THREE.Vector3[] {
     const half = Math.min(PATH_MAX_EASE, Math.max(3, Math.ceil(total / speed / 2)));
     const start = Math.max(0, k - half);
     const stop = Math.min(count - 1, end + 1 + half);
+    const leap = points[end + 1].clone().sub(points[k]);
     for (let i = start + 1; i < stop; i += 1) {
       const t = (i - start) / (stop - start);
-      out[i].copy(points[start]).lerp(points[stop], t * t * (3 - 2 * t));
+      const done = t * t * (3 - 2 * t);
+      if (i <= k) out[i].addScaledVector(leap, done);
+      else if (i > end) out[i].addScaledVector(leap, done - 1);
+      // Inside a jump of several steps the samples are on neither side.
+      else out[i].add(points[k]).sub(points[i]).addScaledVector(leap, done);
     }
-    k = stop;
+    k = end + 1;
   }
   const reach = Math.ceil(PATH_SIGMA * 3);
   return out.map((_, i) => {
@@ -299,8 +380,10 @@ function anchorOf(touch: FaceTouch | undefined, center: { x: number; y: number }
 }
 
 /**
- * Which hand point touches the face or throat in the picture, if any. The face is the box from the chin to above the
- * eyes, the throat the narrower box below the chin; the tracker's depth is not trusted for this, only the picture.
+ * Which hand point touches the face or throat in the picture, if any. The face is the box from the chin to the top of
+ * the forehead (to just above the eyebrows when the face mesh does not say where that is), the throat the narrower box
+ * below the chin; the tracker's depth is not trusted for this, only the picture. Asked about one point (`only`), that
+ * point is returned however far it is from the face, with a weight of zero when it does not touch.
  */
 function faceTouchOf(
   face: FaceLine | undefined,
@@ -312,9 +395,10 @@ function faceTouchOf(
   const faceHalf = face.eyeSpan * 1.35;
   const throatHalf = face.eyeSpan * 0.8;
   const throatBottom = face.chinY - (face.eyeY - face.chinY) * 0.9;
+  const faceTop = face.foreheadY ?? face.eyeY + 0.08;
   const outside = (x: number, y: number) => {
     const dx = x - face.centerX;
-    const inFace = Math.max(Math.abs(dx) - faceHalf, face.chinY - y, y - (face.eyeY + 0.08), 0);
+    const inFace = Math.max(Math.abs(dx) - faceHalf, face.chinY - y, y - faceTop, 0);
     const inThroat = Math.max(Math.abs(dx) - throatHalf, throatBottom - y, y - face.chinY, 0);
     return Math.min(inFace, inThroat);
   };
@@ -331,7 +415,7 @@ function faceTouchOf(
       best = { bone, index, weight: 1 - THREE.MathUtils.smoothstep(distance, TOUCH_NEAR, TOUCH_FAR), at: { x: point.x, y: point.y } };
     }
   }
-  return best && best.weight > 0 ? best : undefined;
+  return best && (best.weight > 0 || only !== undefined) ? best : undefined;
 }
 
 /** The middle of the palm in the picture: wrist and the four knuckles. */
@@ -630,13 +714,16 @@ function bringHandsTogether({ gesture, aspect, root, count, armLimbs, handLimbs,
   root.updateMatrixWorld(true);
 }
 
-export function bakeAnimation({ gesture, aspect, arms, hands, body, root, toWorld, smooth = true }: BakeInput): BakedAnimation {
-  const count = Math.max(2, Math.ceil(gesture.duration * BAKE_FPS) + 1);
+export function bakeAnimation({ gesture: source, aspect, arms, hands, body, root, toWorld, smooth = true }: BakeInput): BakedAnimation {
+  const gesture = withoutRestingGlimpses(source, aspect);
+  const count =Math.max(2, Math.ceil(gesture.duration * BAKE_FPS) + 1);
   const sides: Side[] = ["Left", "Right"];
 
   // Hands extracted with the hand landmarker's 3D depth are fitted to it in full (see hand-solver)
   // and filtered lightly.
   const trustedDepth = gesture.normalization?.hand_depth === "world";
+  // WiLoR's hands are whole hand models: their curls are taken as measured (see hand-solver).
+  const wholeHand = gesture.normalization?.hand_source === "wilor";
   const armLimbs = new Map<Side, Limb>();
   const handLimbs = new Map<Side, Limb>();
   const limbBones = (bones: { bone: THREE.Bone; filter: CurveFilter }[]): Limb => ({
@@ -788,14 +875,19 @@ export function bakeAnimation({ gesture, aspect, arms, hands, body, root, toWorl
   const dropToRest: Record<Side, number[]> = { Left: new Array(count).fill(0), Right: new Array(count).fill(0) };
   for (const side of sides) {
     const low: boolean[] = new Array(count).fill(false);
+    // The wrist's height in the picture: the hand track's while it has the hand, the pose's otherwise.
+    const wristY: number[] = new Array(count).fill(NaN);
     for (let k = 0; k < count; k += 1) {
       const time = k / BAKE_FPS;
-      if (handAt(gesture, side === "Left" ? "left_hand" : "right_hand", time, aspect)) continue;
+      const hand = handAt(gesture, side === "Left" ? "left_hand" : "right_hand", time, aspect);
+      if (hand) wristY[k] = hand.landmarks[0]?.y ?? NaN;
+      if (hand) continue;
       const pose = interpolateFrame(gesture.tracks.pose, time);
       const poseWorld = world ? interpolateFrame(world, time) : undefined;
       const landmarks = poseWorld?.landmarks.length ? seenArmLandmarks(pose, poseWorld, aspect) : legacyArmLandmarks(pose, aspect);
       const wrist = landmarks?.[side === "Left" ? 15 : 16];
-      low[k] = Boolean(wrist && Number.isFinite(wrist.y) && wrist.y < HANGING_WRIST_Y);
+      wristY[k] = wrist?.y ?? NaN;
+      low[k] =Boolean(wrist && Number.isFinite(wrist.y) && wrist.y < HANGING_WRIST_Y);
       outside[side][k] = Boolean(wrist && Number.isFinite(wrist.y) && (
         wrist.y < DROPPED_WRIST_Y ||
         (edges && (wrist.y < edges.bottom + EDGE_MARGIN || wrist.x < edges.left + EDGE_MARGIN || wrist.x > edges.right - EDGE_MARGIN))
@@ -803,6 +895,14 @@ export function bakeAnimation({ gesture, aspect, arms, hands, body, root, toWorl
     }
     for (const [start, end] of touchRuns(low.map((v) => (v ? 1 : 0)))) {
       if (end - start >= MIN_HANGING_SAMPLES) for (let k = start; k < end; k += 1) hangs[side][k] = true;
+    }
+    // An arm that leaves rest only for a moment, its wrist below the chest all the while, is not signing either (see
+    // GLIMPSE_SECONDS): the signer shifts a resting hand, or starts bringing the hands together as the clip ends.
+    for (const [start, end] of touchRuns(hangs[side].map((hang, k) => (hang || outside[side][k] ? 0 : 1)))) {
+      if (end - start > GLIMPSE_SECONDS * BAKE_FPS) continue;
+      let below = true;
+      for (let k = start; k < end; k += 1) below &&= wristY[k] < GLIMPSE_WRIST_Y;
+      if (below) for (let k = start; k < end; k += 1) outside[side][k] = true;
     }
     // The final drop (see FINAL_DROP_Y), found from the end backwards.
     const heights: number[] = [];
@@ -890,16 +990,25 @@ export function bakeAnimation({ gesture, aspect, arms, hands, body, root, toWorl
         touch.weight = sum / norm;
         if (touch.weight <= 0 || !touch.at || !faces[k] || !body) continue;
         const shift = faceShift(touch.at, faces[k]!, body.face);
-        touch.target = { x: touch.at.x + shift.x, y: touch.at.y + shift.y };
+        const mapped = { x: touch.at.x + shift.x, y: touch.at.y + shift.y };
+        // The point touches the signer's head, so it has to land on the avatar's, not beside it.
+        touch.target = (body.front && ontoHead(body.front, mapped.x, mapped.y, HEAD_TOUCH_INSET)) ?? mapped;
         if (!touches[side][k] || touches[side][k]!.weight < touch.weight) touches[side][k] = touch;
       }
     }
   }
+  // With whole-hand tracks the arm brings the wrist to where the hand track has it (see `wristShifts`).
+  const wristShift = wholeHand
+    ? { Left: wristShifts(gesture, "Left", aspect, count), Right: wristShifts(gesture, "Right", aspect, count) }
+    : undefined;
   for (let k = 0; k < count; k += 1) {
     const time = k / BAKE_FPS;
     const pose = interpolateFrame(gesture.tracks.pose, time);
     const poseWorld = world ? interpolateFrame(world, time) : undefined;
-    const armLandmarks = poseWorld?.landmarks.length ? seenArmLandmarks(pose, poseWorld, aspect) : legacyArmLandmarks(pose, aspect);
+    const armLandmarks = (poseWorld?.landmarks.length ? seenArmLandmarks(pose, poseWorld, aspect) : legacyArmLandmarks(pose, aspect))?.map((point, index) => {
+      const shift = index === 15 ? wristShift?.Left[k] : index === 16 ? wristShift?.Right[k] : undefined;
+      return shift ? { ...point, x: point.x + shift.x, y: point.y + shift.y } : point;
+    });
     const faceMesh = gesture.tracks.face ? interpolateFrame(gesture.tracks.face, time) : undefined;
     const face = armLandmarks ? signerFaceLine(armLandmarks, faceMesh?.landmarks, aspect) : undefined;
     const handFrames = {
@@ -941,7 +1050,7 @@ export function bakeAnimation({ gesture, aspect, arms, hands, body, root, toWorl
       }
       if (hand) {
         const handTracked =
-          !finalDrop[side][k] && solveHand(hand, handFrames[side]?.landmarks, { damping: 0, toWorld, scale: palmLength[side], trustedDepth });
+          !finalDrop[side][k] && solveHand(hand, handFrames[side]?.landmarks, { damping: 0, toWorld, scale: palmLength[side], trustedDepth, wholeHand });
         if (!handTracked) relaxHand(hand, 0);
         handLimbs.get(side)!.tracked[k] = handTracked;
       }
@@ -969,11 +1078,13 @@ export function bakeAnimation({ gesture, aspect, arms, hands, body, root, toWorl
     }
   }
 
-  for (const limb of handLimbs.values()) dropImpossibleSteps(limb, count);
+  // A whole hand model reads a blurred or fast-turning hand well enough: its sudden turns are real (the horns turning
+  // at the temple in "бык" came out 25 degrees off with the two guards below, 8 without), so nothing is dropped or held.
+  if (!wholeHand) for (const limb of handLimbs.values()) dropImpossibleSteps(limb, count);
   for (const limb of handLimbs.values()) easeUntracked(limb, rest, count, HAND_BRIDGE_SECONDS);
   for (const [side, limb] of handLimbs) {
     const fast = blurredSamples(gesture, side === "Left" ? "left_hand" : "right_hand", aspect, count, palmLength[side]);
-    holdShapeThroughBlur(limb, fast, count, handWorld[side]);
+    if (!wholeHand) holdShapeThroughBlur(limb, fast, count, handWorld[side]);
   }
 
   // The final drop eases the arm's plan toward rest by how far the wrist has come down; the elbow comes in first.

@@ -86,6 +86,11 @@ export type SolveOptions = {
    * fingers are fitted to it in full, and the corrections that make up for a flat depth are left out.
    */
   trustedDepth?: boolean;
+  /**
+   * The landmarks are a whole hand model fitted to the picture (gesture `normalization.hand_source === "wilor"`): its
+   * shape is a possible one and measured also where fingers are hidden, so the fingers follow it as it is.
+   */
+  wholeHand?: boolean;
 };
 
 type FingerJoint = {
@@ -313,38 +318,45 @@ export function solveHand(rig: HandRig, landmarks: Landmark[] | undefined, optio
   ];
 
   const worldDirections = new Map<FingerName, THREE.Vector3[]>();
-  const fitted = FITTED_FINGERS.map((finger) =>
-    fitFinger(segmentsOf(finger).map(toPalmFrame), PHALANX_RATIOS[finger], palm.foldSign, rig.fits.get(finger), options.trustedDepth),
-  );
-  FITTED_FINGERS.forEach((finger, index) => rig.fits.set(finger, fitted[index]));
-  // The fit leans on the tracker's depth; where its reach disagrees with how far the tip really is from the wrist,
-  // the reach wins (a fist folding toward the camera, a pointing finger seen end-on).
-  const seenPalm = Math.hypot(points[MIDDLE_MCP].x - points[WRIST].x, points[MIDDLE_MCP].y - points[WRIST].y);
-  const edgeOn = options.scale !== undefined && seenPalm < EDGE_ON_PALM * options.scale;
-  const reaches = FITTED_FINGERS.map((finger) => points[LANDMARK_CHAINS[finger][3]].distanceTo(points[WRIST]) / palmLength);
-  const reached = options.trustedDepth ? fitted : fitted.map((fit, index) => {
-    const finger = FITTED_FINGERS[index];
-    const chain = LANDMARK_CHAINS[finger];
-    const base = toPalmFrame(points[chain[0]].clone().sub(points[WRIST]));
-    const measured = points[chain[3]].distanceTo(points[WRIST]) / palmLength;
-    // In the picture, the last phalanx turning back against the first is a curl, not a finger pointing at the camera.
-    const first = points[chain[1]].clone().sub(points[chain[0]]).setZ(0);
-    const last = points[chain[3]].clone().sub(points[chain[2]]).setZ(0);
-    const hooked = first.lengthSq() > EPSILON && last.lengthSq() > EPSILON && first.normalize().dot(last.normalize()) < HOOKED_DOT;
-    // A palm seen much shorter than it is, is turned edge-on to the camera; then the picture cannot show a finger
-    // curling back, but a short reach still means a closed hand (a fist swinging up), not fingers pointing at the lens.
-    return matchReach(fit, base, PHALANX_RATIOS[finger], palm.foldSign, measured, hooked || edgeOn);
-  });
-  // A held-out finger is straightened only to make up for a flat depth; measured in 3D, its curve is real (the arch of
-  // the index fingers in "школа").
-  closeFist(options.trustedDepth ? reached : straightenPointing(reached, reaches)).forEach((fit, index) => {
-    worldDirections.set(
-      FITTED_FINGERS[index],
-      fingerDirections(fit, palm.foldSign).map(([x, y, z]) =>
-        palm.side.clone().multiplyScalar(x).addScaledVector(palm.up, y).addScaledVector(palm.normal, z).normalize(),
-      ),
+  if (options.wholeHand) {
+    // A whole fitted hand model: every segment is aimed where it was measured, like the thumb. Fitting hinges to it
+    // only loses shape (measured on fists: the middle phalanges came out 10 to 16 degrees too open, the last ones 20
+    // too closed, against 3 to 7 degrees for the thumb's segments).
+    for (const finger of FITTED_FINGERS) worldDirections.set(finger, segmentsOf(finger).map((segment) => segment.normalize()));
+  } else {
+    const fitted = FITTED_FINGERS.map((finger) =>
+      fitFinger(segmentsOf(finger).map(toPalmFrame), PHALANX_RATIOS[finger], palm.foldSign, rig.fits.get(finger), options.trustedDepth),
     );
-  });
+    FITTED_FINGERS.forEach((finger, index) => rig.fits.set(finger, fitted[index]));
+    // The fit leans on the tracker's depth; where its reach disagrees with how far the tip really is from the wrist,
+    // the reach wins (a fist folding toward the camera, a pointing finger seen end-on).
+    const seenPalm = Math.hypot(points[MIDDLE_MCP].x - points[WRIST].x, points[MIDDLE_MCP].y - points[WRIST].y);
+    const edgeOn = options.scale !== undefined && seenPalm < EDGE_ON_PALM * options.scale;
+    const reaches = FITTED_FINGERS.map((finger) => points[LANDMARK_CHAINS[finger][3]].distanceTo(points[WRIST]) / palmLength);
+    const reached = options.trustedDepth ? fitted : fitted.map((fit, index) => {
+      const finger = FITTED_FINGERS[index];
+      const chain = LANDMARK_CHAINS[finger];
+      const base = toPalmFrame(points[chain[0]].clone().sub(points[WRIST]));
+      const measured = points[chain[3]].distanceTo(points[WRIST]) / palmLength;
+      // In the picture, the last phalanx turning back against the first is a curl, not a finger pointing at the camera.
+      const first = points[chain[1]].clone().sub(points[chain[0]]).setZ(0);
+      const last = points[chain[3]].clone().sub(points[chain[2]]).setZ(0);
+      const hooked = first.lengthSq() > EPSILON && last.lengthSq() > EPSILON && first.normalize().dot(last.normalize()) < HOOKED_DOT;
+      // A palm seen much shorter than it is, is turned edge-on to the camera; then the picture cannot show a finger
+      // curling back, but a short reach still means a closed hand (a fist swinging up), not fingers pointing at the lens.
+      return matchReach(fit, base, PHALANX_RATIOS[finger], palm.foldSign, measured, hooked || edgeOn);
+    });
+    // A held-out finger is straightened only to make up for a flat depth; measured in 3D, its curve is real (the arch of
+    // the index fingers in "школа").
+    closeFist(options.trustedDepth ? reached : straightenPointing(reached, reaches)).forEach((fit, index) => {
+      worldDirections.set(
+        FITTED_FINGERS[index],
+        fingerDirections(fit, palm.foldSign).map(([x, y, z]) =>
+          palm.side.clone().multiplyScalar(x).addScaledVector(palm.up, y).addScaledVector(palm.normal, z).normalize(),
+        ),
+      );
+    });
+  }
   worldDirections.set("Thumb", segmentsOf("Thumb").map((segment) => segment.normalize()));
 
   for (const finger of FINGERS) {

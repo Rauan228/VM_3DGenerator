@@ -1,6 +1,7 @@
 # Environments and builds
 .venv/
 .venv-linux/
+.venv-wilor/
 venv/
 node_modules/
 dist/

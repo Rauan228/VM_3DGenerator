@@ -61,6 +61,8 @@ class NormalizationInfo(BaseModel):
     # "world": hand landmark depth comes from the hand landmarker's 3D hand and can be trusted; "image": the holistic
     # model's own, nearly flat depth (gestures extracted before it existed).
     hand_depth: Literal["image", "world"] = "image"
+    # "wilor": the hand tracks are WiLoR's whole 3D hands (see hand_wilor.py); "mediapipe": the holistic model's.
+    hand_source: Literal["mediapipe", "wilor"] = "mediapipe"
     # Where the picture's edges lie in these units ({left, right, top, bottom}); absent for older gestures.
     frame: dict[str, float] | None = None
 

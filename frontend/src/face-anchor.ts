@@ -18,6 +18,8 @@ export type FaceLine = {
   eyeSpan: number;
   /** Half the face's width at the cheekbones (face mesh points 234 and 454), when it is known. */
   halfWidth?: number;
+  /** Top of the forehead at the hairline (face mesh point 10), when it is known. */
+  foreheadY?: number;
 };
 
 const LEFT_EYE = 2;
@@ -26,6 +28,11 @@ const MOUTH_LEFT = 9;
 const MOUTH_RIGHT = 10;
 /** Face mesh landmark at the bottom of the chin. */
 const CHIN = 152;
+/** Face mesh landmark at the top of the forehead, on the hairline. */
+const FOREHEAD = 10;
+/** A forehead is this share of the eye-to-chin height tall, or the mesh has slipped. */
+const MIN_FOREHEAD = 0.3;
+const MAX_FOREHEAD = 0.9;
 /** Face mesh landmarks on the face's contour at the cheekbones, in front of the ears. */
 const CHEEK_RIGHT = 234;
 const CHEEK_LEFT = 454;
@@ -77,12 +84,16 @@ export function signerFaceLine(body: Landmark[], mesh: Landmark[] | undefined, a
   const halfWidth = cheeks.every((p) => p && Number.isFinite(p.x)) ? Math.abs(cheeks[0]!.x - cheeks[1]!.x) / 2 : undefined;
   // A face seen from the front is two to three eye spans wide; anything else is a tracking slip.
   const plausible = halfWidth !== undefined && halfWidth > 0.9 * eyeSpan && halfWidth < 1.6 * eyeSpan;
+  const forehead = mesh?.[FOREHEAD];
+  const foreheadY = forehead && Number.isFinite(forehead.y) ? forehead.y * aspect : undefined;
+  const tall = foreheadY !== undefined && foreheadY - eyeY > MIN_FOREHEAD * eyeToChin && foreheadY - eyeY < MAX_FOREHEAD * eyeToChin;
   return {
     centerX: (leftEye.x + rightEye.x) / 2,
     eyeY,
     chinY,
     eyeSpan,
     halfWidth: plausible ? halfWidth : undefined,
+    foreheadY: tall ? foreheadY : undefined,
   };
 }
 

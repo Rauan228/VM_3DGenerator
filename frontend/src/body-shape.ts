@@ -130,6 +130,28 @@ export function frontAt(front: FrontSurface, x: number, y: number): number | und
 }
 
 /**
+ * (x, y) brought onto the head as seen from the front: left alone when it is on the head already, else moved sideways
+ * to `inset` inside its outline at that height. Undefined above or below the head. A signer's head with its hair is
+ * wider at the temples than an avatar's against the cheekbones the two are matched by, so a fingertip on the signer's
+ * temple maps to a point beside the avatar's head.
+ */
+export function ontoHead(front: FrontSurface, x: number, y: number, inset: number): { x: number; y: number } | undefined {
+  const row = Math.round((y - front.y0) / front.step);
+  if (row < 0 || row >= front.rows) return undefined;
+  let first = -1;
+  let last = -1;
+  for (let c = 0; c < front.cols; c += 1) {
+    if (Number.isNaN(front.z[row * front.cols + c])) continue;
+    if (first < 0) first = c;
+    last = c;
+  }
+  if (first < 0) return undefined;
+  const low = front.x0 + first * front.step + inset;
+  const high = front.x0 + last * front.step - inset;
+  return low <= high ? { x: Math.min(Math.max(x, low), high), y } : undefined;
+}
+
+/**
  * The torso and the chin measured off the avatar's skin, so contact with the body and face is right for any avatar,
  * not only the one the constants were once fitted to.
  */

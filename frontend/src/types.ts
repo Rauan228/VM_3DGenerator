@@ -67,6 +67,8 @@ export type NormalizationInfo = {
   aspect_corrected?: boolean;
   /** "world": hand depth from the hand landmarker's 3D hand, which can be trusted; absent or "image": nearly flat. */
   hand_depth?: "image" | "world";
+  /** "wilor": the hand tracks are whole 3D hands from WiLoR (a hand model fitted to each picture); absent or "mediapipe". */
+  hand_source?: "mediapipe" | "wilor";
   /** Where the picture's edges lie in these units: a body point beyond them is guessed by the pose model, not seen. */
   frame?: { left: number; right: number; top: number; bottom: number };
 };

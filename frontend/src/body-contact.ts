@@ -130,8 +130,10 @@ export function faceTouchPull(touch: FaceTouch | undefined, root: THREE.Object3D
   scratch.setFromMatrixPosition(touch.bone.matrixWorld).applyMatrix4(rootInverse).sub(body.shoulderCenter).divideScalar(body.shoulderWidth);
   const dx = touch.target ? THREE.MathUtils.clamp(touch.target.x - scratch.x, -MAX_TOUCH_SLIDE, MAX_TOUCH_SLIDE) : 0;
   const dy = touch.target ? THREE.MathUtils.clamp(touch.target.y - scratch.y, -MAX_TOUCH_SLIDE, MAX_TOUCH_SLIDE) : 0;
-  // The depth of the face where the point will be once it has slid.
-  const surface = frontAt(body.front, scratch.x + dx, scratch.y + dy) ?? frontAt(body.front, scratch.x, scratch.y);
+  // The depth of the face where the point will be once it has slid. A point still below the measured surface, on its way
+  // up to the throat, takes the surface's lowest row: cut off there, the pull would start with a jump.
+  const y = Math.max(scratch.y, body.front.y0);
+  const surface = frontAt(body.front, scratch.x + dx, Math.max(scratch.y + dy, body.front.y0)) ?? frontAt(body.front, scratch.x, y);
   if (surface === undefined) return out;
   const dz = THREE.MathUtils.clamp(surface + TOUCH_GAP - scratch.z, -MAX_TOUCH_PULL, MAX_TOUCH_PUSH);
   // Sliding along the face waits for a sure touch: a hand only passing near the face is not dragged onto it.
