@@ -53,6 +53,18 @@ export type ArmSolveOptions = {
   palmCenter?: { x: number; y: number };
   /** How far the palm is in front of the signer's eyes (shoulder widths), measured from its size in the picture (see `handsAheadOfFace`). */
   aheadOfFace?: number;
+  /**
+   * How far forward the wrist is (the avatar's shoulder widths from its shoulder centre), measured from the hand's size
+   * against the front of the body (see `handsAheadOfBody`), and how much that replaces the pose model's depth (0 to 1).
+   * The pose model's depth of a hand before the body is no measure of it: a palm flat on the chest ("активный") came out
+   * a third of a shoulder width further forward than a hand held out before it ("аллигатор").
+   */
+  wristDepth?: { z: number; weight: number; read?: number };
+  /**
+   * The camera's distance (shoulder widths) and where its axis crosses the picture sideways, for a hand whose distance
+   * `wristDepth` has read (`read`, 0 to 1, also beside the trunk, where it does not set the depth): see `uncrossed`.
+   */
+  camera?: { distance: number; centerX: number };
   /** Receives the wrist target and elbow direction this frame asked for, before `offset`: what `aimArm` takes to pose the arm again. */
   record?: ArmPlan;
   /** Added to the wrist target and the elbow direction, in the avatar's units: how the body-contact pass moves the arm off the torso. */
@@ -73,6 +85,8 @@ export type BodyFrame = {
   torso: Torso;
   /** The front of the head and throat, for hands that touch them. */
   front?: FrontSurface;
+  /** The front of the trunk, for hands and forearms against the chest and belly. */
+  trunkFront?: FrontSurface;
 };
 
 type Segment = {
@@ -150,6 +164,7 @@ export function measureBody(root: THREE.Object3D): BodyFrame | undefined {
     },
     torso: shape.torso,
     front: shape.front,
+    trunkFront: shape.trunkFront,
   };
 }
 
@@ -204,13 +219,34 @@ function applyDirections(rig: ArmRig, upper: THREE.Vector3, fore: THREE.Vector3,
 const MAX_MEASURED_AHEAD = 1.2;
 
 /**
+ * A camera close by (a phone at arm's length, 2 to 3 shoulder widths away) shows what is nearer to it bigger: a hand
+ * before the body three quarters of a shoulder width nearer than the shoulders is a third further from the picture's
+ * middle than it is. The arms' measures, taken at the shoulders, then put the hand further across than the avatar's
+ * forearm, as long against its shoulders as a person's, reaches with its elbow at its side: in "адаптивное поведение"
+ * (arms folded before the belly) the forearm spans 1.06 shoulder widths in the picture and 0.77 on the avatar, and the
+ * avatar held its elbows out in front at its chest. Sideways only: heights are left as the picture shows them, as the
+ * avatar is seen from in front at the chest, not from the phone's height, and is compared with the picture.
+ */
+/** A hand is taken to be at most this far before the shoulders (shoulder widths) for that: an arm held out straight. */
+const MAX_UNCROSS_AHEAD = 1.2;
+
+function uncrossed(x: number, ahead: number, camera: { distance: number; centerX: number }, weight: number): number {
+  const scale = THREE.MathUtils.clamp((camera.distance - THREE.MathUtils.clamp(ahead, 0, MAX_UNCROSS_AHEAD)) / camera.distance, 0.5, 1);
+  return THREE.MathUtils.lerp(x, camera.centerX + (x - camera.centerX) * scale, weight);
+}
+
+/**
  * Where the wrist should be, in the avatar's units. The signer's wrist offset from their shoulder is scaled by
  * shoulder width, then corrected for the two ways a sign and an avatar body disagree: the faces sit at different
  * heights over the shoulders (a hand at the face is moved to the same feature of the avatar's face). Near the head the
  * pose model's depth is also held to the head's (see `headDepthLimit`).
  */
 function wristTarget(rig: ArmRig, body: BodyFrame, landmarks: Landmark[], shoulder: Landmark, wrist: Landmark, options: ArmSolveOptions): THREE.Vector3 {
-  const target = rig.shoulder.clone().add(vector(wrist).sub(vector(shoulder)).multiplyScalar(body.shoulderWidth));
+  const seen = options.wristDepth && options.camera ? { ...wrist, x: uncrossed(wrist.x, options.wristDepth.z, options.camera, options.wristDepth.read ?? options.wristDepth.weight) } : wrist;
+  const target = rig.shoulder.clone().add(vector(seen).sub(vector(shoulder)).multiplyScalar(body.shoulderWidth));
+  if (options.wristDepth && options.wristDepth.weight > 0) {
+    target.z = THREE.MathUtils.lerp(target.z, body.shoulderCenter.z + options.wristDepth.z * body.shoulderWidth, options.wristDepth.weight);
+  }
 
   if (options.face) {
     const tip = landmarks[HAND_TIP_LANDMARK[rig.side]];
@@ -279,7 +315,9 @@ export function solveArm(rig: ArmRig, body: BodyFrame, landmarks: Landmark[] | u
   if (confidence <= 0 || (elbow.visibility ?? 1) < MIN_ELBOW_VISIBILITY) return false;
 
   const target = wristTarget(rig, body, landmarks, shoulder, wrist, options);
-  const elbowHint = vector(elbow).sub(vector(shoulder)).multiplyScalar(body.shoulderWidth);
+  // The elbow is nearer the camera than the shoulder too, about half as much as the wrist.
+  const seenElbow = options.wristDepth && options.camera ? { ...elbow, x: uncrossed(elbow.x, options.wristDepth.z / 2, options.camera, options.wristDepth.read ?? options.wristDepth.weight) } : elbow;
+  const elbowHint = vector(seenElbow).sub(vector(shoulder)).multiplyScalar(body.shoulderWidth);
 
   // A wrist the pose model is unsure of eases toward the arm hanging at the side. Blending the plan rather than the
   // finished directions keeps what is recorded for easing a lost stretch the same as what was actually posed.

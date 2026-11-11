@@ -68,6 +68,12 @@ export type FrontSurface = { x0: number; y0: number; step: number; cols: number;
 
 export type BodyShape = {
   torso: Torso;
+  /**
+   * How far forward the front of the trunk (chest, belly, the clothes over them) reaches, on a grid as seen from the
+   * front. The elliptic `torso` takes its depth from the band's deepest point (a hoodie's pocket, its hood at the back),
+   * which held hands on the chest 7 to 10 cm in front of it and crossed forearms off the belly.
+   */
+  trunkFront?: FrontSurface;
   /** Height of the bottom of the chin, when the head's skin could be read. */
   chinY?: number;
   front?: FrontSurface;
@@ -79,15 +85,18 @@ export type BodyShape = {
 const HEAD_BONES = new Set(["Head", "Neck"]);
 /** Grid of the front surface, in shoulder widths from the shoulder centre. */
 const FRONT_GRID = { x0: -0.5, x1: 0.5, y0: -0.1, y1: 1.0, step: 0.025 };
+/** The trunk's front: the trunk's skin and the collarbones' (the top of the chest), from the hips to the neck. */
+const TRUNK_FRONT_BONES = new Set([...TRUNK_BONES, "LeftShoulder", "RightShoulder"]);
+const TRUNK_GRID = { x0: -0.7, x1: 0.7, y0: -1.6, y1: 0.2, step: 0.025 };
 
-function measureFront(points: SkinPoint[]): FrontSurface | undefined {
-  const { x0, x1, y0, y1, step } = FRONT_GRID;
+function measureFront(points: SkinPoint[], bones = HEAD_BONES, grid = FRONT_GRID): FrontSurface | undefined {
+  const { x0, x1, y0, y1, step } = grid;
   const cols = Math.round((x1 - x0) / step) + 1;
   const rows = Math.round((y1 - y0) / step) + 1;
   const z = new Float32Array(cols * rows).fill(Number.NaN);
   let filled = 0;
   for (const { point, bone } of points) {
-    if (!HEAD_BONES.has(bone)) continue;
+    if (!bones.has(bone)) continue;
     // Each skin point raises the cells within a step of it.
     const c = (point.x - x0) / step;
     const r = (point.y - y0) / step;
@@ -203,5 +212,9 @@ export function measureBodyShape(
     cheekPoints.length > 20
       ? (Math.max(...cheekPoints.map((p) => p.point.x)) - Math.min(...cheekPoints.map((p) => p.point.x))) / 2
       : undefined;
-  return { torso, chinY, front: measureFront(points), faceHalfWidth };
+  // Cells where the trunk's skin reaches no further forward than its middle are the inside of a collar or hood, seen
+  // through the neck opening: not a front a hand could rest on.
+  const trunkFront = measureFront(points, TRUNK_FRONT_BONES, TRUNK_GRID);
+  if (trunkFront) for (let i = 0; i < trunkFront.z.length; i += 1) if (trunkFront.z[i] < torso.centerZ) trunkFront.z[i] = Number.NaN;
+  return { torso, chinY, front: measureFront(points), trunkFront, faceHalfWidth };
 }

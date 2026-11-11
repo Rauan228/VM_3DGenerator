@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import type { BodyFrame } from "./arm-solver";
-import { frontAt, type Torso } from "./body-shape";
+import { frontAt, type FrontSurface, type Torso } from "./body-shape";
 
 /** A ball of this radius (shoulder widths) stands for a stretch of arm or hand; it has to stay outside the torso. */
 type Ball = {
@@ -42,6 +42,30 @@ export function buildContactRig(root: THREE.Object3D, side: "Left" | "Right"): C
   return { balls };
 }
 
+/**
+ * How far forward a ball of `radius` at (x, y) has to be to rest on the surface: the highest the surface rises under it,
+ * cell by cell. Undefined when no part of the surface is within reach.
+ */
+export function surfaceUnder(front: FrontSurface, x: number, y: number, radius: number): number | undefined {
+  let best: number | undefined;
+  const reach = Math.ceil(radius / front.step);
+  const c0 = Math.round((x - front.x0) / front.step);
+  const r0 = Math.round((y - front.y0) / front.step);
+  for (let r = r0 - reach; r <= r0 + reach; r += 1) {
+    if (r < 0 || r >= front.rows) continue;
+    for (let c = c0 - reach; c <= c0 + reach; c += 1) {
+      if (c < 0 || c >= front.cols) continue;
+      const z = front.z[r * front.cols + c];
+      if (Number.isNaN(z)) continue;
+      const d2 = (front.x0 + c * front.step - x) ** 2 + (front.y0 + r * front.step - y) ** 2;
+      if (d2 > radius * radius) continue;
+      const top = z + Math.sqrt(radius * radius - d2);
+      if (best === undefined || top > best) best = top;
+    }
+  }
+  return best;
+}
+
 const scratch = new THREE.Vector3();
 const other = new THREE.Vector3();
 
@@ -58,7 +82,7 @@ const SIDEWAYS_BIAS = 0.3;
  * default: the hand is visible over the clothes, so it is in front of the body, and moving it forward keeps it where the
  * picture shows it. A ball at the torso's edge is moved out sideways instead. Zero when it is clear or beside the body.
  */
-export function torsoPush(torso: Torso, point: THREE.Vector3, radius: number, out: THREE.Vector3): THREE.Vector3 {
+export function torsoPush(torso: Torso, point: THREE.Vector3, radius: number, out: THREE.Vector3, front?: FrontSurface): THREE.Vector3 {
   out.set(0, 0, 0);
   if (!(point.y < torso.top && point.y > torso.bottom)) return out;
 
@@ -68,7 +92,11 @@ export function torsoPush(torso: Torso, point: THREE.Vector3, radius: number, ou
   if (across >= 1) return out;
 
   const ahead = point.z - torso.centerZ;
-  const forward = torso.centerZ + b * Math.sqrt(1 - across * across) - point.z;
+  // The front of the trunk where the ball is: measured off the skin when the avatar has it (nothing there, beside the
+  // body as seen from the front, is clear of it), else the ellipse's.
+  const surface = front ? surfaceUnder(front, point.x, point.y, radius) : torso.centerZ + b * Math.sqrt(1 - across * across);
+  if (surface === undefined) return out;
+  const forward = surface - point.z;
   if (forward <= 0) return out;
   const sideways = a * Math.sqrt(Math.max(0, 1 - (ahead / b) ** 2)) - Math.abs(point.x);
   // Between the two the push blends: a hard switch makes a limb near the torso's edge jump from one side to the front.
@@ -91,7 +119,7 @@ export function armTorsoPush(rig: ContactRig, root: THREE.Object3D, body: BodyFr
     scratch.setFromMatrixPosition(ball.from.matrixWorld);
     if (ball.to) scratch.lerp(other.setFromMatrixPosition(ball.to.matrixWorld), ball.blend);
     scratch.applyMatrix4(rootInverse).sub(body.shoulderCenter).divideScalar(body.shoulderWidth);
-    torsoPush(body.torso, scratch, ball.radius, push);
+    torsoPush(body.torso, scratch, ball.radius, push, body.trunkFront);
     if (push.lengthSq() > worst.lengthSq()) worst.copy(push);
   }
   return out.copy(worst).multiplyScalar(body.shoulderWidth);

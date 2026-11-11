@@ -50,3 +50,65 @@ def test_video_without_stored_hands_is_left_alone(tmp_path, monkeypatch):
     tracks["left_hand"][0].landmarks = [Landmark(x=0.5, y=0.5, z=0.0)] * 21
     assert not hand_wilor.add_wilor_hands(video, tracks, width=640, height=480)
     assert len(tracks["left_hand"][0].landmarks) == 21
+
+
+def _flat_hand() -> np.ndarray:
+    """A flat right hand in WiLoR's camera space (metres, y down), fingers straight along -y."""
+    points = np.zeros((21, 3))
+    bases = {1: (0.03, -0.02), 5: (0.02, -0.09), 9: (0.0, -0.095), 13: (-0.02, -0.09), 17: (-0.04, -0.08)}
+    for base, (x, y) in bases.items():
+        for joint in range(4):
+            points[base + joint] = (x + (0.012 * joint if base == 1 else 0.0), y - 0.025 * joint, 0.0)
+    return points
+
+
+def _turned(points: np.ndarray, degrees: float, axis: int = 1) -> np.ndarray:
+    angle = np.radians(degrees)
+    c, s = np.cos(angle), np.sin(angle)
+    rotation = {0: [[1, 0, 0], [0, c, -s], [0, s, c]], 1: [[c, 0, s], [0, 1, 0], [-s, 0, c]]}[axis]
+    return points @ np.array(rotation).T
+
+
+def test_palm_read_from_the_wrong_side_for_a_moment_is_dropped():
+    hand = _flat_hand()
+    frames = np.arange(10)
+    hands = np.stack([hand] * 10)
+    hands[4] = _turned(hand, 160)  # two frames read from the back, then back as before
+    hands[5] = _turned(hand, 150)
+    assert hand_wilor._drop_flips(frames, hands).tolist() == [4, 5]
+
+
+def test_a_real_turn_is_kept():
+    hand = _flat_hand()
+    frames = np.arange(10)
+    # 25 degrees a frame, which a quick twist of the wrist does, and it stays turned.
+    hands = np.stack([_turned(hand, min(index, 7) * 25) for index in frames])
+    assert hand_wilor._drop_flips(frames, hands).size == 0
+
+
+def test_a_finger_hooked_on_a_blurred_frame_is_straightened():
+    hand = _flat_hand()
+    hooked = hand.copy()
+    hooked[7] = hooked[6] + (0.0, 0.0, 0.025)  # index bent 90 degrees at its middle joint, bones as long
+    hooked[8] = hooked[7] + (0.0, 0.0, 0.025)
+    frames = np.arange(7)
+    hands = np.stack([hand, hand, hand, hooked, hand, hand, hand])
+    weights = np.array([1.0, 1.0, 1.0, 0.1, 1.0, 1.0, 1.0])  # the hooked frame is the blurred one
+    points2d = hands[:, :, :2] * 1000 + 300
+    new2d, new3d = hand_wilor._steady_fingers(frames, points2d, hands, weights, 30.0)
+    assert np.allclose(new3d[3], hand, atol=1e-6)
+    assert np.allclose(new2d[3], hand[:, :2] * 1000 + 300, atol=1e-3)
+    # The palm and the other frames stay as read.
+    assert np.allclose(new3d[[0, 1, 2, 4, 5, 6]], hands[[0, 1, 2, 4, 5, 6]], atol=1e-6)
+
+
+def test_a_shape_held_on_sharp_frames_is_not_averaged_away():
+    hand = _flat_hand()
+    fist = hand.copy()
+    for base in (5, 9, 13, 17):  # every finger folded 90 degrees at the knuckle
+        for joint in (1, 2, 3):
+            fist[base + joint] = fist[base] + (0.0, 0.0, 0.025 * joint)
+    frames = np.arange(8)
+    hands = np.stack([hand] * 4 + [fist] * 4)
+    new2d, new3d = hand_wilor._steady_fingers(frames, hands[:, :, :2] * 1000, hands, np.ones(8), 30.0)
+    assert np.allclose(new3d[:4], hand, atol=1e-6) and np.allclose(new3d[4:], fist, atol=1e-6)

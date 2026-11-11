@@ -1,10 +1,10 @@
 import * as THREE from "three";
 import { aimArm, relaxArm, restPlan, solveArm, type ArmPlan, type ArmRig, type ArmSide, type BodyFrame } from "./arm-solver";
 import { armTorsoPush, buildContactRig, faceTouchPull, MAX_TOUCH_SLIDE, type ContactRig, type FaceTouch } from "./body-contact";
-import { ontoHead } from "./body-shape";
+import { frontAt, ontoHead } from "./body-shape";
 import { faceShift, signerFaceLine, type FaceLine } from "./face-anchor";
 import { handAt, interpolateFrame } from "./gesture-utils";
-import { handsAheadOfFace } from "./hand-distance";
+import { handsAheadOfBody, handsAheadOfFace } from "./hand-distance";
 import { relaxHand, resetHandFit, solveHand, type HandRig } from "./hand-solver";
 import { angleBetween, smoothCurve, type CurveFilter } from "./motion-filter";
 import type { GestureJson, Landmark, LandmarkFrame } from "./types";
@@ -277,6 +277,12 @@ const TOUCH_POINTS: [number, string][] = [
  */
 const TOUCH_NEAR = 0.02;
 const TOUCH_FAR = 0.07;
+/**
+ * The throat reaches this share of the eye-to-chin height below the chin. Further down a hand is on the collar and the
+ * chest ("активный", "воротник", "злость": 0.7 to 1.0 below), where pulled onto the avatar's throat it rose to its neck
+ * and two hands at the collarbones met in the middle; throat signs touch above (a flick at the neck in "алкоголь" 0.35).
+ */
+const THROAT_DEPTH = 0.6;
 /** A point touching the side of the head is placed this far (shoulder widths) inside the head's outline as measured. */
 const HEAD_TOUCH_INSET = 0.04;
 
@@ -289,6 +295,73 @@ const TOUCH_AHEAD_START = 0.2;
 const TOUCH_AHEAD_END = 0.4;
 /** Half window (bake samples) over which a face touch is eased in time: about 0.15 s each way. */
 const TOUCH_EASE_HALF = 9;
+
+/**
+ * A hand before the trunk is placed in depth by its size in the picture (see `handsAheadOfBody`), fully from this far
+ * below the chin on (shoulder widths), not at all from the first figure up, where the face's rules take over; and
+ * sideways while its palm is over the trunk, fading out between these distances from the middle.
+ */
+const BODY_BELOW_CHIN_START = 0.05;
+const BODY_BELOW_CHIN_FULL = 0.15;
+const BODY_SIDE_START = 0.4;
+const BODY_SIDE_END = 0.65;
+/**
+ * Only for a hand this near the body (its palm ahead of the body's front, shoulder widths), fading out to the second
+ * figure: there the contact with the body is what is seen. A hand held out far before the body keeps the pose model's
+ * depth: put as far forward as its size says (1.3 shoulder widths before the shoulders, the fingers 1.9, in "аллигатор")
+ * it came out big and low in the player's picture, which looks at the avatar from further away than the phone did.
+ */
+const BODY_NEAR_FULL = 0.3;
+const BODY_NEAR_END = 0.6;
+/**
+ * Nor is it read for a hand this low (its palm's middle, shoulder widths): on the lap, or coming up into the picture
+ * from below, blurred and cut off, when it read up to 1.3 shoulder widths before the body and the wrist leapt sideways
+ * ("адаптивное поведение").
+ */
+const BODY_LOW_START = -0.95;
+const BODY_LOW_END = -1.2;
+/**
+ * A hand whose deepest point (by the hand's own 3D shape) reads this close to the front of the body, or behind it, is on
+ * the body and is set with that point against the avatar's front; from the second figure on it keeps the distance read.
+ * The reading is good to about a tenth of a shoulder width, so a palm pressed to the chest reads up to that far off it.
+ */
+const BODY_TOUCH_NEAR = 0.08;
+const BODY_TOUCH_FAR = 0.2;
+/** A point resting on the body sits this far (shoulder widths) out from the front measured: about a finger's half thickness. */
+const BODY_TOUCH_GAP = 0.035;
+
+/**
+ * The depth a hand's size gives is smoothed over this many samples (the Gaussian's sigma): it changes from frame to frame
+ * with the hand's reading and with which of its points is deepest, and the wrist, pushed off the trunk at a slant, shook
+ * sideways with it ("доминантный": 0.008 to 0.025 shoulder widths a frame).
+ */
+const BODY_DEPTH_SIGMA = 5;
+
+type WristDepth = { z: number; weight: number; read: number };
+
+/** Gaussian smoothing of the wrist depths over time; a sample without one counts as weight 0, so they fade in and out. */
+function smoothDepths(depths: (WristDepth | undefined)[], sigma: number): (WristDepth | undefined)[] {
+  const reach = Math.ceil(sigma * 3);
+  return Array.from({ length: depths.length }, (_, k) => {
+    if (!depths[k]) return undefined;
+    let z = 0;
+    let zWeight = 0;
+    let weight = 0;
+    let read = 0;
+    let total = 0;
+    for (let j = Math.max(0, k - reach); j <= Math.min(depths.length - 1, k + reach); j += 1) {
+      const kernel = Math.exp(-0.5 * ((j - k) / sigma) ** 2);
+      total += kernel;
+      const depth = depths[j];
+      if (!depth) continue;
+      z += kernel * depth.z;
+      zWeight += kernel;
+      weight += kernel * depth.weight;
+      read += kernel * depth.read;
+    }
+    return { z: z / zWeight, weight: weight / total, read: read / total };
+  });
+}
 
 /** A step in a path this many times the local speed (or more) is a jump. */
 const PATH_STEP_FACTOR = 2.2;
@@ -394,7 +467,7 @@ function faceTouchOf(
   if (!face || !landmarks || landmarks.length < 21 || !bones) return undefined;
   const faceHalf = face.eyeSpan * 1.35;
   const throatHalf = face.eyeSpan * 0.8;
-  const throatBottom = face.chinY - (face.eyeY - face.chinY) * 0.9;
+  const throatBottom = face.chinY - (face.eyeY - face.chinY) * THROAT_DEPTH;
   const faceTop = face.foreheadY ?? face.eyeY + 0.08;
   const outside = (x: number, y: number) => {
     const dx = x - face.centerX;
@@ -617,6 +690,46 @@ const PALM_BONES = ["Hand", "HandIndex1", "HandMiddle1", "HandRing1", "HandPinky
 /** Palms whose facing directions are at least this opposed (cosine) face each other: pressed together, not stacked. */
 const PALMS_FACING = -0.7;
 
+/**
+ * Hands that come close somewhere other than at their centres (fingertips meeting at the collar in "воротник", a thumb
+ * hooked over the other in "бабочка", the heel of one hand on the other) keep that gap too: the two points of the hands
+ * closest in the picture are set as far apart on the avatar as on the signer, in palm lengths, both hands moving half the
+ * way. Fully below the first distance (palm lengths), not at all from the second on. The avatar's fingers are not the
+ * signer's length against its palm (its index 0.52 of the palm, a person's about 0.85), so where only the palms were
+ * placed, fingertips held a little apart crossed.
+ */
+const POINTS_CLOSE_FULL = 0.3;
+const POINTS_CLOSE_START = 0.8;
+/** The avatar's bone at each of the 21 hand landmarks (the side's prefix added). */
+const LANDMARK_BONES = [
+  "Hand",
+  "HandThumb1", "HandThumb2", "HandThumb3", "HandThumb4",
+  "HandIndex1", "HandIndex2", "HandIndex3", "HandIndex4",
+  "HandMiddle1", "HandMiddle2", "HandMiddle3", "HandMiddle4",
+  "HandRing1", "HandRing2", "HandRing3", "HandRing4",
+  "HandPinky1", "HandPinky2", "HandPinky3", "HandPinky4",
+];
+
+/**
+ * The pairs of points, one of each hand, that are about the closest in the picture (within POINTS_NEAR_SPREAD palm
+ * lengths of the closest), each with its share, and how far apart the closest are in palm lengths. Several pairs share
+ * the gap rather than the single closest one: as hands move against each other the closest pair changes from frame to
+ * frame (the wrist, then a finger of the hand that holds it, in "доминантный"), and following one pair the hands shook.
+ */
+const POINTS_NEAR_SPREAD = 0.1;
+function closePairs(left: Landmark[], right: Landmark[], signerPalm: number): { pairs: { left: number; right: number; share: number }[]; apart: number } {
+  const all: { left: number; right: number; apart: number }[] = [];
+  for (let i = 0; i < 21; i += 1) {
+    for (let j = 0; j < 21; j += 1) all.push({ left: i, right: j, apart: Math.hypot(left[i].x - right[j].x, left[i].y - right[j].y) / signerPalm });
+  }
+  const apart = Math.min(...all.map((pair) => pair.apart));
+  const near = all.filter((pair) => pair.apart < apart + 3 * POINTS_NEAR_SPREAD).map((pair) => ({ ...pair, share: Math.exp(-0.5 * ((pair.apart - apart) / POINTS_NEAR_SPREAD) ** 2) }));
+  const total = near.reduce((sum, pair) => sum + pair.share, 0);
+  return { pairs: near.map(({ left, right, share }) => ({ left, right, share: share / total })), apart };
+}
+/** The closest points' correction is smoothed over time with this sigma (samples), for the same reason. */
+const POINTS_SIGMA = 4;
+
 /** How far apart the signer's hand centres are in the picture, in their palm lengths, or undefined unless both are seen. */
 function handsApart(gesture: GestureJson, time: number, aspect: number, signerPalm: number): number | undefined {
   const left = handCenterOf(handAt(gesture, "left_hand", time, aspect)?.landmarks);
@@ -644,6 +757,8 @@ function bringHandsTogether({ gesture, aspect, root, count, armLimbs, handLimbs,
   const bones = (side: Side) => PALM_BONES.map((name) => root.getObjectByName(`${side}${name}`)).filter(Boolean) as THREE.Object3D[];
   const palm = { Left: bones("Left"), Right: bones("Right") };
   if (palm.Left.length < PALM_BONES.length || palm.Right.length < PALM_BONES.length) return;
+  const points = (side: Side) => LANDMARK_BONES.map((name) => root.getObjectByName(`${side}${name}`));
+  const handPoints = { Left: points("Left"), Right: points("Right") };
   const limbs = [...armLimbs.values(), ...handLimbs.values()];
   const saved = limbs.flatMap((limb) => limb.bones.map(({ bone }) => bone.quaternion.clone()));
   const point = new THREE.Vector3();
@@ -661,6 +776,8 @@ function bringHandsTogether({ gesture, aspect, root, count, armLimbs, handLimbs,
     return normal.normalize().multiplyScalar(side === "Right" ? 1 : -1);
   };
   const quaternion = new THREE.Quaternion();
+  // How far the closest points move each wrist (the left; the right the other way), applied once smoothed in time.
+  const pointShift: (THREE.Vector3 | undefined)[] = new Array(count);
   for (let k = 0; k < count; k += 1) {
     const left = plans.Left[k];
     const right = plans.Right[k];
@@ -675,15 +792,32 @@ function bringHandsTogether({ gesture, aspect, root, count, armLimbs, handLimbs,
     const apart = handsApart(gesture, time, aspect, signerPalm);
     if (apart === undefined) continue;
     const weight = 1 - THREE.MathUtils.smoothstep(apart, HANDS_CLOSE_FULL, HANDS_CLOSE_START);
-    if (weight <= 0) continue;
+    const close = closePairs(seen.Left, seen.Right, signerPalm);
+    const pointWeight = (1 - weight) * (1 - THREE.MathUtils.smoothstep(close.apart, POINTS_CLOSE_FULL, POINTS_CLOSE_START));
+    if (weight <= 0 && pointWeight <= 0) continue;
 
     for (const limb of limbs) for (const { bone, values } of limb.bones) bone.quaternion.copy(readQuaternion(values, k, quaternion));
     root.updateMatrixWorld(true);
-    const a = centre("Left");
-    const b = centre("Right");
     const avatarPalm = root.worldToLocal(palm.Left[0].getWorldPosition(point)).distanceTo(
       root.worldToLocal(palm.Left[2].getWorldPosition(new THREE.Vector3())),
     );
+    if (pointWeight > 0) {
+      const toward = new THREE.Vector3();
+      for (const pair of close.pairs) {
+        const boneLeft = handPoints.Left[pair.left];
+        const boneRight = handPoints.Right[pair.right];
+        if (!boneLeft || !boneRight) continue;
+        const now = root.worldToLocal(boneLeft.getWorldPosition(new THREE.Vector3())).sub(root.worldToLocal(boneRight.getWorldPosition(new THREE.Vector3())));
+        const wanted = new THREE.Vector3(seen.Left[pair.left].x - seen.Right[pair.right].x, seen.Left[pair.left].y - seen.Right[pair.right].y, 0)
+          .multiplyScalar(avatarPalm / signerPalm);
+        // In the picture only, as the points were measured: their depth stays as the hands have it.
+        toward.add(new THREE.Vector3(wanted.x - now.x, wanted.y - now.y, 0).multiplyScalar(pair.share));
+      }
+      pointShift[k] = toward.multiplyScalar(pointWeight * 0.5);
+    }
+    if (weight <= 0) continue;
+    const a = centre("Left");
+    const b = centre("Right");
     if (a.distanceTo(b) < 1e-6) continue;
     // Never closer than a hand is thick: hands that overlap in the picture may be one in front of the other.
     const gap = Math.max(apart, HAND_THICKNESS) * avatarPalm;
@@ -708,6 +842,27 @@ function bringHandsTogether({ gesture, aspect, root, count, armLimbs, handLimbs,
     left.hint.add(toward);
     right.target.sub(toward);
     right.hint.sub(toward);
+  }
+  const reach = Math.ceil(POINTS_SIGMA * 3);
+  const smoothedShift = Array.from({ length: count }, (_, k) => {
+    const sum = new THREE.Vector3();
+    let weight = 0;
+    for (let j = Math.max(0, k - reach); j <= Math.min(count - 1, k + reach); j += 1) {
+      if (!plans.Left[j] || !plans.Right[j]) continue;
+      const w = Math.exp(-0.5 * ((j - k) / POINTS_SIGMA) ** 2);
+      if (pointShift[j]) sum.addScaledVector(pointShift[j]!, w);
+      weight += w;
+    }
+    return weight > 0 ? sum.divideScalar(weight) : sum;
+  });
+  for (let k = 0; k < count; k += 1) {
+    const left = plans.Left[k];
+    const right = plans.Right[k];
+    if (!left || !right) continue;
+    left.target.add(smoothedShift[k]);
+    left.hint.add(smoothedShift[k]);
+    right.target.sub(smoothedShift[k]);
+    right.hint.sub(smoothedShift[k]);
   }
   let i = 0;
   for (const limb of limbs) for (const { bone } of limb.bones) bone.quaternion.copy(saved[i++]);
@@ -766,6 +921,45 @@ export function bakeAnimation({ gesture: source, aspect, arms, hands, body, root
   const aheadAt = (side: Side, k: number) => {
     const ahead = aheadOfFace?.[side][k];
     return ahead === undefined || Number.isNaN(ahead) ? undefined : ahead;
+  };
+  const bodyAhead = handsAheadOfBody(gesture, aspect, count, BAKE_FPS);
+  // The avatar's palm against the signer's, both in shoulder widths: the hand's own depths are scaled by it.
+  const avatarPalm: Partial<Record<Side, number>> = {};
+  if (root && body) {
+    for (const side of sides) {
+      const wrist = root.getObjectByName(`${side}Hand`);
+      const knuckle = root.getObjectByName(`${side}HandMiddle1`);
+      if (wrist && knuckle) avatarPalm[side] = wrist.getWorldPosition(new THREE.Vector3()).distanceTo(knuckle.getWorldPosition(new THREE.Vector3())) / body.shoulderWidth;
+    }
+  }
+  /** Where a hand over the trunk puts its wrist in depth (see BODY_BELOW_CHIN_START), in the avatar's shoulder widths. */
+  const wristDepthOf = (side: Side, k: number, landmarks: Landmark[] | undefined, face: FaceLine | undefined) => {
+    const ahead = bodyAhead?.ahead[side][k];
+    const trunk = body?.trunkFront;
+    if (!bodyAhead || !trunk || !body || !landmarks || landmarks.length < 21 || ahead === undefined || Number.isNaN(ahead)) return undefined;
+    const centre = handCenterOf(landmarks);
+    if (!centre) return undefined;
+    const below = (face?.chinY ?? 0.3) - centre.y;
+    const across = Math.abs(centre.x - (face?.centerX ?? 0));
+    // Below the chin, down to the lap, the hand's distance is read wherever the hand is near the body; it sets the
+    // wrist's depth only over the trunk.
+    const read = bodyAhead.trust * THREE.MathUtils.smoothstep(below, BODY_BELOW_CHIN_START, BODY_BELOW_CHIN_FULL) *
+      THREE.MathUtils.smoothstep(centre.y, BODY_LOW_END, BODY_LOW_START) *
+      (1 - THREE.MathUtils.smoothstep(ahead, BODY_NEAR_FULL, BODY_NEAR_END));
+    const weight = read * (1 - THREE.MathUtils.smoothstep(across, BODY_SIDE_START, BODY_SIDE_END));
+    if (read <= 0) return undefined;
+    const y = face ? centre.y + faceShift(centre, face, body.face).y : centre.y;
+    const surface = frontAt(trunk, THREE.MathUtils.clamp(centre.x, -BODY_SIDE_START, BODY_SIDE_START), y);
+    if (surface === undefined) return undefined;
+    const scale = (avatarPalm[side] ?? 0) && palmLength[side] ? avatarPalm[side]! / palmLength[side]! : 1;
+    let middle = 0;
+    for (const index of HAND_CENTER_LANDMARKS) middle += landmarks[index].z / HAND_CENTER_LANDMARKS.length;
+    let deepest = 0;
+    for (const point of landmarks) deepest = Math.min(deepest, (point.z - middle) * scale);
+    const touching = BODY_TOUCH_GAP - deepest;
+    const onBody = 1 - THREE.MathUtils.smoothstep(ahead + deepest, BODY_TOUCH_NEAR, BODY_TOUCH_FAR);
+    const palm = Math.max(THREE.MathUtils.lerp(ahead, touching, onBody), touching);
+    return { z: surface + palm + (landmarks[0].z - middle) * scale, weight, read };
   };
 
   const contact: Partial<Record<Side, ContactRig>> = {};
@@ -1001,6 +1195,20 @@ export function bakeAnimation({ gesture: source, aspect, arms, hands, body, root
   const wristShift = wholeHand
     ? { Left: wristShifts(gesture, "Left", aspect, count), Right: wristShifts(gesture, "Right", aspect, count) }
     : undefined;
+  // The depth a hand's size gives its wrist, for the whole clip first and then smoothed (see BODY_DEPTH_SIGMA).
+  const wristDepths: Record<Side, (WristDepth | undefined)[]> = { Left: new Array(count), Right: new Array(count) };
+  if (bodyAhead) {
+    for (let k = 0; k < count; k += 1) {
+      const time = k / BAKE_FPS;
+      const pose = interpolateFrame(gesture.tracks.pose, time);
+      const poseWorld = world ? interpolateFrame(world, time) : undefined;
+      const landmarks = poseWorld?.landmarks.length ? seenArmLandmarks(pose, poseWorld, aspect) : legacyArmLandmarks(pose, aspect);
+      const faceMesh = gesture.tracks.face ? interpolateFrame(gesture.tracks.face, time) : undefined;
+      const face = landmarks ? signerFaceLine(landmarks, faceMesh?.landmarks, aspect) : undefined;
+      for (const side of sides) wristDepths[side][k] = wristDepthOf(side, k, handAt(gesture, side === "Left" ? "left_hand" : "right_hand", time, aspect)?.landmarks, face);
+    }
+    for (const side of sides) wristDepths[side] = smoothDepths(wristDepths[side], BODY_DEPTH_SIGMA);
+  }
   for (let k = 0; k < count; k += 1) {
     const time = k / BAKE_FPS;
     const pose = interpolateFrame(gesture.tracks.pose, time);
@@ -1042,6 +1250,8 @@ export function bakeAnimation({ gesture: source, aspect, arms, hands, body, root
           handCenter: anchorOf(touch[side], handCenterOf(handFrames[side]?.landmarks)),
           palmCenter: handCenterOf(handFrames[side]?.landmarks),
           aheadOfFace: handFrames[side] ? aheadAt(side, k) : undefined,
+          wristDepth: wristDepths[side][k],
+          camera: bodyAhead && { distance: bodyAhead.cameraDistance, centerX: bodyAhead.centerX },
           offset,
           record: asked[side],
         });

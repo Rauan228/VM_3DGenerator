@@ -22,6 +22,11 @@ if [[ "${1:-}" == "stop" ]]; then
       rm -f "$run/$name.pid"
     fi
   done
+  # A server takes a moment to let its port go; started again before that, it would be taken for still running.
+  for _ in $(seq 20); do
+    listening 8010 || listening 5173 || break
+    sleep 0.25
+  done
   exit 0
 fi
 
