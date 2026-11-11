@@ -855,7 +855,8 @@ def build(key, spec, args, landmarks_all):
     mandible = tripo_mouth.mandible_weights(points, lips, lower_lip_verts, upper_lip_verts, jaw_pivot, np.array(target["chin"]), lower_front)
     model_shapes["jawOpen"] = tripo_mouth.jaw_offsets(points, jaw_pivot, jaw_angle, jaw_slide, mandible)
     print("jaw joint", jaw_pivot, "turn", math.degrees(jaw_angle), "head bone", head_bone, "lips front", lower_front)
-    model_shapes.update(tripo_face.lip_shapes(points, lip_line, lower_lip_verts, lower_front, upper_lip_verts))
+    model_shapes.update(tripo_mouth.round_lip_shapes(points, lips, lower_lip_verts, upper_lip_verts, set(inner_lip.values()),
+                                                     tripo_mouth.mesh_edges(mesh, set(inner_lip.values())), inner_lip.keys()))
     model_shapes.update(tripo_mouth.lip_raise_shapes(points, lips, lower_lip_verts, upper_lip_verts))
     model_shapes.update(tripo_face.brow_shapes(points, face_projection, all_pts, ref_h, eye_info))
     tripo_mouth.smooth_offsets(model_shapes, mesh, lips, float(target["chin"][2]), apart=set(inner_lip.values()))
@@ -864,6 +865,7 @@ def build(key, spec, args, landmarks_all):
     edge = np.array(list(inner_lip.values()), dtype=int)
     for delta in model_shapes.values():
         delta[hanging] = delta[edge]
+    tripo_mouth.tube_rings(model_shapes, points, inner_lip, lips)
     if not mesh.shape_keys:
         body.shape_key_add(name="Basis", from_mix=False)
     for name in sorted(mpfb.arkit_names()):

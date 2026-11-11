@@ -9,7 +9,7 @@ eye, an open jaw leaves the painted lips closed. Here the face gets what an anim
 * the lips are split along the line between them (the mouth behind them, the lips' volume and the jaw are
   tripo_mouth.py's);
 * the shapes that matter most are built from that geometry rather than transferred: the blink closes the upper lid over
-  the eyeball, the lips round for "o" and "u".
+  the eyeball, the brows move as brows.
 
 Model space as Tripo exports it: the figure faces +X, its left is +Y, Z is up, one unit tall.
 """
@@ -332,43 +332,6 @@ def blink_offsets(points, eye, close=0.97):
 def _smooth(t):
     t = np.clip(t, 0.0, 1.0)
     return t * t * (3 - 2 * t)
-
-
-def lip_shapes(points, line, lower, front_x, upper=()):
-    """Pucker and funnel, the rounded lips of "o" and "u" that a signer's mouth forms with many words. The lips gather
-    toward the middle and push forward; for the funnel they also part into a round opening. Built here because the
-    transferred shapes barely move the painted lips of a Tripo face."""
-    mid_y = float(np.mean(line[:, 0]))
-    half = float(np.ptp(line[:, 0])) / 2
-    seam_z = _interp_line(line, mid_y)
-    lower, upper = set(lower), set(upper)
-    pucker = np.zeros_like(points)
-    funnel = np.zeros_like(points)
-    for i, p in enumerate(points):
-        if p[0] < front_x - half * 1.3:
-            continue
-        dy = p[1] - mid_y
-        base = _interp_line(line, min(max(p[1], line[:, 0].min()), line[:, 0].max()))
-        dz = p[2] - base
-        # An ellipse around the mouth, wider than tall, fading out over the cheeks and the chin.
-        reach = np.hypot(dy / (half * 1.7), dz / (half * 1.05))
-        w = 1 - _smooth((reach - 0.35) / 0.65)
-        if w <= 0:
-            continue
-        # The lips themselves move most; the skin around follows less.
-        on_lips = 1 - _smooth((abs(dz) - half * 0.12) / (half * 0.35))
-        gather = 0.6 * w * (0.5 + 0.5 * on_lips)
-        forward = half * 0.4 * w * (0.4 + 0.6 * on_lips)
-        offset = np.array([forward, -dy * gather, -(p[2] - seam_z) * 0.12 * w])
-        pucker[i] = offset
-        # The funnel: the same, with the lips parted into a round opening, widest in the middle. Which lip a vertex is
-        # on is the split's to say: it follows the mesh's edges and wanders a little either side of the drawn line, and
-        # upper-lip edge vertices below the line went down with the lower lip, hanging from it in red spikes.
-        below = i in lower if (i in lower or i in upper) else dz < -1e-5
-        across = 1 - _smooth(abs(dy) / (half * 0.85))
-        part = half * 0.2 * across * (1 - _smooth((abs(dz) - half * 0.05) / (half * 0.5)))
-        funnel[i] = offset * np.array([0.8, 0.85, 1.0]) + np.array([part * 0.15, 0.0, -part if below else part * 0.6])
-    return {"mouthPucker": pucker, "mouthFunnel": funnel}
 
 
 # MediaPipe's brow contours, outer end to inner end: upper and lower edge of each brow.

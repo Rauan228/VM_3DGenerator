@@ -16,8 +16,7 @@
    The face is made animatable (`tools/tripo_face.py`): Tripo paints eyes and lips onto the skin, so the face is
    subdivided, the eye openings are cut out with glossy eyeballs behind (textured from the reference, skinned to
    `LeftEye`/`RightEye`), and the lips are split along the line between them. The shapes that matter most are built
-   from that geometry instead of transferred: blink (upper lid over the eyeball), pucker/funnel (rounded lips), brows
-   down / inner up / outer up.
+   from that geometry instead of transferred: blink (upper lid over the eyeball), brows down / inner up / outer up.
 
    The mouth is built as a mouth (`tools/tripo_mouth.py`, 2026-11-11; before it the lips moved like a mask over the
    face: paint on a flat surface around a dark plug, the lower lip sliding over a chin that hardly moved): the lips get
@@ -28,7 +27,11 @@
    way from the head bone to the lips) and slides it forward a little, as the condyles do, with the chin, the lower
    lip, the lower teeth and the tongue, the cheeks and the skin under the chin stretching between; at 1 the lower lip
    drops 0.58 of the mouth's width (23–25°). `mouthUpperUp`/`mouthLowerDown` lift the lips off the teeth (the
-   transferred ones barely moved the painted lips). Teeth stand in arches of a person's proportions (incisors, canine,
+   transferred ones barely moved the painted lips). `mouthPucker` (у, ю) and `mouthFunnel` (о, ш) lay the lips' edge on
+   a round opening at the front (small for the pucker, wider for the funnel, which the jaw opens taller), each lip's
+   red ringed round it and thickened, the corners drawn in and forward with it, so the lips make a tube with their
+   inner side going back behind; the skin around follows, less and less over 0.9 of the mouth's width (gathering the
+   lips toward the middle in proportion, as before, squeezed the opening to a point with a crease down it). Teeth stand in arches of a person's proportions (incisors, canine,
    premolars and first molar a side, scaled to the mouth's width, the upper incisors over and before the lower) in
    scalloped gums (`TM_teeth_*`, `TM_gums_*`); the tongue (`TM_tongue`) lies in the lower arch with shapes of its own,
    `tongueTipUp` (tip on the ridge behind the upper teeth: т, д, н, л, р), `tongueBackUp` (к, г, х), `tongueFrontUp`

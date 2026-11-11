@@ -318,6 +318,123 @@ def mandible_weights(points, lips, lower, upper, pivot, chin, front_x):
     return weight
 
 
+# Rounded lips (orbicularis oris drawing the lips in and forward): the opening the edge between them is laid round,
+# (half width, half height) in W, and how far forward the lips come. A pucker (у, ю) leaves a small round hole, a funnel
+# (о, ш) a wider one that the jaw opens taller. Gathering the lips toward the middle in proportion, as before, squeezed
+# the opening to a point with a crease down it.
+PUCKER = {"opening": (0.05, 0.035), "forward": 0.22}
+FUNNEL = {"opening": (0.15, 0.11), "forward": 0.14}
+# Gathered, the lips bunch into a ring this thick (across, up), in the lips' height where they are (thin toward the
+# corners: at the middle's height there, the red by the corners was stretched into fan-like streaks). The painted red
+# reaches a little past MediaPipe's outer lip line (the lower lip's by more), so the ring takes the lips this far out.
+LIP_RING = (1.5, 1.15)
+LIP_REACH = 1.3
+# The skin around stretches between the rounded lips and the face this far (W) from the mouth's middle, which stays,
+# like a membrane (relaxed over the mesh); the nose takes a third of it.
+ROUND_REACH = 1.25
+MEMBRANE_ROUNDS = 800
+
+
+def round_lip_shapes(points, lips, lower, upper, rim, edges, inner=()):
+    """mouthPucker and mouthFunnel: the lips' edge laid on a small round opening at the front, each lip's red ringed
+    round it and thickened, the corners drawn in and forward with the rest (the lips form a tube, the inner side going
+    back from the opening behind them); the skin around stretches like a membrane between them and the face (each skin
+    vertex taking the mean of its neighbours, the lips and the face beyond held): taken from the nearest lip vertices,
+    it tore along the lines where the nearest changed from one lip to the other."""
+    from mathutils.kdtree import KDTree
+
+    mid_y, half = _mouth_frame(lips)
+    width = 2 * half
+    line = lips["line"]
+    seam_mid = _interp_line(line, mid_y)
+    # Both lips ring the opening alike (the lower lip, thicker, made the ring lopsided): their mean height at each place.
+    def thick(y):
+        y = min(max(y, mid_y - half), mid_y + half)
+        seam = _interp_line(line, y)
+        return (abs(_interp_line(lips["upper"], y) - seam) + abs(seam - _interp_line(lips["lower"], y))) / 2
+    lower, upper, inner = set(lower), set(upper), set(inner)
+    rim = sorted(rim)
+    order = np.argsort(points[rim, 1])
+    rim_y, rim_x = points[rim, 1][order], points[rim, 0][order]
+    front = float(np.interp(mid_y, rim_y, rim_x))
+
+    lip_index, lip_place = [], []
+    for i, p in enumerate(points):
+        # (The lips' inner side goes with the edge it hangs from, later.)
+        if p[0] <= 0 or abs(p[1] - mid_y) > half * 1.02 or i in inner:
+            continue
+        seam = _interp_line(line, min(max(p[1], mid_y - half), mid_y + half))
+        if i not in lower and i not in upper and abs(p[2] - seam) > half * 0.6:
+            continue
+        side = "lower" if i in lower else "upper" if i in upper else ("lower" if p[2] < seam else "upper")
+        s, _ = _lip_place((p[1], p[2]), lips, side)
+        if s <= LIP_REACH:
+            lip_index.append(i)
+            lip_place.append((side, float(np.clip((p[1] - mid_y) / half, -1, 1)), s))
+    lip_index = np.array(lip_index)
+
+    out = {}
+    tree = KDTree(len(lip_index))
+    for k, i in enumerate(lip_index):
+        tree.insert(points[i], k)
+    tree.balance()
+    on_lips = set(lip_index.tolist()) | inner
+    others = np.array([i for i in range(len(points)) if i not in on_lips and points[i][0] > front - 0.8 * width
+                       and np.hypot(points[i][1] - mid_y, points[i][2] - seam_mid) < ROUND_REACH * width])
+    count = np.maximum(np.bincount(edges.ravel(), minlength=len(points)), 1)
+    nose = (1 - 2 / 3 * _smooth((points[others, 2] - lips["subnasale_z"]) / (0.3 * width)))[:, None]
+    for name, spec in (("mouthPucker", PUCKER), ("mouthFunnel", FUNNEL)):
+        a, b = spec["opening"][0] * width, spec["opening"][1] * width
+        delta = np.zeros_like(points)
+        for i, (side, t, s) in zip(lip_index, lip_place):
+            p = points[i]
+            # Round the opening: the upper lip's edge over its top half, the lower's under it, the corners at its sides.
+            phi = math.pi / 2 * (1 - t) if side == "upper" else -math.pi / 2 * (1 - t)
+            ring_y = a + s * LIP_RING[0] * thick(p[1])
+            ring_z = b + s * LIP_RING[1] * thick(p[1])
+            # Forward to the opening's plane, the red sloping back a little toward its border (the tube's lip).
+            column_front = float(np.interp(p[1], rim_y, rim_x))
+            forward = front - column_front + spec["forward"] * width - 0.1 * width * s
+            delta[i] = [forward, mid_y + ring_y * math.cos(phi) - p[1], seam_mid + ring_z * math.sin(phi) - p[2]]
+        # The skin: started from the nearest lip vertices' motion, then relaxed as a membrane.
+        for i in others:
+            found = tree.find_n(points[i], 4)
+            w = 1 / np.maximum(np.array([d for _, _, d in found]), 1e-6) ** 2
+            fall = 1 - _smooth(min(d for _, _, d in found) / (ROUND_REACH * width))
+            delta[i] = fall * (w[:, None] * delta[lip_index[[k for _, k, _ in found]]]).sum(0) / w.sum()
+        for _ in range(MEMBRANE_ROUNDS):
+            mean = np.stack([np.bincount(edges[:, 0], delta[edges[:, 1], k], len(points)) +
+                             np.bincount(edges[:, 1], delta[edges[:, 0], k], len(points)) for k in range(3)], 1) / count[:, None]
+            delta[others] = mean[others]
+        delta[others] *= nose
+        out[name] = delta
+    return out
+
+
+# Rounded, the lips' inner side turns from facing up and down to running back as a tube: for the pucker it closes in
+# toward the opening's axis, a little behind its edge and nearly shut at its deepest ring, hiding the teeth behind the
+# small opening as the dark inside of a real one does (the player has no occlusion, and the incisors showed white in
+# the hole); for the funnel it runs straight back.
+TUBE_NARROW = {"mouthPucker": 0.85, "mouthFunnel": 0.0}
+
+
+def tube_rings(shapes, points, inner, lips):
+    """Turn the lips' inner rings into the tube of rounded lips (in place, after they took their edge's motion)."""
+    mid_y, half = _mouth_frame(lips)
+    width = 2 * half
+    axis = np.array([mid_y, _interp_line(lips["line"], mid_y)])
+    hanging = np.array(list(inner.keys()), dtype=int)
+    edge = np.array(list(inner.values()), dtype=int)
+    rise = points[hanging, 2] - points[edge, 2]
+    # How deep each ring is: the deepest in the lips' middle is 1 (toward the corners the rings run deeper still).
+    depth = np.minimum((points[edge, 0] - points[hanging, 0]) / (INNER_RINGS[-1][0] * width), 1.0)
+    for name, narrow in TUBE_NARROW.items():
+        delta = shapes[name]
+        delta[hanging, 2] -= rise  # straight back from the edge
+        across = points[hanging][:, 1:] + delta[hanging, 1:] - axis
+        delta[hanging, 1:] -= across * (narrow * depth)[:, None]
+
+
 # At 1, the upper lip's red rises this much (W) over the canine of its side (levator labii superioris), the lower lip's
 # drops this much (depressor labii inferioris), each turning a little outward.
 UPPER_LIFT = 0.11
@@ -368,6 +485,29 @@ TRANSFERRED = ("mouthStretch", "mouthSmile", "mouthFrown", "mouthDimple", "mouth
 CHIN_FADE = 0.4
 
 
+def _places(mesh):
+    """For each vertex, which place it is in: vertices in one place (the two sides of a texture seam) share it."""
+    co = np.array([v.co[:] for v in mesh.vertices])
+    _, place = np.unique(np.round(co / 1e-6).astype(np.int64), axis=0, return_inverse=True)
+    return place.ravel()
+
+
+def mesh_edges(mesh, apart=()):
+    """The mesh's edges, with vertices in one place joined as if by an edge (a texture seam must not open when its two
+    sides are moved apart), except `apart` (the edge of the mouth, whose two sides are the two lips)."""
+    edges = [e.vertices[:] for e in mesh.edges]
+    apart = set(apart)
+    first = {}
+    for i, key in enumerate(_places(mesh)):
+        if i in apart:
+            continue
+        if key in first:
+            edges.append((first[key], i))
+        else:
+            first[key] = i
+    return np.array(edges)
+
+
 def smooth_offsets(shapes, mesh, lips, chin_z, apart=(), rounds=SMOOTH_ROUNDS):
     """Smooth the transferred mouth and cheek shapes' offsets along the mesh's edges (the split between the lips is
     not an edge, so neither lip takes the other's motion), fading them out under the chin. Vertices in one place
@@ -376,19 +516,9 @@ def smooth_offsets(shapes, mesh, lips, chin_z, apart=(), rounds=SMOOTH_ROUNDS):
     width = 2 * _mouth_frame(lips)[1]
     co = np.array([v.co[:] for v in mesh.vertices])
     fade = _smooth((co[:, 2] - (chin_z - CHIN_FADE * width)) / (CHIN_FADE * width))[:, None]
-    edges = [e.vertices[:] for e in mesh.edges]
-    _, place = np.unique(np.round(co / 1e-6).astype(np.int64), axis=0, return_inverse=True)
-    place = place.ravel()
+    edges = mesh_edges(mesh, apart)
+    place = _places(mesh)
     apart = set(apart)
-    first = {}
-    for i, key in enumerate(place):
-        if i in apart:
-            continue
-        if key in first:
-            edges.append((first[key], i))
-        else:
-            first[key] = i
-    edges = np.array(edges)
     count = np.bincount(edges.ravel(), minlength=len(mesh.vertices))[:, None]
     together = np.array([i for i in range(len(co)) if i not in apart])
     for name in [n for n in shapes if n.startswith(TRANSFERRED)]:
