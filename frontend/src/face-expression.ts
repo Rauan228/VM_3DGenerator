@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { BAKE_FPS } from "./animation-bake";
+import { ADDED_SHAPES, MOUTHED_SHAPES, mouthing } from "./mouthing";
 import type { ExpressionFrame, GestureJson } from "./types";
 
 /**
@@ -247,6 +248,18 @@ export function bakeFace(gesture: GestureJson, rig: FaceRig, faceTouch?: Float32
     }
     shapes.set("eyeBlinkLeft", blink);
     shapes.set("eyeBlinkRight", blink);
+  }
+
+  // A word whose sounds are known is said with the lips (see mouthing.ts) in place of the signer's mouth; the brows, eyes,
+  // cheeks and head stay the signer's, and a smile is kept under the word.
+  const said = mouthing(gesture, count, BAKE_FPS);
+  if (said) {
+    for (const name of MOUTHED_SHAPES) shapes.delete(name);
+    for (const [name, curve] of said.shapes) {
+      const base = ADDED_SHAPES.includes(name) ? shapes.get(name) : undefined;
+      if (base) for (let k = 0; k < count; k += 1) curve[k] = Math.min(1, curve[k] + base[k]);
+      shapes.set(name, curve);
+    }
   }
 
   const turn = new THREE.Quaternion();

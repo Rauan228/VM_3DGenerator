@@ -68,7 +68,7 @@ function Driver({ time }: { time: React.MutableRefObject<number> }) {
 function Render() {
   const params = new URLSearchParams(location.search);
   const avatar = params.get("avatar") === "female" ? "female" : "male";
-  // For checking a pose: `view=mid` frames head to waist, `view=close` the chest and hands, `view=head` the head and shoulders, `view=side` looks from the avatar's right.
+  // For checking a pose: `view=mid` frames head to waist, `view=close` the chest and hands, `view=head` the head and shoulders, `view=face` the face close up (the lips), `view=side` looks from the avatar's right.
   const view = params.get("view");
   const [gesture, setGesture] = useState<GestureJson>();
   const time = useRef(0);
@@ -92,13 +92,15 @@ function Render() {
               ? [0, 0.15, 1.0]
               : view === "head"
                 ? [0, 0.5, 1.3]
+                : view === "face"
+                  ? [0, 0.44, 0.62]
                 : view === "mid"
                   ? [0, 0.3, 1.05]
                 : [0, FRAMING[avatar].lookAt + 0.05, FRAMING[avatar].distance]
         }
         fov={38}
         onUpdate={(self) =>
-          self.lookAt(0, view === "side" || view === "close" ? 0.12 : view === "head" ? 0.42 : view === "mid" ? 0.3 : FRAMING[avatar].lookAt, 0)
+          self.lookAt(0, view === "side" || view === "close" ? 0.12 : view === "head" || view === "face" ? 0.42 : view === "mid" ? 0.3 : FRAMING[avatar].lookAt, 0)
         }
       />
       <ambientLight intensity={0.8} />

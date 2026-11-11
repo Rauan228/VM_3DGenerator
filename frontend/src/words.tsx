@@ -19,7 +19,7 @@ import "./words.css";
 
 type Item = Entry & { set: SetName; key: string };
 type Avatar = "male" | "female";
-type Angle = "front" | "side";
+type Angle = "front" | "side" | "face";
 /** What happens when a word's video ends. */
 type After = "repeat" | "next" | "stop";
 /** The video cropped to the signer like the avatar's frame, or whole (a hand lying on the lap is seen only whole). */
@@ -36,7 +36,10 @@ const FRAME = 1 / 30;
 const PREFS_KEY = "words-prefs-v1";
 const DEFAULT_PREFS: Prefs = { avatar: "female", rate: 1, after: "repeat", fit: "cover" };
 const AVATAR_NAMES: Record<Avatar, string> = { female: "Девушка", male: "Парень" };
-const ANGLE_NAMES: Record<Angle, string> = { front: "Спереди", side: "Сбоку" };
+const ANGLE_NAMES: Record<Angle, string> = { front: "Спереди", side: "Сбоку", face: "Лицо" };
+/** The face close up, to read the lips (the man is 10 cm taller: his face is higher). */
+const FACE_Y: Record<Avatar, number> = { female: 0.42, male: 0.48 };
+const FACE_DISTANCE = 0.62;
 const AFTER_NAMES: Record<After, string> = { repeat: "Повтор", next: "Следующее", stop: "Стоп" };
 const FIT_NAMES: Record<Fit, string> = { cover: "Крупно", contain: "Целиком" };
 
@@ -90,15 +93,18 @@ function notesText(items: Item[], notes: Record<SetName, Record<string, string>>
   return lines.join("\n");
 }
 
-/** Puts the camera in front of the avatar or at its side; from there it is turned with the mouse. */
-function View({ angle, reset }: { angle: Angle; reset: number }) {
+/** Puts the camera in front of the avatar, at its side or close before its face; from there it is turned with the mouse. */
+function View({ angle, reset, avatar }: { angle: Angle; reset: number; avatar: Avatar }) {
   const camera = useThree((state) => state.camera);
-  const controls = useThree((state) => state.controls) as { update: () => void } | null;
+  const controls = useThree((state) => state.controls) as { update: () => void; target: { set: (x: number, y: number, z: number) => void } } | null;
   useEffect(() => {
-    camera.position.set(angle === "side" ? DISTANCE : 0, LOOK_AT_Y + 0.05, angle === "side" ? 0 : DISTANCE);
-    camera.lookAt(0, LOOK_AT_Y, 0);
+    const y = angle === "face" ? FACE_Y[avatar] : LOOK_AT_Y;
+    if (angle === "face") camera.position.set(0, y + 0.02, FACE_DISTANCE);
+    else camera.position.set(angle === "side" ? DISTANCE : 0, y + 0.05, angle === "side" ? 0 : DISTANCE);
+    camera.lookAt(0, y, 0);
+    controls?.target.set(0, y, 0);
     controls?.update();
-  }, [angle, reset, camera, controls]);
+  }, [angle, reset, avatar, camera, controls]);
   return null;
 }
 
@@ -367,8 +373,8 @@ function Words() {
           <div className="box">
             <Canvas dpr={[1, 2]} camera={{ position: [0, LOOK_AT_Y + 0.05, DISTANCE], fov: 38 }}>
               <color attach="background" args={["#15112b"]} />
-              <OrbitControls makeDefault enablePan={false} minDistance={0.5} maxDistance={4} target={[0, LOOK_AT_Y, 0]} />
-              <View angle={view.angle} reset={view.reset} />
+              <OrbitControls makeDefault enablePan={false} minDistance={0.3} maxDistance={4} target={[0, LOOK_AT_Y, 0]} />
+              <View angle={view.angle} reset={view.reset} avatar={prefs.avatar} />
               <ambientLight intensity={0.8} />
               <directionalLight position={[2.4, 3.2, 2.2]} intensity={2.2} />
               <directionalLight position={[-2.2, 1.4, -1.2]} intensity={0.6} />
