@@ -53,7 +53,20 @@ function plain(text: string) {
   return text.trim().toLowerCase().replace(/ё/g, "е");
 }
 
-async function fetchItems(): Promise<Item[]> {
+/**
+ * `?list=<name>` shows only the words of frontend/public/gallery/lists/<name>.json (`{ title, items: ["set/slug", ...] }`),
+ * in its order: a set of words to look at again, as the reviewer named them.
+ */
+const LIST = new URLSearchParams(window.location.search).get("list");
+type WordList = { title: string; items: string[] };
+
+async function fetchList(): Promise<WordList | undefined> {
+  if (!LIST) return undefined;
+  const response = await fetch(`/gallery/lists/${encodeURIComponent(LIST)}.json`, { cache: "no-store" });
+  return response.ok ? response.json() : undefined;
+}
+
+async function fetchItems(list: WordList | undefined): Promise<Item[]> {
   const sets = await Promise.all(
     SET_NAMES.map((set) =>
       fetchEntries(set).then(
@@ -62,7 +75,9 @@ async function fetchItems(): Promise<Item[]> {
       ),
     ),
   );
-  return sets.flat().sort((a, b) => plain(a.word).localeCompare(plain(b.word), "ru") || a.set.localeCompare(b.set));
+  const all = sets.flat();
+  if (list) return list.items.flatMap((key) => all.filter((item) => item.key === key));
+  return all.sort((a, b) => plain(a.word).localeCompare(plain(b.word), "ru") || a.set.localeCompare(b.set));
 }
 
 /** All notes as one text to paste back into the chat: each sign by its word, batch, slug and gesture id. */
@@ -118,8 +133,12 @@ function Words() {
   const noteArea = useRef<HTMLTextAreaElement>(null);
   const currentRow = useRef<HTMLButtonElement>(null);
 
+  const [list, setList] = useState<WordList>();
   useEffect(() => {
-    void fetchItems().then(setItems);
+    void fetchList().then((found) => {
+      setList(found);
+      return fetchItems(found).then(setItems);
+    });
   }, []);
 
   const shown = useMemo(() => {
@@ -156,7 +175,7 @@ function Words() {
   useEffect(() => {
     if (!current) return;
     window.history.replaceState(null, "", `#${current.key}`);
-    document.title = `${current.word} — все слова`;
+    document.title = `${current.word} — ${list?.title ?? "все слова"}`;
     currentRow.current?.scrollIntoView({ block: "nearest" });
     setGesture(undefined);
     setError(undefined);
@@ -275,15 +294,18 @@ function Words() {
     <div className="gallery words">
       <aside className="list">
         <div className="list-top">
-          <h1>Все слова</h1>
+          <h1>{list?.title ?? "Все слова"}</h1>
           <p>{items ? (shown.length === items.length ? `${items.length} жестов` : `${shown.length} из ${items.length}`) : "Загрузка списка…"}</p>
         </div>
         <input ref={search} type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Поиск слова…" aria-label="Поиск слова" />
-        <Segmented
-          value={source}
-          names={[["all", "Все"], ...SET_NAMES.map((set): [SetName, string] => [set, SETS[set].source])]}
-          onChange={setSource}
-        />
+        {!list && (
+          <Segmented
+            value={source}
+            names={[["all", "Все"], ...SET_NAMES.map((set): [SetName, string] => [set, SETS[set].source])]}
+            onChange={setSource}
+          />
+        )}
+        {list && <a className="all-words" href="/words.html">Все слова →</a>}
         <ol>
           {shown.map((item) => (
             <li key={item.key}>

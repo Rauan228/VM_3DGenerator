@@ -97,7 +97,7 @@ tracked frame in total, so it carries no extra information about the fingers.
 large player with the chosen word's video next to the avatar, which starts once the avatar's animation is ready. Arrow
 keys step through words and frames; at the end of a word it repeats, moves to the next word or stops; the avatar is
 turned with the mouse; the video can be shown whole instead of cropped to the signer. The address keeps the word
-(`#slovo/alligator`). Notes are the gallery's own (same browser storage, `frontend/src/sign-sets.ts`). `tools/viewer.sh`
+(`#slovo/alligator`). `?list=<name>` shows only the words of `frontend/public/gallery/lists/<name>.json` (`{ title, items: ["set/slug", ...] }`) in that order: a reviewer's set of words to look at again (`zamechaniya-11-11`: the nine words of the 2026-11-11 review). Notes are the gallery's own (same browser storage, `frontend/src/sign-sets.ts`). `tools/viewer.sh`
 starts the backend and the dev server if they are not running and opens the page; `tools/viewer.sh stop` stops them.
 
 Videos for sharing: `tools/export_videos.py [--avatar male|female]` renders each gallery sign's avatar frame by frame

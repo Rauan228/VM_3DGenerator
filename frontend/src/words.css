@@ -222,3 +222,8 @@
     overflow: visible;
   }
 }
+
+.words .all-words {
+  color: var(--muted);
+  font-size: 13px;
+}
