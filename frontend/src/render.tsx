@@ -21,6 +21,18 @@ const FRAMING = { male: { lookAt: 0.36, distance: 2.1 }, female: { lookAt: 0.3, 
 const FACE_Y = { male: 0.51, female: 0.42 };
 /** How far before the body's middle the lips are, for the face seen from the side. */
 const FACE_Z = 0.08;
+/** Height of the eyes, for `view=eyes` and the head views. */
+const EYE_Y = { male: FACE_Y.male + 0.085, female: FACE_Y.female + 0.08 };
+/** Head views (camera, look-at): the eyes close up, the head from three quarters, the side and behind. */
+const HEAD_VIEWS: Record<string, (avatar: "male" | "female") => [[number, number, number], [number, number, number]]> = {
+  eyes: (a) => [[0, EYE_Y[a] + 0.005, 0.3], [0, EYE_Y[a], 0]],
+  head34: (a) => [[-0.5, EYE_Y[a] + 0.02, 0.55], [0, EYE_Y[a] - 0.03, 0]],
+  headside: (a) => [[-0.75, EYE_Y[a], 0.0], [0, EYE_Y[a] - 0.03, 0]],
+  headback: (a) => [[0.35, EYE_Y[a] + 0.08, -0.7], [0, EYE_Y[a] - 0.02, 0]],
+  hairline: (a) => [[0, EYE_Y[a] + 0.035, 0.3], [0, EYE_Y[a] + 0.035, 0]],
+  hairline34: (a) => [[-0.22, EYE_Y[a] + 0.04, 0.26], [0, EYE_Y[a] + 0.035, 0.05]],
+  hairlineside: (a) => [[-0.3, EYE_Y[a] + 0.035, 0.08], [0, EYE_Y[a] + 0.035, 0.08]],
+};
 
 type RenderWindow = Window & {
   renderAt?: (seconds: number) => Promise<void>;
@@ -99,7 +111,7 @@ function Driver({ time }: { time: React.MutableRefObject<number> }) {
 function Render() {
   const params = new URLSearchParams(location.search);
   const avatar = params.get("avatar") === "female" ? "female" : "male";
-  // For checking a pose: `view=mid` frames head to waist, `view=close` the chest and hands, `view=head` the head and shoulders, `view=face` the face close up (the lips), `face34` and `faceside` the same from three quarters and in profile (from the avatar's right), `view=side` looks from the avatar's right.
+  // For checking a pose: `view=mid` frames head to waist, `view=close` the chest and hands, `view=head` the head and shoulders, `view=face` the face close up (the lips), `face34` and `faceside` the same from three quarters and in profile (from the avatar's right), `eyes`, `head34`, `headside`, `headback` the eyes and the head, `view=side` looks from the avatar's right.
   const view = params.get("view");
   // `model=<path>` loads another build of the avatar (a test build under /models), for checking it before it replaces the player's.
   const model = params.get("model");
@@ -119,7 +131,9 @@ function Render() {
       <PerspectiveCamera
         makeDefault
         position={
-          view === "side"
+          view && HEAD_VIEWS[view]
+            ? HEAD_VIEWS[view](avatar)[0]
+            : view === "side"
             ? [-1.2, 0.15, 0.25]
             : view === "close"
               ? [0, 0.15, 1.0]
@@ -137,7 +151,9 @@ function Render() {
         }
         fov={38}
         onUpdate={(self) =>
-          view === "face34" || view === "faceside"
+          view && HEAD_VIEWS[view]
+            ? self.lookAt(...HEAD_VIEWS[view](avatar)[1])
+            : view === "face34" || view === "faceside"
             ? self.lookAt(0, FACE_Y[avatar], FACE_Z)
             : self.lookAt(0, view === "side" || view === "close" ? 0.12 : view === "face" ? FACE_Y[avatar] : view === "head" ? 0.42 : view === "mid" ? 0.3 : FRAMING[avatar].lookAt, 0)
         }

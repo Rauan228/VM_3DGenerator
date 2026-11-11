@@ -4,8 +4,8 @@ Tripo models the eyes and lips as paint on the skin, so an expression can only s
 eye, an open jaw leaves the painted lips closed. Here the face gets what an animated face needs:
 
 * the face is subdivided, so lids and lips have vertices to move;
-* each eye opening (from MediaPipe's eye contour on the reference image) is cut out of the skin and an eyeball is set
-  behind it, textured with the painted eye and glossy, skinned to its own bone so it can look around;
+* each eye opening (from MediaPipe's eye contour on the reference image) is cut out of the skin, for the eyeball of
+  tripo_eyes.py behind it;
 * the lips are split along the line between them (the mouth behind them, the lips' volume and the jaw are
   tripo_mouth.py's);
 * the shapes that matter most are built from that geometry rather than transferred: the blink closes the upper lid over
@@ -19,7 +19,6 @@ from __future__ import annotations
 import heapq
 
 import bmesh
-import bpy
 import numpy as np
 from mathutils import Vector
 from mathutils.bvhtree import BVHTree
@@ -104,9 +103,9 @@ def _surface(tree, y, z):
     return hit, normal
 
 
-def carve_eyes(body, projection, all_points, ref_h, reference_path):
-    """Cut the eye openings and set eyeballs behind them. Returns, per side ("L" = the character's left, +Y), the
-    eyeball's centre and radius and the lid lines (y, z) upper and lower, and the eyeball objects."""
+def carve_eyes(body, projection, all_points, ref_h):
+    """Cut the eye openings. Returns, per side ("L" = the character's left, +Y), where the eyeball goes (its centre and
+    radius) and the lid lines (y, z) upper and lower; tripo_eyes.py makes the eyeballs."""
     info = {}
     tree = _front_tree(body)
     bm = bmesh.new()
@@ -154,36 +153,7 @@ def carve_eyes(body, projection, all_points, ref_h, reference_path):
     body.data.update()
     print("eye faces removed", len(doomed))
 
-    image = bpy.data.images.load(reference_path)
-    material = bpy.data.materials.new("TM_eyes")
-    material.use_nodes = True
-    nodes = material.node_tree.nodes
-    bsdf = nodes["Principled BSDF"]
-    texture = nodes.new("ShaderNodeTexImage")
-    texture.image = image
-    texture.interpolation = "Cubic"
-    material.node_tree.links.new(texture.outputs["Color"], bsdf.inputs["Base Color"])
-    bsdf.inputs["Roughness"].default_value = 0.12
-    bsdf.inputs["Specular IOR Level"].default_value = 0.6
-    width_px, height_px = image.size
-    eyes = []
-    for key, eye in info.items():
-        bpy.ops.mesh.primitive_uv_sphere_add(segments=32, ring_count=24, radius=eye["radius"], location=tuple(eye["centre"]))
-        ball = bpy.context.active_object
-        ball.name = ball.data.name = f"TM_eye_{key}"
-        bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
-        uv = (ball.data.uv_layers[0] if ball.data.uv_layers else ball.data.uv_layers.new()).data
-        for loop in ball.data.loops:
-            p = ball.data.vertices[loop.vertex_index].co
-            # The painted eye, projected from the front onto the ball: what shows through the opening is the painted iris.
-            col = projection.col0 + p.y * projection.scale
-            row = projection.row0 + p.z * projection.scale
-            uv[loop.index].uv = (col / width_px, row / height_px)
-        ball.data.materials.append(material)
-        for poly in ball.data.polygons:
-            poly.use_smooth = True
-        eyes.append((key, ball))
-    return info, eyes
+    return info
 
 
 def lip_seam(body, projection, all_points, ref_h):

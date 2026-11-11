@@ -91,7 +91,7 @@ ROOT = 0.08
 SCALLOP = 0.035
 GUM_HEIGHT = 0.13
 
-TEETH_COLOUR = (0.82, 0.78, 0.7)
+TEETH_COLOUR = (0.9, 0.87, 0.8)
 GUM_COLOUR = (0.78, 0.36, 0.4)
 TONGUE_COLOUR = (0.6, 0.22, 0.25)
 CAVITY_FRONT = (0.2, 0.035, 0.045)
@@ -109,6 +109,85 @@ FOLLOW_SKIN = (0.06, 0.3)
 # The tongue: length from the tip (W), its tip's place behind and below the lower incisors' edge.
 TONGUE_LENGTH = 1.2
 TONGUE_TIP = (0.07, -0.12)
+
+
+# The lips' inside, deeper rings darker (sRGB), painted into a free square of the body's texture: coloured from the
+# painted lip, the inside of the man's pale lips was skin-coloured and a rounded mouth read as a hole cut in the face,
+# and it took the lip's wet shine, which glinted white deep in the tube of "у".
+MUCOSA = ((0.62, 0.2, 0.23), (0.4, 0.1, 0.13), (0.22, 0.05, 0.07))
+MUCOSA_ROUGHNESS = 0.55
+# Free texture space is looked for on a grid this fine: a square of BLOCK cells (three bands) with MARGIN free cells
+# round it, so mipmaps do not bleed the neighbouring islands in (Tripo's atlas is dense: no 1/64 cell was free).
+TEXTURE_GRID = 512
+BLOCK, MARGIN = 12, 3
+
+
+def free_square(mesh):
+    """A square of the texture no face uses (BLOCK cells of a TEXTURE_GRID grid, MARGIN more round it), as its
+    lower-left cell (column, row), or None."""
+    grid = TEXTURE_GRID
+    uv = np.empty(len(mesh.loops) * 2)
+    mesh.uv_layers.active.data.foreach_get("uv", uv)
+    uv = uv.reshape(-1, 2)
+    mesh.calc_loop_triangles()
+    tris = np.array([t.loops[:] for t in mesh.loop_triangles])
+    corners = uv[tris]
+    lo = np.clip(np.floor(corners.min(1) * grid).astype(int), 0, grid - 1)
+    hi = np.clip(np.floor(corners.max(1) * grid).astype(int), 0, grid - 1)
+    used = np.zeros((grid, grid), np.int32)
+    for (x0, y0), (x1, y1) in zip(lo, hi):
+        used[y0:y1 + 1, x0:x1 + 1] = 1
+    # Summed-area table: the used cells in any square at once.
+    total = np.pad(used.cumsum(0).cumsum(1), ((1, 0), (1, 0)))
+    side = BLOCK + 2 * MARGIN
+    count = total[side:, side:] - total[:-side, side:] - total[side:, :-side] + total[:-side, :-side]
+    free = np.argwhere(count == 0)
+    if not len(free):
+        return None
+    row, col = free[len(free) // 2]
+    return int(col + MARGIN), int(row + MARGIN)
+
+
+def paint_bands(body, colours, roughness, label):
+    """Paint horizontal colour bands (sRGB, top first) into a free square of the body's colour and ORM maps.
+    Returns the texture coordinates of each band's middle."""
+    mesh = body.data
+    nodes = body.active_material.node_tree.nodes
+    images = [n.image for n in nodes if n.type == "TEX_IMAGE" and n.image]
+    colour = next(i for i in images if i.colorspace_settings.name != "Non-Color")
+    # (Not the normal map, whose name has "orm" in it too.)
+    orm = next((i for i in images if i.colorspace_settings.name == "Non-Color" and
+                (i.name.lower().endswith("_orm") or i.name.startswith("ORM"))), None)
+    found = free_square(mesh)
+    if found is None:
+        raise RuntimeError(f"no free texture space for {label}")
+    cx, cy = found
+    grid, n = TEXTURE_GRID, len(colours)
+    bands = [((cx + BLOCK / 2) / grid, (cy + BLOCK * (n - k - 0.5) / n) / grid) for k in range(n)]
+    for image, values in ((colour, colours), (orm, None)):
+        if image is None:
+            continue
+        w, h = image.size
+        pixels = np.empty(w * h * 4, np.float32)
+        image.pixels.foreach_get(pixels)
+        pixels = pixels.reshape(h, w, 4)
+        for k in range(n):
+            # Band k from the top, spread over the margin too (mipmaps then blur into the band's own colour).
+            top = cy + BLOCK * (n - k) / n + (MARGIN if k == 0 else 0)
+            bottom = cy + BLOCK * (n - k - 1) / n - (MARGIN if k == n - 1 else 0)
+            rows = slice(int(bottom / grid * h), int(np.ceil(top / grid * h)))
+            cols = slice(int((cx - MARGIN) / grid * w), int(np.ceil((cx + BLOCK + MARGIN) / grid * w)))
+            pixels[rows, cols, :3] = values[k] if values is not None else (1.0 - 0.25 * k / max(n - 1, 1), roughness, 0.0)
+            pixels[rows, cols, 3] = 1.0
+        image.pixels.foreach_set(pixels.ravel())
+        image.pack()
+    print(label, "painted at texture cell", found)
+    return bands
+
+
+def paint_mucosa(body):
+    """The lips' inside (MUCOSA bands) in a free square of the body's texture."""
+    return paint_bands(body, MUCOSA, MUCOSA_ROUGHNESS, "the lips' inside")
 
 
 def lip_contours(projection, all_points, ref_h, line):
@@ -193,6 +272,7 @@ def inner_lips(body, lips, lower, upper):
     width = 2 * half
     line = lips["line"]
     lookup = _uv_lookup(body)
+    bands = paint_mucosa(body)
     skin = BVHTree.FromPolygons([v.co.copy() for v in body.data.vertices], [tuple(p.vertices) for p in body.data.polygons])
     bm = bmesh.new()
     bm.from_mesh(body.data)
@@ -224,10 +304,13 @@ def inner_lips(body, lips, lower, upper):
             hit, normal, _, _ = skin.ray_cast(Vector((5.0, v.co.y, v.co.z)), Vector((-1.0, 0.0, 0.0)))
             if hit is not None and normal.x > 0.2 and v.co.x > hit.x - INNER_BEHIND * width:
                 v.co.x = hit.x - INNER_BEHIND * width
-        # Colour: the painted lip, nearer the line between the lips (darker) for the deeper rings.
+        # Colour: the painted lip just inside the edge, the lips' inside (paint_mucosa) deeper in.
         for face in {f for v in new_verts for f in v.link_faces}:
             face.smooth = True
             for loop in face.loops:
+                if k >= 2:
+                    loop[uv_layer].uv = bands[ring[loop.vert] - 1]
+                    continue
                 origin = root[loop.vert]
                 lip = "upper" if side[origin] > 0 else "lower"
                 y = min(max(origin.co.y, mid_y - half * 0.95), mid_y + half * 0.95)
@@ -322,12 +405,13 @@ def mandible_weights(points, lips, lower, upper, pivot, chin, front_x):
 # (half width, half height) in W, and how far forward the lips come. A pucker (у, ю) leaves a small round hole, a funnel
 # (о, ш) a wider one that the jaw opens taller. Gathering the lips toward the middle in proportion, as before, squeezed
 # the opening to a point with a crease down it.
-PUCKER = {"opening": (0.05, 0.035), "forward": 0.22}
-FUNNEL = {"opening": (0.15, 0.11), "forward": 0.14}
-# Gathered, the lips bunch into a ring this thick (across, up), in the lips' height where they are (thin toward the
+PUCKER = {"opening": (0.05, 0.035), "forward": 0.22, "ring": (1.5, 1.15)}
+# For "о" the lips turn out, showing more of their red round a smaller opening: with the thin ring of the pucker the
+# man's lips were a thin edge round a hole full of teeth.
+FUNNEL = {"opening": (0.13, 0.085), "forward": 0.14, "ring": (1.9, 1.5)}
+# Gathered, the lips bunch into a ring ("ring" above: across, up) in the lips' height where they are (thin toward the
 # corners: at the middle's height there, the red by the corners was stretched into fan-like streaks). The painted red
 # reaches a little past MediaPipe's outer lip line (the lower lip's by more), so the ring takes the lips this far out.
-LIP_RING = (1.5, 1.15)
 LIP_REACH = 1.3
 # The skin around stretches between the rounded lips and the face this far (W) from the mouth's middle, which stays,
 # like a membrane (relaxed over the mesh); the nose takes a third of it.
@@ -359,15 +443,18 @@ def round_lip_shapes(points, lips, lower, upper, rim, edges, inner=()):
     front = float(np.interp(mid_y, rim_y, rim_x))
 
     lip_index, lip_place = [], []
+    edge = set(rim)
     for i, p in enumerate(points):
-        # (The lips' inner side goes with the edge it hangs from, later.)
-        if p[0] <= 0 or abs(p[1] - mid_y) > half * 1.02 or i in inner:
+        # (The lips' inner side goes with the edge it hangs from, later.) Every vertex of the opening's edge is on the
+        # lips: some by the corners lie a little past MediaPipe's corners, and moved with the skin instead they left the
+        # lips' inside sticking out sideways in dark flaps.
+        if i in inner or (i not in edge and (p[0] <= 0 or abs(p[1] - mid_y) > half * 1.02)):
             continue
         seam = _interp_line(line, min(max(p[1], mid_y - half), mid_y + half))
         if i not in lower and i not in upper and abs(p[2] - seam) > half * 0.6:
             continue
         side = "lower" if i in lower else "upper" if i in upper else ("lower" if p[2] < seam else "upper")
-        s, _ = _lip_place((p[1], p[2]), lips, side)
+        s, _ = (0.0, None) if i in edge else _lip_place((p[1], p[2]), lips, side)
         if s <= LIP_REACH:
             lip_index.append(i)
             lip_place.append((side, float(np.clip((p[1] - mid_y) / half, -1, 1)), s))
@@ -390,8 +477,8 @@ def round_lip_shapes(points, lips, lower, upper, rim, edges, inner=()):
             p = points[i]
             # Round the opening: the upper lip's edge over its top half, the lower's under it, the corners at its sides.
             phi = math.pi / 2 * (1 - t) if side == "upper" else -math.pi / 2 * (1 - t)
-            ring_y = a + s * LIP_RING[0] * thick(p[1])
-            ring_z = b + s * LIP_RING[1] * thick(p[1])
+            ring_y = a + s * spec["ring"][0] * thick(p[1])
+            ring_z = b + s * spec["ring"][1] * thick(p[1])
             # Forward to the opening's plane, the red sloping back a little toward its border (the tube's lip).
             column_front = float(np.interp(p[1], rim_y, rim_x))
             forward = front - column_front + spec["forward"] * width - 0.1 * width * s
@@ -591,6 +678,9 @@ def _new_object(name, verts, faces, material, colours=None):
     if colours is not None:
         attribute = mesh.color_attributes.new("Col", "FLOAT_COLOR", "POINT")
         for i, c in enumerate(colours):
+            # Stored linear (the browser reads vertex colours so); the colours here are sRGB like the textures, and
+            # taken as linear they came out pale (the tongue pink-white, the inside of the mouth too light).
+            c = np.clip(np.asarray(c[:3]), 0, 1) ** 2.2
             attribute.data[i].color = (c[0], c[1], c[2], 1.0)
     obj = bpy.data.objects.new(name, mesh)
     bpy.context.collection.objects.link(obj)

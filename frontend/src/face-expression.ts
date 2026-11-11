@@ -108,11 +108,62 @@ const HEAD_GLITCH_HALF_WINDOW = 3;
 const TOUCH_HEAD_SHARE = 0.35;
 const TOUCH_EASE = 12;
 
+/**
+ * A living eye is never still: every so often it jumps a degree or two to a new point and holds there (a microsaccade),
+ * the jump taking about 40 ms. Added to the measured gaze, and the eyes' only movement without one; it was the fixed
+ * stare that, with the painted eyes, made them look like a picture. Seeded by the word, so a clip is the same each time.
+ */
+const SACCADE_GAP_SECONDS: [number, number] = [0.5, 1.6];
+const SACCADE_DEGREES = { side: 1.6, up: 1.0 };
+const SACCADE_SECONDS = 0.04;
+/**
+ * The upper lid rides on the eye: looking down it comes down with it (eyeBlink at this share of a full look down), and
+ * looking up it lifts a little (eyeWide).
+ */
+const LID_FOLLOW_DOWN = 0.45;
+const LID_FOLLOW_UP = 0.3;
+
 /** Without measured blinks the avatar still blinks now and then, as a living face does (only when no track exists). */
 const IDLE_BLINK_SECONDS = 3.2;
 const IDLE_BLINK_LENGTH = 0.16;
 
 export type BakedFace = { apply: (time: number) => void; reset: () => void };
+
+/** A small seeded random generator (mulberry32). */
+function seeded(text: string): () => number {
+  let a = 0;
+  for (const c of text) a = (Math.imul(a, 31) + c.charCodeAt(0)) | 0;
+  return () => {
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/** Microsaccades as gaze weights (side, up): steps to a new point every so often, each eased over SACCADE_SECONDS. */
+function saccades(count: number, seed: string): [Float32Array, Float32Array] {
+  const random = seeded(seed);
+  const side = new Float32Array(count);
+  const up = new Float32Array(count);
+  let from = [0, 0];
+  let to = [0, 0];
+  let at = 0;
+  let next = SACCADE_GAP_SECONDS[0] * random();
+  for (let k = 0; k < count; k += 1) {
+    const time = k / BAKE_FPS;
+    if (time >= next) {
+      from = to;
+      to = [(random() * 2 - 1) * SACCADE_DEGREES.side / GAZE_SIDE_DEGREES, (random() * 2 - 1) * SACCADE_DEGREES.up / GAZE_UP_DEGREES];
+      at = next;
+      next += SACCADE_GAP_SECONDS[0] + (SACCADE_GAP_SECONDS[1] - SACCADE_GAP_SECONDS[0]) * random();
+    }
+    const t = THREE.MathUtils.smoothstep((time - at) / SACCADE_SECONDS, 0, 1);
+    side[k] = from[0] + (to[0] - from[0]) * t;
+    up[k] = from[1] + (to[1] - from[1]) * t;
+  }
+  return [side, up];
+}
 
 function percentile(values: number[], p: number): number {
   const sorted = [...values].sort((a, b) => a - b);
@@ -248,6 +299,24 @@ export function bakeFace(gesture: GestureJson, rig: FaceRig, faceTouch?: Float32
     }
     shapes.set("eyeBlinkLeft", blink);
     shapes.set("eyeBlinkRight", blink);
+    eyeTurn.push(new Float32Array(count), new Float32Array(count));
+  }
+
+  // The eyes' microsaccades on top of the gaze, and the lids riding on it.
+  const [jumpSide, jumpUp] = saccades(count, `${gesture.gesture_id}${gesture.word}`);
+  for (let k = 0; k < count; k += 1) {
+    eyeTurn[0][k] += jumpSide[k];
+    eyeTurn[1][k] += jumpUp[k];
+  }
+  for (const side of ["Left", "Right"]) {
+    const blink = shapes.get(`eyeBlink${side}`) ?? new Float32Array(count);
+    const wide = shapes.get(`eyeWide${side}`) ?? new Float32Array(count);
+    for (let k = 0; k < count; k += 1) {
+      blink[k] = Math.min(1, blink[k] + LID_FOLLOW_DOWN * Math.max(0, -eyeTurn[1][k]));
+      wide[k] = Math.min(1, wide[k] + LID_FOLLOW_UP * Math.max(0, eyeTurn[1][k]));
+    }
+    shapes.set(`eyeBlink${side}`, blink);
+    shapes.set(`eyeWide${side}`, wide);
   }
 
   // A word whose sounds are known is said with the lips (see mouthing.ts) in place of the signer's mouth; the brows, eyes,

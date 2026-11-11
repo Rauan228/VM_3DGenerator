@@ -76,7 +76,7 @@ const POSES: Record<Viseme, Record<string, number>> = {
   AR: { jawOpen: 0.45, mouthLowerDown: 0.05, mouthFrown: 0.35 },
   SCHWA: { jawOpen: 0.25, mouthFrown: 0.35 },
   OR: { jawOpen: 0.3, mouthFunnel: 0.45, mouthFrown: 0.2, tongueBackUp: 0.2 },
-  O: { jawOpen: 0.45, mouthFunnel: 0.85, mouthPucker: 0.1, mouthFrown: 0.2, tongueBackUp: 0.35 },
+  O: { jawOpen: 0.38, mouthFunnel: 0.85, mouthPucker: 0.1, mouthFrown: 0.2, tongueBackUp: 0.35 },
   // The jaw hardly open: the lips' tube is made shut, and a jaw opened under it split it from top to bottom.
   U: { jawOpen: 0.04, mouthPucker: 0.85, mouthFunnel: 0.2, mouthFrown: 0.2, tongueBackUp: 0.55 },
   E: { jawOpen: 0.35, mouthStretch: 0.45, mouthLowerDown: 0.15, mouthUpperUp: 0.15, mouthFrown: 0.15, tongueFrontUp: 0.45 },

@@ -14,8 +14,19 @@
    stood up at real height facing the camera.
 
    The face is made animatable (`tools/tripo_face.py`): Tripo paints eyes and lips onto the skin, so the face is
-   subdivided, the eye openings are cut out with glossy eyeballs behind (textured from the reference, skinned to
-   `LeftEye`/`RightEye`), and the lips are split along the line between them. The shapes that matter most are built
+   subdivided, the eye openings are cut out, and the lips are split along the line between them.
+
+   The eyes are built as eyes (`tools/tripo_eyes.py`, 2026-11-12; before, the ball behind each opening carried the
+   reference's painted eye projected from the front, lids, liner and lashes included, which turned with the gaze, and
+   the user saw "just a picture, like a mask over the face"): a white, pinkish and darker toward the back, an iris of
+   the reference's colour (sampled there) with radial fibres, a lighter ring round the pupil and a dark ring at its
+   edge, at least 0.52 of the opening's height across (MediaPipe reads these cartoon irises at about half), a black
+   pupil, under a clear-coated cornea that bulges a little in front, whose highlights make the eye look wet; skinned
+   to `LeftEye`/`RightEye`. The lids get their thickness, their edge turning in to a pink margin and down onto the ball
+   with a dark line where they meet it (kept on the ball through every lid shape), and single thin lashes stand on
+   the upper lid (longer and flicking out at the outer corner for the girl, a few short ones on her lower lid, short
+   for the boy), closing with it. The lids' inside and the lashes are painted into free squares of the body's texture,
+   like the lips' inside. The shapes that matter most are built
    from that geometry instead of transferred: blink (upper lid over the eyeball), brows down / inner up / outer up.
 
    The mouth is built as a mouth (`tools/tripo_mouth.py`, 2026-11-11; before it the lips moved like a mask over the
@@ -39,6 +50,19 @@
    with the skin. Everything inside is kept behind the skin in front of it and shaded darker deeper in through vertex
    colours (the player has no ambient occlusion). The shapes carry normal offsets, so the light follows the lips; the
    exporter writes those for every vertex, and the build rewrites them as sparse (46 MB → 11–12 MB a file).
+
+   The boy's hair is cut anew (`tools/tripo_hair.py`, 2026-11-12; Tripo gave him a dark lumpy cap with blotches
+   painted in it and a fringe ending in ragged tips over the forehead, and repainting and combing the cap still left a
+   cap): Tripo's hair becomes the scalp's dark underlayer, sunk 7 mm into the head, smoothed, painted flat dark brown;
+   in front the hairline is a smooth arc at the height of the fringe's main edge, and the fringe's tips below it, down
+   to a little over the brows, are laid onto the forehead's surface (carried up from the skin round the brows), as is
+   the hair's front edge. On it grow about 500 locks (`TM_hair`, skinned to the head): flattened tubes tapering to a
+   third, lying along the head in the direction the hair is combed (away from the whorl at the top of the back, swept
+   toward the character's left in front), turning a little at random and curling at the end, the fringe's over the
+   forehead down to just over the brows, the others ending where the hair does; brown from the reference, darker at
+   the root, each lock its own shade (vertex colours). The face's texture above the part taken from the reference
+   (both avatars) is repainted in the reference's skin colour up to the hair: Tripo's own forehead showed there a shade
+   off, with a hard edge, and under the boy's fringe a light brown band.
 
    The chest print is a decal of its own (`TM_print`): a copy of the hoodie's surface under the letters, lifted 1.5 mm
    and skinned like it, textured with the team's wordmark "Til Mind" (`assets/logo/til-mind-text.png`, made by
