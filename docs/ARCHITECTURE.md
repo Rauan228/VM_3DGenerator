@@ -66,7 +66,7 @@ WiLoR reads every frame on its own, and a hand blurred by fast movement it reads
 cleaned against the frames around them before they are stored (`hand_wilor.py`). A palm that turns more than 90
 degrees in a frame and back within four frames was read from the wrong side (one to four frames, 120 to 170 degrees
 off, in 97 of the 698 hands, e.g. "водоплавающее", "аллигатор": the avatar's palm flapped over and back) and those
-frames are dropped. And each finger's shape is taken from the frames within 0.1 s either way, weighted by how sharp
+frames are dropped. The palm's turn is then averaged over the frames within 0.07 s either way, weighted by how sharp the hand is in each (see below; the square root of the fingers' weight) and by distance in time: blurred, WiLoR read it 20 to 45 degrees off from frame to frame, back and forth, and the avatar's palms jerked as the wings of "бабочка" flap (up to 27 degrees a sixtieth of a second, now 13). And each finger's shape is taken from the frames within 0.1 s either way, weighted by how sharp
 the hand is in each (the strongest edges in the hand against the spread of its brightness, relative to the hand's
 sharper frames, to the fourth power) and by distance in time: the shape most of that weight agrees on, averaged over
 the frames that agree with it within 25 degrees per bone. The palm stays as read; the fingers keep each frame's bone
