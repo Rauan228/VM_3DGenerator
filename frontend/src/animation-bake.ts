@@ -742,6 +742,186 @@ function signerPalmOf(palmLength: Record<Side, number | undefined>): number {
   return ((palmLength.Left ?? palmLength.Right ?? 0) + (palmLength.Right ?? palmLength.Left ?? 0)) / 2;
 }
 
+/**
+ * The avatar's two hands are kept from going through each other: crossed at the wrists in "бабочка", stacked in "соты",
+ * they lay at one depth, as their places come from the picture, and the fingers of one went through the palm of the
+ * other. Each hand is balls along its palm and the fingers' first bones (radii in shoulder widths, about the avatar's
+ * thickness there, see `handBalls`); where a ball of one comes nearer a ball of the other than the two radii, the hand in
+ * front is moved forward until they only touch. Which hand is in front is the one nearer the camera on the video, by its size (see
+ * `handsAheadOfBody`), over the whole stretch the hands are together; with no size read, the one the avatar has in front.
+ */
+const HAND_BALL_PALM = 0.045;
+const HAND_BALL_KNUCKLE = 0.035;
+const HAND_BALL_FINGER = 0.025;
+/** Hands this much nearer the camera than each other (shoulder widths, by their size) settle which is in front. */
+const FRONT_HAND_MARGIN = 0.03;
+/**
+ * Moves that differ by less than this a sample (shoulder widths) are about equal (see `separateHands`). Otherwise the
+ * hand with the smaller move goes in front: sent in front by the video when the avatar had it behind, it went through
+ * the other on the way ("тигр", "бабочка").
+ */
+const FRONT_COST_EVEN = 0.02;
+/** The forward move is held this many samples either side of where it is needed, then smoothed, so it does not flicker. */
+const SEPARATE_HOLD = 10;
+const SEPARATE_SIGMA = 3;
+/** The hand in front is moved this much further (shoulder widths), as the arms' paths are smoothed after. */
+const SEPARATE_MARGIN = 0.01;
+/**
+ * The hand in front moves forward at most this far (shoulder widths), and the other one back for the rest, up to the
+ * second figure: as the hands come together the one that goes in front may still be behind (half a shoulder width in
+ * "соты"), and pushed forward all the way at once it went through the other.
+ */
+const MAX_FRONT_MOVE = 0.2;
+const MAX_BACK_MOVE = 0.1;
+
+type HandBall = { from: THREE.Object3D; to?: THREE.Object3D; radius: number };
+
+/**
+ * The palm and the fingers' first bones only: the hands are not to go through each other's palms, but fingers do lace and
+ * thumbs hook round each other ("бабочка", "соты"), and kept apart whole they stood a third of a shoulder width apart.
+ */
+function handBalls(root: THREE.Object3D, side: Side): HandBall[] | undefined {
+  const bone = (name: string) => root.getObjectByName(`${side}${name}`) ?? undefined;
+  const wrist = bone("Hand");
+  if (!wrist) return undefined;
+  const balls: HandBall[] = [{ from: wrist, radius: HAND_BALL_PALM }];
+  for (const finger of ["Index", "Middle", "Ring", "Pinky"]) {
+    const knuckle = bone(`Hand${finger}1`);
+    const middle = bone(`Hand${finger}2`);
+    if (!knuckle || !middle) return undefined;
+    balls.push({ from: wrist, to: knuckle, radius: HAND_BALL_PALM });
+    balls.push({ from: knuckle, radius: HAND_BALL_KNUCKLE });
+    balls.push({ from: knuckle, to: middle, radius: HAND_BALL_FINGER });
+  }
+  return balls;
+}
+
+function separateHands({ root, body, count, arms, handLimbs, plans, handWorld, toWorld, bodyAhead }: {
+  root: THREE.Object3D;
+  body: BodyFrame;
+  count: number;
+  arms: Partial<Record<Side, ArmRig>>;
+  handLimbs: Map<Side, Limb>;
+  plans: Record<Side, (ArmPlan | undefined)[]>;
+  handWorld: Record<Side, (THREE.Quaternion | undefined)[]>;
+  toWorld?: THREE.Quaternion;
+  bodyAhead?: { ahead: Record<Side, Float32Array> };
+}) {
+  const balls = { Left: handBalls(root, "Left"), Right: handBalls(root, "Right") };
+  const arm = { Left: arms.Left, Right: arms.Right };
+  if (!balls.Left || !balls.Right || !arm.Left || !arm.Right) return;
+  const bones = [...handLimbs.values()].flatMap((limb) => limb.bones.map(({ bone }) => bone));
+  const armBones = [arm.Left.upper.bone, arm.Left.fore.bone, arm.Right.upper.bone, arm.Right.fore.bone];
+  const saved = [...bones, ...armBones].map((bone) => bone.quaternion.clone());
+  const rootWorld = root.getWorldQuaternion(new THREE.Quaternion());
+  const point = new THREE.Vector3();
+  const other = new THREE.Vector3();
+  const where = (ball: HandBall) => {
+    point.setFromMatrixPosition(ball.from.matrixWorld);
+    if (ball.to) point.lerp(other.setFromMatrixPosition(ball.to.matrixWorld), 0.5);
+    return root.worldToLocal(point.clone()).sub(body.shoulderCenter).divideScalar(body.shoulderWidth);
+  };
+
+  // Per sample: how far forward the left hand must be of the right one for them not to meet (negative: the right of the
+  // left), and which the video has in front (positive: the left).
+  const leftAhead: number[] = new Array(count).fill(NaN);
+  const rightAhead: number[] = new Array(count).fill(NaN);
+  const order: number[] = new Array(count).fill(0);
+  for (let k = 0; k < count; k += 1) {
+    const left = plans.Left[k];
+    const right = plans.Right[k];
+    if (!left || !right) continue;
+    aimArm(arm.Left, left, { toWorld });
+    aimArm(arm.Right, right, { toWorld });
+    for (const [side, limb] of handLimbs) {
+      for (const { bone, values } of limb.bones) readQuaternion(values, k, bone.quaternion);
+      const palm = handWorld[side][k];
+      const wrist = limb.bones[0].bone;
+      if (palm && wrist.parent && limb.tracked[k]) {
+        wrist.parent.updateWorldMatrix(true, false);
+        wrist.quaternion.copy(wrist.parent.getWorldQuaternion(new THREE.Quaternion()).invert().multiply(rootWorld).multiply(palm));
+      }
+    }
+    root.updateMatrixWorld(true);
+    const a = balls.Left.map((ball) => ({ at: where(ball), radius: ball.radius }));
+    const b = balls.Right.map((ball) => ({ at: where(ball), radius: ball.radius }));
+    let needLeft = -Infinity;
+    let needRight = -Infinity;
+    for (const p of a) {
+      for (const q of b) {
+        const reach = p.radius + q.radius;
+        const across = Math.hypot(p.at.x - q.at.x, p.at.y - q.at.y);
+        if (across >= reach) continue;
+        const depth = Math.sqrt(reach * reach - across * across);
+        needLeft = Math.max(needLeft, depth - (p.at.z - q.at.z));
+        needRight = Math.max(needRight, depth - (q.at.z - p.at.z));
+      }
+    }
+    leftAhead[k] = needLeft;
+    rightAhead[k] = needRight;
+    const sizeL = bodyAhead?.ahead.Left[k];
+    const sizeR = bodyAhead?.ahead.Right[k];
+    const measured = sizeL !== undefined && sizeR !== undefined && Number.isFinite(sizeL) && Number.isFinite(sizeR) ? sizeL - sizeR : NaN;
+    const palmZ = (side: HandBall[]) => {
+      const at = where(side[0]);
+      return at.z;
+    };
+    order[k] = Math.abs(measured) > FRONT_HAND_MARGIN ? Math.sign(measured) : Math.sign(palmZ(balls.Left) - palmZ(balls.Right)) * 0.5;
+  }
+
+  // Over each stretch where the hands meet, one of them is in front all along: the one the samples mostly say.
+  const meets = leftAhead.map((need, k) => (need > 0 || rightAhead[k] > 0 ? 1 : 0));
+  const move: Record<Side, number[]> = { Left: new Array(count).fill(0), Right: new Array(count).fill(0) };
+  for (const [start, end] of touchRuns(meets)) {
+    // The hand that has to move the least to be in front all along, so neither goes through the other on its way; the
+    // video's word decides only between about equal moves.
+    let vote = 0;
+    let costLeft = 0;
+    let costRight = 0;
+    for (let k = start; k < end; k += 1) {
+      vote += order[k];
+      costLeft += Math.max(0, leftAhead[k]);
+      costRight += Math.max(0, rightAhead[k]);
+    }
+    const even = Math.abs(costLeft - costRight) < FRONT_COST_EVEN * (end - start);
+    const front: Side = even ? (vote >= 0 ? "Left" : "Right") : costLeft < costRight ? "Left" : "Right";
+    const back: Side = front === "Left" ? "Right" : "Left";
+    const need = front === "Left" ? leftAhead : rightAhead;
+    for (let k = start; k < end; k += 1) {
+      const total = need[k] > 0 ? need[k] + SEPARATE_MARGIN : 0;
+      move[front][k] = Math.min(total, MAX_FRONT_MOVE);
+      move[back][k] = -Math.min(Math.max(total - MAX_FRONT_MOVE, 0), MAX_BACK_MOVE);
+    }
+  }
+  const reach = Math.ceil(SEPARATE_SIGMA * 3);
+  for (const side of ["Left", "Right"] as const) {
+    // The largest move either way within the hold, forward or back.
+    const held = move[side].map((_, k) => {
+      let most = 0;
+      for (let j = Math.max(0, k - SEPARATE_HOLD); j <= Math.min(count - 1, k + SEPARATE_HOLD); j += 1) {
+        if (Math.abs(move[side][j]) > Math.abs(most)) most = move[side][j];
+      }
+      return most;
+    });
+    for (let k = 0; k < count; k += 1) {
+      const plan = plans[side][k];
+      if (!plan) continue;
+      let sum = 0;
+      let weight = 0;
+      for (let j = Math.max(0, k - reach); j <= Math.min(count - 1, k + reach); j += 1) {
+        const w = Math.exp(-0.5 * ((j - k) / SEPARATE_SIGMA) ** 2);
+        sum += w * held[j];
+        weight += w;
+      }
+      const forward = (sum / weight) * body.shoulderWidth;
+      plan.target.z += forward;
+      plan.hint.z += forward;
+    }
+  }
+  [...bones, ...armBones].forEach((bone, i) => bone.quaternion.copy(saved[i]));
+  root.updateMatrixWorld(true);
+}
+
 function bringHandsTogether({ gesture, aspect, root, count, armLimbs, handLimbs, plans, palmLength }: {
   gesture: GestureJson;
   aspect: number;
@@ -1312,6 +1492,7 @@ export function bakeAnimation({ gesture: source, aspect, arms, hands, body, root
   }
 
   if (root) bringHandsTogether({ gesture, aspect, root, count, armLimbs, handLimbs, plans, palmLength });
+  if (root && body) separateHands({ root, body, count, arms, handLimbs, plans, handWorld, toWorld, bodyAhead });
 
   // Last, with every hand finished, each arm is checked against the torso once more. An arm that was not tracked is eased
   // in target space: its wrist travels from where it was to where it goes next, with the torso checked at every step.
