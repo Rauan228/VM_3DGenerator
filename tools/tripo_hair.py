@@ -36,10 +36,10 @@ HAIRLINE_THICK = 0.0012
 HAIR_ROUGHNESS = 0.6
 # Locks: spacing of their roots, width at the root, flatness (thickness over width), lengths (top, sides and back,
 # fringe), how high over the underlayer they lie, how much they wander and curl, and the sweep of the front.
-SPACING = 0.006
+SPACING = 0.0052
 WIDTH = 0.014
 FLAT = 0.5
-LENGTH = {"top": 0.036, "side": 0.024, "fringe": 0.034}
+LENGTH = {"top": 0.036, "side": 0.024}
 LIFT = (0.0008, 0.0032)
 WANDER_DEGREES = 8
 CURL_DEGREES = (25, 80)
@@ -50,7 +50,7 @@ STEPS = 14
 SIDES = 8
 LOCK_SHADE = (0.86, 1.06)
 # A lock may run this many steps past the hair (over the ears and the neck the hair ends).
-OVERHANG_STEPS = 2
+OVERHANG_STEPS = 1
 LIGHTER = 1.3
 
 
@@ -84,12 +84,14 @@ def _normals(mesh, inverse, count):
     return normals / np.maximum(np.linalg.norm(normals, axis=1, keepdims=True), 1e-12)
 
 
-def underlayer(mesh, hair, keep_out, forehead=None, forehead_x=None, hairline=None):
+def underlayer(mesh, hair, keep_out, forehead=None, forehead_x=None, hairline=None, front=None, skull_x=None):
     """Turn Tripo's hair into the scalp's underlayer (moves the mesh's vertices): closed over blotches, never
     `keep_out`; `forehead` vertices (the fringe's ragged tips under the hairline, which hung over the forehead in
     folds) laid onto the forehead's surface, `forehead_x(y, z)`, and smoothed into it. Returns the hair vertices and the
     frame the locks are combed in. The hair's front edge (`hairline` vertices) is laid back onto the forehead too: left
-    standing out, it made a ledge of skin under the fringe."""
+    standing out, it made a ledge of skin under the fringe. `front` (vertex weights) lays the front of the head over
+    the brows back onto the skull's front, `skull_x(y, z)`: Tripo's fringe stood out there as a slab, dark over a
+    crumpled band of skin, and the swept-up locks give the hair its volume instead."""
     pos, inverse, edges = _weld(mesh)
     region = np.zeros(len(pos), bool)
     region[inverse[hair & ~keep_out]] = True
@@ -141,6 +143,18 @@ def underlayer(mesh, hair, keep_out, forehead=None, forehead_x=None, hairline=No
             pos[edge] = mean(pos)[edge] * 0.5 + pos[edge] * 0.5
         pos[edge, 0] = np.minimum(pos[edge, 0], forehead_x(pos[edge, 1], pos[edge, 2]) + HAIRLINE_THICK)
         print("hair's front edge laid on the forehead:", int(edge.sum()), "vertices")
+    if front is not None and skull_x is not None:
+        weight = np.zeros(len(pos))
+        np.maximum.at(weight, inverse, front)
+        moving = weight > 0
+        for _ in range(3):
+            target = skull_x(pos[moving, 1], pos[moving, 2]) + np.where(region[moving], HAIRLINE_THICK, 0.0)
+            pos[moving, 0] = pos[moving, 0] + (np.minimum(pos[moving, 0], target) - pos[moving, 0]) * weight[moving]
+            for _ in range(8):
+                pos[moving] = mean(pos)[moving] * 0.5 + pos[moving] * 0.5
+        target = skull_x(pos[moving, 1], pos[moving, 2]) + np.where(region[moving], HAIRLINE_THICK, 0.0)
+        pos[moving, 0] = pos[moving, 0] + (np.minimum(pos[moving, 0], target) - pos[moving, 0]) * weight[moving]
+        print("front of the head laid on the skull:", int(moving.sum()), "vertices")
     for i, v in enumerate(mesh.vertices):
         v.co = pos[inverse[i]]
     mesh.update()
@@ -157,7 +171,7 @@ def underlayer(mesh, hair, keep_out, forehead=None, forehead_x=None, hairline=No
 
 def paint_underlayer(texture, normal_map, orm, texels, colour, weight=None, seed=5):
     """Paint the underlayer a flat dark brown (a little mottled), its relief and shine flattened; `weight(points)`, if
-    given, blends it in (the fringe's edge over the brows)."""
+    given, blends it in (a soft hairline)."""
     rng = np.random.default_rng(seed)
     base = np.array(colour) * UNDERLAYER_SHADE
     for rows, cols, points, normal in texels:
@@ -173,42 +187,79 @@ def paint_underlayer(texture, normal_map, orm, texels, colour, weight=None, seed
 
 
 def _flow(p, n, frame, angle):
-    """The direction the hair is combed at `p` (normal `n`): away from the whorl along the head, swept toward the
-    character's left in front, turned by `angle` (radians) about the normal."""
+    """The direction the hair is combed at `p` (normal `n`): at the back and sides away from the whorl, down the head;
+    in front swept up off the forehead and back, and toward the character's left (as in the reference; a fringe
+    combed down over the forehead read as a dark band over the brows); turned by `angle` (radians) about the normal."""
     away = p - frame["whorl"]
-    d = away - n * (away @ n)
-    front = max(0.0, min(1.0, (p[0] - frame["centre"][0]) / frame["size"]))
-    d = d / max(np.linalg.norm(d), 1e-9) + SWEEP * front * np.array([0.0, 1.0, -0.3])
+    down = away - n * (away @ n)
+    down /= max(np.linalg.norm(down), 1e-9)
+    front = (p[0] - frame["centre"][0]) / frame["size"]
+    swept = max(0.0, min(1.0, (front - 0.1) / 0.45))
+    swept = swept * swept * (3 - 2 * swept)
+    d = down * (1 - 2 * swept) + SWEEP * swept * np.array([0.0, 1.0, 0.25])
     d -= n * (d @ n)
     d /= max(np.linalg.norm(d), 1e-9)
     b = np.cross(n, d)
     return d * math.cos(angle) + b * math.sin(angle)
 
 
+def hairline_weight(mesh, hair, soft=0.0025):
+    """A function of points: 0 at the hair's edge, 1 once `soft` (model units) inside it, for a soft hairline."""
+    from mathutils.kdtree import KDTree
+
+    pos, inverse, edges = _weld(mesh)
+    region = np.zeros(len(pos), bool)
+    region[inverse[hair]] = True
+    edge = region & _grow(~region, edges, 1)
+    tree = KDTree(int(edge.sum()))
+    for k, i in enumerate(np.where(edge)[0]):
+        tree.insert(pos[i], k)
+    tree.balance()
+
+    def weight(points):
+        d = np.array([tree.find(Vector(p))[2] for p in points])
+        t = np.clip(d / soft, 0, 1)
+        return 0.8 + 0.2 * t * t * (3 - 2 * t)
+
+    return weight
+
+
 def _outward(n, p, frame):
     return -n if n @ (p - frame["centre"]) < 0 else n
 
 
-def locks(body, hair, frame, colour, lowest_z, seed=7):
-    """The locks, as a new object (TM_hair) in the body's space. `lowest_z`: the fringe goes no lower (over the brows)."""
+def locks(body, hair, frame, colour, floor_z, seed=7):
+    """The locks, as a new object (TM_hair) in the body's space. No lock goes below `floor_z` (the top of the neck:
+    the locks at the back ran down into the hood)."""
     mesh = body.data
     rng = np.random.default_rng(seed)
     co = [v.co.copy() for v in mesh.vertices]
     tree = BVHTree.FromPolygons(co, [tuple(p.vertices) for p in mesh.polygons])
-    # Roots: hair vertices spread SPACING apart (a grid hash keeps it quick).
+    # Roots: hair vertices spread SPACING apart (a grid hash keeps it quick), the hairline in front first and closer
+    # together, so the hair's edge there is made of locks' roots rather than the bare underlayer.
     candidates = np.where(hair)[0]
     rng.shuffle(candidates)
+    pos_all = np.array([c[:] for c in co])
+    edge = np.zeros(len(co), bool)
+    for e in mesh.edges:
+        a, b = e.vertices
+        if hair[a] != hair[b]:
+            edge[a if hair[a] else b] = True
+    in_front = edge & (pos_all[:, 0] - frame["centre"][0] > 0.45 * frame["size"])
+    candidates = np.concatenate([np.where(in_front)[0], candidates[~in_front[candidates]]])
     taken, grid = [], {}
     for i in candidates:
         p = np.array(co[i][:])
         cell = tuple(np.floor(p / SPACING).astype(int))
         near = [q for dx in (-1, 0, 1) for dy in (-1, 0, 1) for dz in (-1, 0, 1)
                 for q in grid.get((cell[0] + dx, cell[1] + dy, cell[2] + dz), [])]
-        if all(np.linalg.norm(p - q) >= SPACING for q in near):
+        spacing = SPACING * (0.6 if in_front[i] else 1.0)
+        if all(np.linalg.norm(p - q) >= spacing for q in near):
             grid.setdefault(cell, []).append(p)
             taken.append(p)
     verts, faces, colours = [], [], []
     base = np.array(colour) * LIGHTER
+    stops = {"outside": 0, "floor": 0, "short": 0}
     for root in taken:
         hit, normal, _, _ = tree.find_nearest(Vector(root))
         if hit is None:
@@ -217,7 +268,7 @@ def locks(body, hair, frame, colour, lowest_z, seed=7):
         n = _outward(np.array(normal[:]), p, frame)
         height = (p[2] - frame["centre"][2]) / frame["size"]
         front = (p[0] - frame["centre"][0]) / frame["size"]
-        kind = "fringe" if front > 0.45 and height > -0.2 else "top" if height > 0.35 else "side"
+        kind = "top" if height > 0.35 or front > 0.45 else "side"
         length = LENGTH[kind] * rng.uniform(0.75, 1.15)
         turn = math.radians(rng.uniform(-WANDER_DEGREES, WANDER_DEGREES))
         curl = math.radians(rng.uniform(*CURL_DEGREES)) * rng.choice([-1, 1])
@@ -234,14 +285,16 @@ def locks(body, hair, frame, colour, lowest_z, seed=7):
             hit, normal, index, _ = tree.find_nearest(Vector(point))
             if hit is None:
                 break
-            if kind != "fringe" and not any(hair[v] for v in mesh.polygons[index].vertices):
+            if not any(hair[v] for v in mesh.polygons[index].vertices):
                 outside += 1
                 if outside > OVERHANG_STEPS:
+                    stops["outside"] += 1
                     break
             surface = np.array(hit[:])
             n = _outward(np.array(normal[:]), surface, frame)
             place = surface + n * lift
-            if kind == "fringe" and place[2] < lowest_z:
+            if place[2] < floor_z:
+                stops["floor"] += 1
                 break
             path.append(place)
             # Combed, then curling about the normal toward the tip.
@@ -253,6 +306,7 @@ def locks(body, hair, frame, colour, lowest_z, seed=7):
             frames.append((d.copy(), n.copy()))
             point = surface + d * step
         if len(path) < 4:
+            stops["short"] += 1
             continue
         start = len(verts)
         count = len(path)
@@ -295,5 +349,5 @@ def locks(body, hair, frame, colour, lowest_z, seed=7):
     hair_mesh.materials.append(material)
     obj = bpy.data.objects.new("TM_hair", hair_mesh)
     bpy.context.collection.objects.link(obj)
-    print("hair locks", len(taken), "vertices", len(verts))
+    print("hair locks", len(taken), "vertices", len(verts), "stopped:", stops)
     return obj

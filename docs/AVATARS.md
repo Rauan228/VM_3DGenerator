@@ -22,7 +22,9 @@
    the reference's colour (sampled there) with radial fibres, a lighter ring round the pupil and a dark ring at its
    edge, at least 0.52 of the opening's height across (MediaPipe reads these cartoon irises at about half), a black
    pupil, under a clear-coated cornea that bulges a little in front, whose highlights make the eye look wet; skinned
-   to `LeftEye`/`RightEye`. The lids get their thickness, their edge turning in to a pink margin and down onto the ball
+   to `LeftEye`/`RightEye`. The texture is laid out from the pupil outward (to 100° round the ball): mapped round a
+   pole at the pupil, it was squeezed to a point there, the GPU took a blur of iris and white from afar, and the
+   irises looked grey and the eyes frightening. The lids get their thickness, their edge turning in to a pink margin and down onto the ball
    with a dark line where they meet it (kept on the ball through every lid shape), and single thin lashes stand on
    the upper lid (longer and flicking out at the outer corner for the girl, a few short ones on her lower lid, short
    for the boy), closing with it. The lids' inside and the lashes are painted into free squares of the body's texture,
@@ -52,17 +54,19 @@
    exporter writes those for every vertex, and the build rewrites them as sparse (46 MB → 11–12 MB a file).
 
    The boy's hair is cut anew (`tools/tripo_hair.py`, 2026-11-12; Tripo gave him a dark lumpy cap with blotches
-   painted in it and a fringe ending in ragged tips over the forehead, and repainting and combing the cap still left a
-   cap): Tripo's hair becomes the scalp's dark underlayer, sunk 7 mm into the head, smoothed, painted flat dark brown;
-   in front the hairline is a smooth arc at the height of the fringe's main edge, and the fringe's tips below it, down
-   to a little over the brows, are laid onto the forehead's surface (carried up from the skin round the brows), as is
-   the hair's front edge. On it grow about 500 locks (`TM_hair`, skinned to the head): flattened tubes tapering to a
-   third, lying along the head in the direction the hair is combed (away from the whorl at the top of the back, swept
-   toward the character's left in front), turning a little at random and curling at the end, the fringe's over the
-   forehead down to just over the brows, the others ending where the hair does; brown from the reference, darker at
-   the root, each lock its own shade (vertex colours). The face's texture above the part taken from the reference
-   (both avatars) is repainted in the reference's skin colour up to the hair: Tripo's own forehead showed there a shade
-   off, with a hard edge, and under the boy's fringe a light brown band.
+   painted in it and a fringe hanging over the forehead as a second layer of surface, ending in ragged tips; repainting
+   and combing the cap still left a cap, and laying the fringe onto the forehead crumpled it, the two layers lying on
+   one place): the fringe's faces with skin just behind them, or facing down, are taken away; the front of the head
+   over the brows is laid back onto the skull's front (the forehead's line over the brows, leaning back 12° and
+   curving back); Tripo's hair becomes the scalp's dark underlayer, sunk 7 mm, smoothed, painted flat dark brown with a
+   soft edge; on it grow about 600 locks (`TM_hair`, skinned to the head): flattened tubes tapering to a third, combed
+   down from the whorl at the back and sides and swept up off the forehead and toward the character's left in front
+   (as in the reference), the front hairline made of their roots, none below the top of the neck or past the hair's
+   edge; brown from the reference, darker at the root, each its own shade (vertex colours, converted to linear). The
+   face's texture above the part taken from the reference (both avatars) is repainted in the reference's skin colour
+   up to the hair (Tripo's own forehead showed a shade off, with a hard edge); the hood's shadow Tripo painted on the
+   boy's neck is painted out, and the hood's inside round the neck (painted dark and spotted like hair) is the
+   hoodie's colour in shadow.
 
    The chest print is a decal of its own (`TM_print`): a copy of the hoodie's surface under the letters, lifted 1.5 mm
    and skinned like it, textured with the team's wordmark "Til Mind" (`assets/logo/til-mind-text.png`, made by

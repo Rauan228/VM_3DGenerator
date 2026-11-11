@@ -32,13 +32,16 @@ from tripo_mouth import paint_bands
 IRISES = ((468, (469, 470, 471, 472)), (473, (474, 475, 476, 477)))
 # The pupil's radius as a share of the iris's, and the cornea's bulge in front of the ball (r) over the iris and a little
 # past it.
-PUPIL = 0.42
+PUPIL = 0.36
 CORNEA_BULGE = 0.07
 CORNEA_REACH = 1.2
-EYE_TEXTURE = (512, 256)
-# The iris is at least this share of the opening's height across (radius): MediaPipe reads the painted irises of
-# these cartoon eyes as about half their size, and the eyes stared with white all round.
-IRIS_OF_OPENING = 0.52
+EYE_TEXTURE = (512, 512)
+# The texture reaches this far round the ball from the pupil (radians); the back is never seen.
+THETA_MAX = math.radians(100)
+# The iris is at least this share of the opening's height across (radius; a person's is taller than the opening, its
+# top under the upper lid): MediaPipe reads the painted irises of these cartoon eyes as about half their size, and the
+# eyes stared with white all round.
+IRIS_OF_OPENING = 0.6
 # Kept this far (r) behind the skin in front of it.
 BEHIND_SKIN = 0.05
 SCLERA = (0.86, 0.84, 0.8)
@@ -80,12 +83,24 @@ def _iris(reference, all_points, ref_h, projection):
     return out
 
 
+def _eye_uv(local, forward, up, right):
+    """Texture coordinates of a direction from the eyeball's centre: the angle from the forward axis outward from the
+    middle of the texture (THETA_MAX at its edge), the azimuth round it. Mapped round a pole at the pupil instead
+    (u round the axis, v from the front), the texture squeezed to a point there, and seen from afar the GPU took a
+    blur of the whole iris and white: the irises looked grey and the eyes frightening."""
+    theta = math.acos(max(-1.0, min(1.0, float(local @ forward))))
+    phi = math.atan2(float(local @ up), float(local @ right))
+    rho = min(theta / THETA_MAX, 1.0)
+    return 0.5 + 0.5 * rho * math.cos(phi), 0.5 + 0.5 * rho * math.sin(phi)
+
+
 def _eye_texture(name, iris_colour, iris_angle, seed):
-    """The eye's texture: u around the eye's forward axis, v from the front (0) to the back (1)."""
+    """The eye's texture, laid out as _eye_uv reads it."""
     w, h = EYE_TEXTURE
     v, u = np.mgrid[0:h, 0:w]
-    theta = (v + 0.5) / h * math.pi
-    phi = (u + 0.5) / w * 2 * math.pi
+    a, b = (u + 0.5) / w * 2 - 1, (v + 0.5) / h * 2 - 1
+    theta = np.minimum(np.hypot(a, b), 1.0) * THETA_MAX
+    phi = np.arctan2(b, a)
     rng = np.random.default_rng(seed)
     pupil = iris_angle * PUPIL
     s = np.clip((theta - pupil) / (iris_angle - pupil), 0, 1)
@@ -157,19 +172,9 @@ def eyeballs(info, reference, all_points, ref_h, projection, body=None):
                     v.co.x = hit.x - BEHIND_SKIN * radius
         uv_layer = bm.loops.layers.uv.new()
         for face in bm.faces:
-            uvs = []
             for loop in face.loops:
                 local = (np.array(loop.vert.co[:]) - centre)
-                local /= np.linalg.norm(local)
-                theta = math.acos(max(-1.0, min(1.0, float(local @ forward))))
-                phi = math.atan2(float(local @ up), float(local @ right)) % (2 * math.pi)
-                uvs.append([phi / (2 * math.pi), theta / math.pi])
-            uvs = np.array(uvs)
-            # Faces across the seam of the azimuth: their low side goes past 1 (the texture repeats).
-            if np.ptp(uvs[:, 0]) > 0.5:
-                uvs[uvs[:, 0] < 0.5, 0] += 1
-            for loop, uv in zip(face.loops, uvs):
-                loop[uv_layer].uv = uv
+                loop[uv_layer].uv = _eye_uv(local / np.linalg.norm(local), forward, up, right)
             face.smooth = True
         mesh = bpy.data.meshes.new(f"TM_eye_{key}")
         bm.to_mesh(mesh)
@@ -184,7 +189,7 @@ def eyeballs(info, reference, all_points, ref_h, projection, body=None):
         texture.image = _eye_texture(f"TM_eye_{key}", iris["colour"], iris_angle, 3 if key == "L" else 5)
         material.node_tree.links.new(texture.outputs["Color"], bsdf.inputs["Base Color"])
         bsdf.inputs["Roughness"].default_value = 0.18
-        bsdf.inputs["Coat Weight"].default_value = 1.0
+        bsdf.inputs["Coat Weight"].default_value = 0.5
         bsdf.inputs["Coat Roughness"].default_value = 0.02
         mesh.materials.append(material)
         out.append((key, ball))
