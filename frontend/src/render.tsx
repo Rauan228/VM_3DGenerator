@@ -19,6 +19,8 @@ const FLOOR_Y = -1.12;
 const FRAMING = { male: { lookAt: 0.36, distance: 2.1 }, female: { lookAt: 0.3, distance: 1.95 } };
 /** Height of the lips, for `view=face` (as in the words viewer). */
 const FACE_Y = { male: 0.51, female: 0.42 };
+/** How far before the body's middle the lips are, for the face seen from the side. */
+const FACE_Z = 0.08;
 
 type RenderWindow = Window & {
   renderAt?: (seconds: number) => Promise<void>;
@@ -28,7 +30,14 @@ type RenderWindow = Window & {
   handFrames?: () => Record<string, { wrist: number[]; normal: number[]; along: number[] }>;
   /** For checking a pose: where the named bones are, in the scene. */
   bonePositions?: (names: string[]) => Record<string, number[]>;
+  /**
+   * For checking the mouth: draws the face shapes given (by name, Left/Right named apart) in place of the animation's
+   * mouth, the mouth's other shapes (mouth*, jaw*, tongue*) at 0; `undefined` gives the animation back.
+   */
+  setShapes?: (shapes?: Record<string, number>) => void;
 };
+
+const MOUTH_SHAPE = /^(mouth|jaw|tongue)/;
 
 function Driver({ time }: { time: React.MutableRefObject<number> }) {
   const { invalidate, gl, scene } = useThree();
@@ -41,6 +50,26 @@ function Driver({ time }: { time: React.MutableRefObject<number> }) {
         // One frame to draw, one more so the drawn frame is what the canvas shows.
         requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
       });
+    let shapes: Record<string, number> | undefined;
+    target.setShapes = (given) => {
+      shapes = given;
+      invalidate();
+    };
+    // After the animation has set the frame's shapes, before it is drawn.
+    // `hide=<name>,<name>` leaves those meshes out (to see what is behind them).
+    const hidden = new Set((new URLSearchParams(location.search).get("hide") ?? "").split(",").filter(Boolean));
+    scene.onBeforeRender = () => {
+      if (hidden.size) scene.traverse((object) => hidden.has(object.name) && (object.visible = false));
+      if (!shapes) return;
+      scene.traverse((object) => {
+        const mesh = object as THREE.Mesh;
+        if (!mesh.isMesh || !mesh.morphTargetDictionary || !mesh.morphTargetInfluences) return;
+        for (const [name, i] of Object.entries(mesh.morphTargetDictionary)) {
+          if (name in shapes!) mesh.morphTargetInfluences[i] = shapes![name];
+          else if (MOUTH_SHAPE.test(name)) mesh.morphTargetInfluences[i] = 0;
+        }
+      });
+    };
     target.handFrames = () => {
       const at = (name: string) => scene.getObjectByName(name)?.getWorldPosition(new THREE.Vector3());
       const out: Record<string, { wrist: number[]; normal: number[]; along: number[] }> = {};
@@ -70,8 +99,10 @@ function Driver({ time }: { time: React.MutableRefObject<number> }) {
 function Render() {
   const params = new URLSearchParams(location.search);
   const avatar = params.get("avatar") === "female" ? "female" : "male";
-  // For checking a pose: `view=mid` frames head to waist, `view=close` the chest and hands, `view=head` the head and shoulders, `view=face` the face close up (the lips), `view=side` looks from the avatar's right.
+  // For checking a pose: `view=mid` frames head to waist, `view=close` the chest and hands, `view=head` the head and shoulders, `view=face` the face close up (the lips), `face34` and `faceside` the same from three quarters and in profile (from the avatar's right), `view=side` looks from the avatar's right.
   const view = params.get("view");
+  // `model=<path>` loads another build of the avatar (a test build under /models), for checking it before it replaces the player's.
+  const model = params.get("model");
   const [gesture, setGesture] = useState<GestureJson>();
   const time = useRef(0);
 
@@ -96,20 +127,26 @@ function Render() {
                 ? [0, 0.5, 1.3]
                 : view === "face"
                   ? [0, FACE_Y[avatar] + 0.02, 0.62]
+                : view === "face34"
+                  ? [-0.4, FACE_Y[avatar] + 0.02, 0.48 + FACE_Z]
+                : view === "faceside"
+                  ? [-0.62, FACE_Y[avatar] + 0.02, FACE_Z]
                 : view === "mid"
                   ? [0, 0.3, 1.05]
                 : [0, FRAMING[avatar].lookAt + 0.05, FRAMING[avatar].distance]
         }
         fov={38}
         onUpdate={(self) =>
-          self.lookAt(0, view === "side" || view === "close" ? 0.12 : view === "face" ? FACE_Y[avatar] : view === "head" ? 0.42 : view === "mid" ? 0.3 : FRAMING[avatar].lookAt, 0)
+          view === "face34" || view === "faceside"
+            ? self.lookAt(0, FACE_Y[avatar], FACE_Z)
+            : self.lookAt(0, view === "side" || view === "close" ? 0.12 : view === "face" ? FACE_Y[avatar] : view === "head" ? 0.42 : view === "mid" ? 0.3 : FRAMING[avatar].lookAt, 0)
         }
       />
       <ambientLight intensity={0.8} />
       <directionalLight position={[2.4, 3.2, 2.2]} intensity={2.2} />
       <directionalLight position={[-2.2, 1.4, -1.2]} intensity={0.6} />
       <Suspense fallback={null}>
-        <AvatarRig url={MODELS[avatar]} position={[0, FLOOR_Y, 0]} gesture={gesture} time={0} timeSource={() => time.current} aspect={aspect} />
+        <AvatarRig url={model ? `/models/${model}` : MODELS[avatar]} position={[0, FLOOR_Y, 0]} gesture={gesture} time={0} timeSource={() => time.current} aspect={aspect} />
         <Driver time={time} />
       </Suspense>
     </Canvas>

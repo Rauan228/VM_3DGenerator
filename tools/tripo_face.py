@@ -6,9 +6,10 @@ eye, an open jaw leaves the painted lips closed. Here the face gets what an anim
 * the face is subdivided, so lids and lips have vertices to move;
 * each eye opening (from MediaPipe's eye contour on the reference image) is cut out of the skin and an eyeball is set
   behind it, textured with the painted eye and glossy, skinned to its own bone so it can look around;
-* the lips are split along the line between them, with a dark mouth cavity and teeth behind;
+* the lips are split along the line between them (the mouth behind them, the lips' volume and the jaw are
+  tripo_mouth.py's);
 * the shapes that matter most are built from that geometry rather than transferred: the blink closes the upper lid over
-  the eyeball, the jaw opens by turning the chin about the jaw's hinge.
+  the eyeball, the lips round for "o" and "u".
 
 Model space as Tripo exports it: the figure faces +X, its left is +Y, Z is up, one unit tall.
 """
@@ -16,7 +17,6 @@ Model space as Tripo exports it: the figure faces +X, its left is +Y, Z is up, o
 from __future__ import annotations
 
 import heapq
-import math
 
 import bmesh
 import bpy
@@ -38,8 +38,6 @@ SUBDIVIDE_CUTS = 2
 # How far above the drawn lip line (a share of the mouth's width) the lower side of the split may still reach: the
 # split follows mesh edges, so it wanders a little around the line.
 LIP_SLACK = 0.06
-# A jaw fully open turns the chin by this much.
-JAW_OPEN_DEGREES = 13.0
 # The eyeball's radius as a share of the eye opening's width.
 EYEBALL_RADIUS = 0.55
 
@@ -296,64 +294,6 @@ def lip_seam(body, projection, all_points, ref_h):
     return line, lower, upper
 
 
-def jaw_open_offsets(points, line, lower, chin_z, neck_z, jaw_half_width, edges, upper=()):
-    """The jaw opening: everything below the lips turns about the jaw's hinge (behind the mouth, at about the level of
-    the earlobes). The lower lip turns fully; the rest of the jaw follows by how far it is, over the skin, from the
-    lower lip, without crossing the split between the lips, so nothing above the mouth is dragged down. It fades out
-    toward the ears and down the neck."""
-    mid_y = float(np.mean(line[:, 0]))
-    seam_z = _interp_line(line, mid_y)
-    half_mouth = float(np.ptp(line[:, 0])) / 2
-    front_x = float(points[list(lower), 0].max()) if lower else float(points[:, 0].max())
-    depth = jaw_half_width * 1.6
-    pivot = np.array([front_x - depth, 0.0, seam_z + depth * 0.15])
-    angle = math.radians(JAW_OPEN_DEGREES)
-    c, s = math.cos(angle), math.sin(angle)
-
-    def upper_side(p):
-        # Between the corners the split separates the lips, so only the cheeks beyond the corners need keeping: above
-        # the corner's height they stay.
-        if abs(p[1] - mid_y) <= half_mouth:
-            return p[2] > _interp_line(line, p[1]) + LIP_SLACK * 2 * half_mouth
-        return p[2] >= _interp_line(line, mid_y + np.sign(p[1] - mid_y) * half_mouth) - 1e-5
-
-    neighbours = [[] for _ in range(len(points))]
-    for a, b in edges:
-        neighbours[a].append(b)
-        neighbours[b].append(a)
-    reach = jaw_half_width * 0.9
-    upper = set(upper)
-    dist = {i: 0.0 for i in lower}
-    queue = [(0.0, i) for i in lower]
-    heapq.heapify(queue)
-    while queue:
-        d, i = heapq.heappop(queue)
-        if d > dist.get(i, np.inf) or d > reach:
-            continue
-        for j in neighbours[i]:
-            pj = points[j]
-            if pj[0] < pivot[0] or upper_side(pj) or j in upper:
-                continue
-            nd = d + float(np.linalg.norm(pj - points[i]))
-            if nd < dist.get(j, np.inf):
-                dist[j] = nd
-                heapq.heappush(queue, (nd, j))
-    weight = np.zeros(len(points))
-    for i, d in dist.items():
-        t = 1 - min(d / reach, 1.0)
-        down = 1 - np.clip((chin_z - points[i][2]) / max(chin_z - neck_z, 1e-6), 0, 1)
-        if i in lower:
-            # The lower lip opens most in the middle and closes into the corners, as a mouth does.
-            across = np.clip((half_mouth - abs(points[i][1] - mid_y)) / (half_mouth * 0.6), 0, 1)
-            weight[i] = 0.25 + 0.75 * across * across * (3 - 2 * across)
-        else:
-            weight[i] = (t * t * (3 - 2 * t)) * (down * down * (3 - 2 * down)) * 0.25
-    rel = points - pivot
-    # Turning about the Y axis (the jaw's hinge runs left to right): +X (forward) goes down.
-    rotated = np.stack([rel[:, 0] * c + rel[:, 2] * s, rel[:, 1], -rel[:, 0] * s + rel[:, 2] * c], 1)
-    return (rotated - rel) * weight[:, None], pivot
-
-
 def blink_offsets(points, eye, close=0.97):
     """The upper lid of one eye coming down over the eyeball until it meets the lower lid; the lower lid rises a little.
     Skin is kept just outside the eyeball, so the lid slides over it rather than through it."""
@@ -394,14 +334,14 @@ def _smooth(t):
     return t * t * (3 - 2 * t)
 
 
-def lip_shapes(points, line, lower, front_x):
+def lip_shapes(points, line, lower, front_x, upper=()):
     """Pucker and funnel, the rounded lips of "o" and "u" that a signer's mouth forms with many words. The lips gather
     toward the middle and push forward; for the funnel they also part into a round opening. Built here because the
     transferred shapes barely move the painted lips of a Tripo face."""
     mid_y = float(np.mean(line[:, 0]))
     half = float(np.ptp(line[:, 0])) / 2
     seam_z = _interp_line(line, mid_y)
-    lower = set(lower)
+    lower, upper = set(lower), set(upper)
     pucker = np.zeros_like(points)
     funnel = np.zeros_like(points)
     for i, p in enumerate(points):
@@ -421,8 +361,10 @@ def lip_shapes(points, line, lower, front_x):
         forward = half * 0.4 * w * (0.4 + 0.6 * on_lips)
         offset = np.array([forward, -dy * gather, -(p[2] - seam_z) * 0.12 * w])
         pucker[i] = offset
-        # The funnel: the same, with the lips parted into a round opening, widest in the middle.
-        below = i in lower or dz < -1e-5
+        # The funnel: the same, with the lips parted into a round opening, widest in the middle. Which lip a vertex is
+        # on is the split's to say: it follows the mesh's edges and wanders a little either side of the drawn line, and
+        # upper-lip edge vertices below the line went down with the lower lip, hanging from it in red spikes.
+        below = i in lower if (i in lower or i in upper) else dz < -1e-5
         across = 1 - _smooth(abs(dy) / (half * 0.85))
         part = half * 0.2 * across * (1 - _smooth((abs(dz) - half * 0.05) / (half * 0.5)))
         funnel[i] = offset * np.array([0.8, 0.85, 1.0]) + np.array([part * 0.15, 0.0, -part if below else part * 0.6])
@@ -472,48 +414,3 @@ def brow_shapes(points, projection, all_points, ref_h, eyes):
             out["browInnerUp"][i] = [0.0, toward_middle * gap * 0.06 * w * (1 - t), gap * 0.5 * w * (1 - _smooth(t / 0.8))]
             out[f"browOuterUp{suffix}"][i] = [0.0, 0.0, gap * 0.45 * w * _smooth((t - 0.15) / 0.85)]
     return out
-
-
-def mouth_parts(rig_parent, line, pivot, lower_front_x, head_group="Head"):
-    """A dark cavity and two rows of teeth behind the lips. The lower teeth carry the jaw's jawOpen shape too."""
-    mid_y = float(np.mean(line[:, 0]))
-    seam_z = _interp_line(line, mid_y)
-    width = float(np.ptp(line[:, 0]))
-    parts = []
-
-    dark = bpy.data.materials.new("TM_mouth")
-    dark.use_nodes = True
-    bsdf = dark.node_tree.nodes["Principled BSDF"]
-    bsdf.inputs["Base Color"].default_value = (0.035, 0.008, 0.01, 1.0)
-    bsdf.inputs["Roughness"].default_value = 1.0
-    bsdf.inputs["Specular IOR Level"].default_value = 0.0
-    teeth_mat = bpy.data.materials.new("TM_teeth")
-    teeth_mat.use_nodes = True
-    tb = teeth_mat.node_tree.nodes["Principled BSDF"]
-    tb.inputs["Base Color"].default_value = (0.86, 0.84, 0.8, 1.0)
-    tb.inputs["Roughness"].default_value = 0.35
-
-    bpy.ops.mesh.primitive_uv_sphere_add(segments=20, ring_count=12, radius=1.0)
-    cavity = bpy.context.active_object
-    cavity.scale = (width * 0.5, width * 0.55, width * 0.4)
-    cavity.location = (lower_front_x - width * 0.75, mid_y, seam_z - width * 0.12)
-    bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
-    cavity.data.materials.append(dark)
-    cavity.name = cavity.data.name = "TM_mouth_cavity"
-    parts.append((cavity, False))
-
-    for name, dz, moves in (("TM_teeth_upper", width * 0.04, False), ("TM_teeth_lower", -width * 0.06, True)):
-        bpy.ops.mesh.primitive_cylinder_add(vertices=24, radius=width * 0.38, depth=width * 0.07, end_fill_type="NOTHING")
-        teeth = bpy.context.active_object
-        bm = bmesh.new()
-        bm.from_mesh(teeth.data)
-        # The front half of a ring: an arch of teeth.
-        bmesh.ops.delete(bm, geom=[v for v in bm.verts if v.co.x < width * 0.05], context="VERTS")
-        bm.to_mesh(teeth.data)
-        bm.free()
-        teeth.location = (lower_front_x - width * 0.5, mid_y, seam_z + dz)
-        bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
-        teeth.data.materials.append(teeth_mat)
-        teeth.name = teeth.data.name = name
-        parts.append((teeth, moves))
-    return parts

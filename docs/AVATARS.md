@@ -15,10 +15,27 @@
 
    The face is made animatable (`tools/tripo_face.py`): Tripo paints eyes and lips onto the skin, so the face is
    subdivided, the eye openings are cut out with glossy eyeballs behind (textured from the reference, skinned to
-   `LeftEye`/`RightEye`), and the lips are split along the line between them with a dark mouth cavity and teeth behind.
-   The shapes that matter most are built from that geometry instead of transferred: blink (upper lid over the eyeball),
-   jaw open (chin turned about the jaw's hinge, lower teeth with it), pucker/funnel (rounded lips), brows down / inner
-   up / outer up.
+   `LeftEye`/`RightEye`), and the lips are split along the line between them. The shapes that matter most are built
+   from that geometry instead of transferred: blink (upper lid over the eyeball), pucker/funnel (rounded lips), brows
+   down / inner up / outer up.
+
+   The mouth is built as a mouth (`tools/tripo_mouth.py`, 2026-11-11; before it the lips moved like a mask over the
+   face: paint on a flat surface around a dark plug, the lower lip sliding over a chin that hardly moved): the lips get
+   the volume of real lips from MediaPipe's outer lip contour (each lip's red stands out, the line between them lies
+   behind, the fold under the lower lip deepens) and an inner side, three rings turned in from the opening's edge and
+   coloured from the painted lip, so a parted mouth shows their thickness; their red is wet (low roughness in the ORM
+   map). `jawOpen` turns the whole mandible about the jaw joints (at the height of the bottom of the nose, 0.3 of the
+   way from the head bone to the lips) and slides it forward a little, as the condyles do, with the chin, the lower
+   lip, the lower teeth and the tongue, the cheeks and the skin under the chin stretching between; at 1 the lower lip
+   drops 0.58 of the mouth's width (23–25°). `mouthUpperUp`/`mouthLowerDown` lift the lips off the teeth (the
+   transferred ones barely moved the painted lips). Teeth stand in arches of a person's proportions (incisors, canine,
+   premolars and first molar a side, scaled to the mouth's width, the upper incisors over and before the lower) in
+   scalloped gums (`TM_teeth_*`, `TM_gums_*`); the tongue (`TM_tongue`) lies in the lower arch with shapes of its own,
+   `tongueTipUp` (tip on the ridge behind the upper teeth: т, д, н, л, р), `tongueBackUp` (к, г, х), `tongueFrontUp`
+   (и, й) and `tongueOut`; the cavity (`TM_mouth_cavity`) is lined inside, its floor going with the jaw and its front
+   with the skin. Everything inside is kept behind the skin in front of it and shaded darker deeper in through vertex
+   colours (the player has no ambient occlusion). The shapes carry normal offsets, so the light follows the lips; the
+   exporter writes those for every vertex, and the build rewrites them as sparse (46 MB → 11–12 MB a file).
 
    The chest print is a decal of its own (`TM_print`): a copy of the hoodie's surface under the letters, lifted 1.5 mm
    and skinned like it, textured with the team's wordmark "Til Mind" (`assets/logo/til-mind-text.png`, made by

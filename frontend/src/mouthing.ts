@@ -54,27 +54,31 @@ type Phone = { viseme: Viseme; vowel: boolean; stressed?: boolean; long?: boolea
  * to look unlike the others: lip reading tells the jaw's opening, rounded lips (о, у, ш), spread lips (и, э), lips shut
  * (б, п, м) and the lower lip under the teeth (в, ф) — little more, so those are made large. Both faces were modelled
  * with the corners of the mouth turned up, and every open shape read as a grin; a frown on the vowels and the slack
- * consonants brings the corners level. The small openings (и, т, с, й) are set so far that the man's lips part too:
- * his lips meet more fully at rest, and at the woman's values they stayed shut.
+ * consonants brings the corners level. The poses are set for the mouth of tools/tripo_mouth.py, whose jaw turns the
+ * whole mandible and whose lip shapes lift the lips off the teeth: the teeth show for и, э, с, з and the open vowels,
+ * as in speech, not on every sound. The tongue (the avatars' own shapes,
+ * tools/tripo_mouth.py) touches the ridge behind the upper teeth with its tip for т, д, н, л, р (half way for с, з,
+ * further back for ш, ж), lifts its back to the soft palate for к, г, х (less for ы, у, о) and its front toward the
+ * hard palate for и, й, э; for а it lies low.
  */
 const POSES: Record<Viseme, Record<string, number>> = {
   PP: { mouthPress: 0.7, mouthRollLower: 0.15, mouthRollUpper: 0.15, mouthFrown: 0.2 },
   FV: { jawOpen: 0.04, mouthRollLower: 0.7, mouthUpperUp: 0.3, mouthFrown: 0.25 },
-  TD: { jawOpen: 0.18, mouthUpperUp: 0.3, mouthLowerDown: 0.45, mouthFrown: 0.3 },
-  SZ: { jawOpen: 0.06, mouthStretch: 0.5, mouthUpperUp: 0.4, mouthLowerDown: 0.55, mouthFrown: 0.2 },
-  SH: { jawOpen: 0.12, mouthFunnel: 0.45, mouthPucker: 0.3, mouthUpperUp: 0.35, mouthLowerDown: 0.45 },
-  L: { jawOpen: 0.3, mouthUpperUp: 0.2, mouthLowerDown: 0.25, mouthFrown: 0.3 },
-  R: { jawOpen: 0.24, mouthUpperUp: 0.2, mouthLowerDown: 0.25, mouthFrown: 0.3 },
-  KG: { jawOpen: 0.28, mouthLowerDown: 0.15, mouthFrown: 0.35 },
-  J: { jawOpen: 0.12, mouthStretch: 0.5, mouthUpperUp: 0.3, mouthLowerDown: 0.45 },
-  A: { jawOpen: 0.85, mouthLowerDown: 0.4, mouthUpperUp: 0.2, mouthFrown: 0.3 },
-  AR: { jawOpen: 0.6, mouthLowerDown: 0.3, mouthUpperUp: 0.15, mouthFrown: 0.35 },
-  SCHWA: { jawOpen: 0.3, mouthLowerDown: 0.2, mouthFrown: 0.35 },
-  O: { jawOpen: 0.55, mouthFunnel: 0.6, mouthPucker: 0.2, mouthLowerDown: 0.15, mouthFrown: 0.2 },
-  U: { jawOpen: 0.22, mouthPucker: 1, mouthFunnel: 0.6, mouthFrown: 0.2 },
-  E: { jawOpen: 0.5, mouthStretch: 0.55, mouthLowerDown: 0.35, mouthUpperUp: 0.2, mouthFrown: 0.15 },
-  I: { jawOpen: 0.18, mouthStretch: 0.8, mouthSmile: 0.2, mouthUpperUp: 0.35, mouthLowerDown: 0.55 },
-  Y: { jawOpen: 0.3, mouthStretch: 0.4, mouthLowerDown: 0.4, mouthFrown: 0.35 },
+  TD: { jawOpen: 0.15, mouthUpperUp: 0.1, mouthLowerDown: 0.15, mouthFrown: 0.3, tongueTipUp: 0.9 },
+  SZ: { jawOpen: 0.06, mouthStretch: 0.45, mouthUpperUp: 0.3, mouthLowerDown: 0.4, mouthFrown: 0.2, tongueTipUp: 0.45, tongueFrontUp: 0.3 },
+  SH: { jawOpen: 0.12, mouthFunnel: 0.45, mouthPucker: 0.3, mouthUpperUp: 0.25, mouthLowerDown: 0.3, tongueTipUp: 0.65, tongueBackUp: 0.25 },
+  L: { jawOpen: 0.3, mouthUpperUp: 0.1, mouthLowerDown: 0.1, mouthFrown: 0.3, tongueTipUp: 1 },
+  R: { jawOpen: 0.24, mouthUpperUp: 0.1, mouthLowerDown: 0.1, mouthFrown: 0.3, tongueTipUp: 0.85 },
+  KG: { jawOpen: 0.28, mouthFrown: 0.35, tongueBackUp: 1 },
+  J: { jawOpen: 0.12, mouthStretch: 0.5, mouthUpperUp: 0.2, mouthLowerDown: 0.3, tongueFrontUp: 0.9 },
+  A: { jawOpen: 0.7, mouthLowerDown: 0.1, mouthUpperUp: 0.15, mouthFrown: 0.3 },
+  AR: { jawOpen: 0.45, mouthLowerDown: 0.05, mouthFrown: 0.35 },
+  SCHWA: { jawOpen: 0.25, mouthFrown: 0.35 },
+  O: { jawOpen: 0.5, mouthFunnel: 0.6, mouthPucker: 0.25, mouthFrown: 0.2, tongueBackUp: 0.35 },
+  U: { jawOpen: 0.2, mouthPucker: 1, mouthFunnel: 0.6, mouthFrown: 0.2, tongueBackUp: 0.55 },
+  E: { jawOpen: 0.35, mouthStretch: 0.45, mouthLowerDown: 0.15, mouthUpperUp: 0.15, mouthFrown: 0.15, tongueFrontUp: 0.45 },
+  I: { jawOpen: 0.15, mouthStretch: 0.7, mouthSmile: 0.15, mouthUpperUp: 0.25, mouthLowerDown: 0.35, tongueFrontUp: 0.8 },
+  Y: { jawOpen: 0.25, mouthStretch: 0.35, mouthLowerDown: 0.2, mouthFrown: 0.35, tongueBackUp: 0.5 },
   // Between two words: lips shut, corners level.
   REST: { mouthFrown: 0.3 },
 };
@@ -85,9 +89,11 @@ const POSES: Record<Viseme, Record<string, number>> = {
  * but let them round; ш, ж and the vowels set everything.
  */
 const LIP_SHAPES = new Set(["mouthFunnel", "mouthPucker", "mouthStretch", "mouthSmile", "mouthFrown"]);
+const TONGUE_SHAPES = ["tongueTipUp", "tongueBackUp", "tongueFrontUp"];
 const KEEPS_LIPS: Partial<Record<Viseme, Set<string>>> = {
-  PP: new Set(["mouthPucker", "mouthFrown"]),
-  FV: new Set(["mouthPucker", "mouthFrown"]),
+  // The lips shut or tucked, the tongue already where the next vowel wants it.
+  PP: new Set(["mouthPucker", "mouthFrown", ...TONGUE_SHAPES]),
+  FV: new Set(["mouthPucker", "mouthFrown", ...TONGUE_SHAPES]),
   TD: LIP_SHAPES,
   KG: LIP_SHAPES,
   L: LIP_SHAPES,
@@ -99,7 +105,7 @@ export const MOUTHED_SHAPES = [
   "jawOpen", "mouthClose", "mouthFunnel", "mouthPucker", "mouthRollLower", "mouthRollUpper", "mouthShrugLower",
   "mouthShrugUpper", "mouthPressLeft", "mouthPressRight", "mouthStretchLeft", "mouthStretchRight", "mouthLowerDownLeft",
   "mouthLowerDownRight", "mouthUpperUpLeft", "mouthUpperUpRight", "mouthFrownLeft", "mouthFrownRight", "mouthLeft",
-  "mouthRight", "jawForward", "jawLeft", "jawRight",
+  "mouthRight", "jawForward", "jawLeft", "jawRight", "tongueOut", ...TONGUE_SHAPES,
 ];
 export const ADDED_SHAPES = ["mouthSmileLeft", "mouthSmileRight"];
 /** The signer's smile is kept under the word at this share: whole, it turned every vowel into a grin. */

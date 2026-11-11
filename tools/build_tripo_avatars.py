@@ -18,6 +18,7 @@ import argparse
 import json
 import math
 import os
+import struct
 import sys
 
 import bmesh
@@ -31,6 +32,7 @@ sys.path.insert(0, os.path.join(ROOT, "tools"))
 import build_mpfb_avatars as mpfb  # noqa: E402
 import build_stylized_avatars as sty  # noqa: E402
 import tripo_face  # noqa: E402
+import tripo_mouth  # noqa: E402
 
 TRIPO = os.path.join(ROOT, "models", "tripo")
 # `ink`: colour of the chest print. White reads on the purple hoodie; on the light pink one it hardly shows, so the
@@ -251,6 +253,32 @@ def project_regions(mesh, texture, reference, projection, regions, normal_map=No
             nr, nc = (rows * nh) // texture.shape[0], (cols * nw) // texture.shape[1]
             flat = np.array([0.5, 0.5, 1.0])
             normal_map[nr, nc, :3] = normal_map[nr, nc, :3] * (1 - weight[:, None]) + flat * weight[:, None]
+        changed += int((weight > 0).sum())
+    return changed
+
+
+# The lips' red is wet: as rough as the skin, the lips shone like the cheeks and read as paint on them.
+LIP_ROUGHNESS = 0.3
+
+
+def wet_lips(mesh, orm, projection, polygon):
+    """Lower the roughness (the ORM map's green) over the lips' red, `polygon` in reference pixels (rows from the
+    bottom). Returns the number of texels changed."""
+    lo = min(p[1] for p in polygon) - FEATHER
+    hi = max(p[1] for p in polygon) + FEATHER
+    changed = 0
+
+    def keep(corners, normal):
+        if normal[0] < FACING_MIN:
+            return False
+        rows = projection.to_image(corners)[:, 1]
+        return rows.max() >= lo and rows.min() <= hi
+
+    for rows, cols, points, normal in rasterize(mesh, (orm.shape[1], orm.shape[0]), keep):
+        weight = smoothstep(polygon_distance(projection.to_image(points), polygon), -2, 3)
+        if not weight.any():
+            continue
+        orm[rows, cols, 1] = orm[rows, cols, 1] * (1 - weight) + LIP_ROUGHNESS * weight
         changed += int((weight > 0).sum())
     return changed
 
@@ -605,6 +633,83 @@ def from_face_frame(vectors, height):
     return np.stack([-vectors[..., 1], vectors[..., 0], vectors[..., 2]], -1) / height
 
 
+# A shape's normal offsets smaller than this are left out of the file (they do not show).
+MORPH_NORMAL_MIN = 0.002
+
+
+def sparse_morph_normals(path):
+    """Rewrite the shapes' normal offsets in a GLB as sparse (only the vertices whose shading changes). Blender writes
+    them for every vertex of the body, 52 shapes x 70 000 vertices: 36 MB of a 46 MB file."""
+    data = open(path, "rb").read()
+    json_length = struct.unpack_from("<I", data, 12)[0]
+    gl = json.loads(data[20:20 + json_length])
+    binary = data[20 + json_length + 8:]
+    views = gl["bufferViews"]
+    dropped = set()
+    added = []  # (bytes) appended as new views
+
+    def dense(accessor):
+        view = views[accessor["bufferView"]]
+        start = view.get("byteOffset", 0) + accessor.get("byteOffset", 0)
+        return np.frombuffer(binary, np.float32, accessor["count"] * 3, start).reshape(-1, 3)
+
+    for mesh in gl["meshes"]:
+        for primitive in mesh["primitives"]:
+            for target in primitive.get("targets", []):
+                if "NORMAL" not in target:
+                    continue
+                accessor = gl["accessors"][target["NORMAL"]]
+                if "bufferView" not in accessor or "sparse" in accessor:
+                    continue
+                values = dense(accessor)
+                keep = np.where(np.linalg.norm(values, axis=1) > MORPH_NORMAL_MIN)[0].astype(np.uint32)
+                dropped.add(accessor.pop("bufferView"))
+                accessor.pop("byteOffset", None)
+                if len(keep):
+                    added.append(keep.tobytes())
+                    added.append(np.ascontiguousarray(values[keep]).tobytes())
+                    accessor["sparse"] = {"count": int(len(keep)),
+                                          "indices": {"bufferView": len(views) + len(added) - 2, "componentType": 5125},
+                                          "values": {"bufferView": len(views) + len(added) - 1}}
+                accessor.pop("min", None)
+                accessor.pop("max", None)
+    # Rebuild the binary chunk without the dropped views, renumbering the rest.
+    chunks, remap, offset = [], {}, 0
+    new_views = []
+    sources = [(i, v, binary[v.get("byteOffset", 0):v.get("byteOffset", 0) + v["byteLength"]]) for i, v in enumerate(views)]
+    sources += [(len(views) + k, {"buffer": 0, "byteLength": len(b)}, b) for k, b in enumerate(added)]
+    for i, view, payload in sources:
+        if i in dropped:
+            continue
+        view = dict(view)
+        view["byteOffset"] = offset
+        view["byteLength"] = len(payload)
+        remap[i] = len(new_views)
+        new_views.append(view)
+        pad = (-len(payload)) % 4
+        chunks.append(payload + b"\0" * pad)
+        offset += len(payload) + pad
+    gl["bufferViews"] = new_views
+    for accessor in gl["accessors"]:
+        if "bufferView" in accessor:
+            accessor["bufferView"] = remap[accessor["bufferView"]]
+        if "sparse" in accessor:
+            accessor["sparse"]["indices"]["bufferView"] = remap[accessor["sparse"]["indices"]["bufferView"]]
+            accessor["sparse"]["values"]["bufferView"] = remap[accessor["sparse"]["values"]["bufferView"]]
+    for image in gl.get("images", []):
+        if "bufferView" in image:
+            image["bufferView"] = remap[image["bufferView"]]
+    new_binary = b"".join(chunks)
+    gl["buffers"][0]["byteLength"] = len(new_binary)
+    text = json.dumps(gl, separators=(",", ":")).encode()
+    text += b" " * ((-len(text)) % 4)
+    total = 12 + 8 + len(text) + 8 + len(new_binary)
+    with open(path, "wb") as out:
+        out.write(struct.pack("<III", 0x46546C67, 2, total))
+        out.write(struct.pack("<I", len(text)) + b"JSON" + text)
+        out.write(struct.pack("<I", len(new_binary)) + b"BIN\0" + new_binary)
+
+
 def build(key, spec, args, landmarks_all):
     S = mpfb.services()
     face_source = sty.mpfb_face(spec["gender"])
@@ -667,6 +772,8 @@ def build(key, spec, args, landmarks_all):
     z_hi = projection.to_model(0, print_rows[1] + 180)[1]
     print("back print texels", paint_out_back_print(mesh, texture, (z_lo, z_hi), cloth, normal_map, orm))
     if orm is not None:
+        lip_outline = [(lm["all"][i][0], ref_h - lm["all"][i][1]) for i in tripo_mouth.OUTER_UPPER + tripo_mouth.OUTER_LOWER[-2:0:-1]]
+        print("wet lip texels", wet_lips(mesh, orm, face_projection, lip_outline))
         orm_image = bpy.data.images.new(f"TM_{key}_orm", orm.shape[1], orm.shape[0], alpha=True, is_data=True)
         orm_image.colorspace_settings.name = "Non-Color"
         orm_image.pixels.foreach_set(orm.ravel())
@@ -692,6 +799,10 @@ def build(key, spec, args, landmarks_all):
     eye_info, eyeballs = tripo_face.carve_eyes(body, face_projection, all_pts, ref_h,
                                                os.path.join(TRIPO, f"{key}_v3_restyle_generated_image_url.png"))
     lip_line, lower_lip_verts, upper_lip_verts = tripo_face.lip_seam(body, face_projection, all_pts, ref_h)
+    # The lips get their volume and an inner side (see tripo_mouth.py).
+    lips = tripo_mouth.lip_contours(face_projection, all_pts, ref_h, lip_line)
+    print("lip vertices sculpted", tripo_mouth.sculpt_lips(body, lips, lower_lip_verts, upper_lip_verts))
+    inner_lip = tripo_mouth.inner_lips(body, lips, lower_lip_verts, upper_lip_verts)
     mesh = body.data
     points = np.array([v.co[:] for v in mesh.vertices])
 
@@ -736,14 +847,23 @@ def build(key, spec, args, landmarks_all):
     model_shapes["eyeSquintLeft"], model_shapes["eyeSquintRight"] = 0.3 * blink["L"], 0.3 * blink["R"]
     for look in [n for n in model_shapes if n.startswith("eyeLook")]:
         model_shapes[look] = np.zeros_like(points)
-    chin_z = float(target["chin"][2])
-    neck_model_z = float((rig.matrix_world @ rig.data.bones["mixamorig:Neck"].head_local).z)
-    jaw_half = float(abs(target["mouthL"][1] - target["mouthR"][1])) * 1.6
-    jaw, jaw_pivot = tripo_face.jaw_open_offsets(points, lip_line, lower_lip_verts, chin_z, neck_model_z, jaw_half,
-                                                 [tuple(e.vertices) for e in mesh.edges], upper_lip_verts)
-    model_shapes["jawOpen"] = jaw
-    model_shapes.update(tripo_face.lip_shapes(points, lip_line, lower_lip_verts, float(points[list(lower_lip_verts), 0].max())))
+    # The mandible turns as one piece about the jaw joints (tripo_mouth.py).
+    lower_front = float(points[list(lower_lip_verts), 0].max())
+    head_bone = np.array(rig.matrix_world @ rig.data.bones["mixamorig:Head"].head_local)
+    jaw_pivot = tripo_mouth.jaw_joint(lips, lower_front, head_bone)
+    jaw_angle, jaw_slide = tripo_mouth.jaw_motion(lips, lower_front, jaw_pivot)
+    mandible = tripo_mouth.mandible_weights(points, lips, lower_lip_verts, upper_lip_verts, jaw_pivot, np.array(target["chin"]), lower_front)
+    model_shapes["jawOpen"] = tripo_mouth.jaw_offsets(points, jaw_pivot, jaw_angle, jaw_slide, mandible)
+    print("jaw joint", jaw_pivot, "turn", math.degrees(jaw_angle), "head bone", head_bone, "lips front", lower_front)
+    model_shapes.update(tripo_face.lip_shapes(points, lip_line, lower_lip_verts, lower_front, upper_lip_verts))
+    model_shapes.update(tripo_mouth.lip_raise_shapes(points, lips, lower_lip_verts, upper_lip_verts))
     model_shapes.update(tripo_face.brow_shapes(points, face_projection, all_pts, ref_h, eye_info))
+    tripo_mouth.smooth_offsets(model_shapes, mesh, lips, float(target["chin"][2]), apart=set(inner_lip.values()))
+    # The lips' inner side goes with the edge it hangs from.
+    hanging = np.array(list(inner_lip.keys()), dtype=int)
+    edge = np.array(list(inner_lip.values()), dtype=int)
+    for delta in model_shapes.values():
+        delta[hanging] = delta[edge]
     if not mesh.shape_keys:
         body.shape_key_add(name="Basis", from_mix=False)
     for name in sorted(mpfb.arkit_names()):
@@ -763,17 +883,20 @@ def build(key, spec, args, landmarks_all):
 
     for side, ball in eyeballs:
         attach(ball, "LeftEye" if side == "L" else "RightEye")
-    lower_front = float(points[list(lower_lip_verts), 0].max())
-    for part, moves in tripo_face.mouth_parts(rig, lip_line, jaw_pivot, lower_front):
+    rim = sorted(set(inner_lip.values()))
+    mid_y = float(np.mean(lip_line[:, 0]))
+    middle = [i for i in rim if abs(points[i, 1] - mid_y) < 0.1 * np.ptp(lip_line[:, 0])]
+    seam_x = float(points[middle, 0].mean())
+    for part, shapes in tripo_mouth.mouth_interior(body, lips, lower_front, seam_x, jaw_pivot, jaw_angle, jaw_slide):
         attach(part, "mixamorig:Head")
-        if moves:
+        if part.name == "TM_mouth_cavity":
+            shapes.update(tripo_mouth.follow_skin(np.array([v.co[:] for v in part.data.vertices]), points, model_shapes, lips))
+        if shapes:
             co = np.array([v.co[:] for v in part.data.vertices])
-            rel = co - jaw_pivot
-            a = math.radians(tripo_face.JAW_OPEN_DEGREES)
-            turned = np.stack([rel[:, 0] * math.cos(a) + rel[:, 2] * math.sin(a), rel[:, 1], -rel[:, 0] * math.sin(a) + rel[:, 2] * math.cos(a)], 1)
             part.shape_key_add(name="Basis", from_mix=False)
-            block = part.shape_key_add(name="jawOpen", from_mix=False)
-            block.data.foreach_set("co", (turned + jaw_pivot).ravel())
+            for name, delta in shapes.items():
+                block = part.shape_key_add(name=name, from_mix=False)
+                block.data.foreach_set("co", (co + delta).ravel())
 
     # --- skeleton: Mixamo names without the prefix, eye bones, upright at real height
     for bone in rig.data.bones:
@@ -804,8 +927,9 @@ def build(key, spec, args, landmarks_all):
     out = os.path.join(args.out, f"tilmind-{key}.glb")
     bpy.ops.object.select_all(action="SELECT")
     bpy.ops.export_scene.gltf(filepath=out, export_format="GLB", export_yup=True, export_skins=True, export_morph=True,
-                              export_morph_normal=False, export_animations=False, export_image_format="WEBP",
+                              export_morph_normal=True, export_animations=False, export_image_format="WEBP",
                               export_image_quality=90)
+    sparse_morph_normals(out)
     if args.blend:
         bpy.ops.wm.save_as_mainfile(filepath=out.replace(".glb", ".blend"))
     print("WROTE", out, os.path.getsize(out))
