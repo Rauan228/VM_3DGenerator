@@ -8,8 +8,8 @@
    13,
    66
   ],
-  "gesture_id": "rsl-c304cdd0bcaa4d379360564c864b0403",
-  "source_video": "data/uploads/d20aafc3-аллигатор.mp4",
+  "gesture_id": "rsl-1a396739a1524088a277d8b6f1cc510f",
+  "source_video": "data/uploads/719da44c-аллигатор.mp4",
   "duration": 1.8,
   "expression_frames": 54
  },
@@ -36,8 +36,8 @@
    1,
    69
   ],
-  "gesture_id": "rsl-083ca01453d241e4bef5b2616d0617ba",
-  "source_video": "data/uploads/8a636db5-бабочка.mp4",
+  "gesture_id": "rsl-b821e4b507ae461e9eed255ed83e1467",
+  "source_video": "data/uploads/038adfd9-бабочка.mp4",
   "duration": 2.3,
   "expression_frames": 69
  },
@@ -190,8 +190,8 @@
    0,
    116
   ],
-  "gesture_id": "rsl-1855231429df4980af2cb7070ffead38",
-  "source_video": "data/uploads/06ebf3f7-адаптивное поведение.mp4",
+  "gesture_id": "rsl-a1717f00fd824fa893e9f7d033b44cc6",
+  "source_video": "data/uploads/deaad6a3-адаптивное поведение.mp4",
   "duration": 3.9,
   "expression_frames": 117
  },
@@ -246,8 +246,8 @@
    0,
    66
   ],
-  "gesture_id": "rsl-33229e8263d24015be5af97c6fc41da7",
-  "source_video": "data/uploads/f46c72bf-активный.mp4",
+  "gesture_id": "rsl-0abab9d73686480385699f8c5d5acd52",
+  "source_video": "data/uploads/89015ddc-активный.mp4",
   "duration": 2.2,
   "expression_frames": 66
  },
@@ -316,8 +316,8 @@
    6,
    87
   ],
-  "gesture_id": "rsl-8667ce7b5bc34008bd5e8b6cacbe8eb9",
-  "source_video": "data/uploads/4f5f9d2e-беспокоящий.mp4",
+  "gesture_id": "rsl-007d62fb7fa64c3ebf80b153067d9723",
+  "source_video": "data/uploads/7cd3b0ff-беспокоящий.mp4",
   "duration": 2.7,
   "expression_frames": 81
  },
@@ -428,8 +428,8 @@
    0,
    66
   ],
-  "gesture_id": "rsl-48ed8fea1720453fb169a74a44a6eea0",
-  "source_video": "data/uploads/abf1cc83-вилять.mp4",
+  "gesture_id": "rsl-b3bf2084828544b0b0d6a07f6e927700",
+  "source_video": "data/uploads/b39540aa-вилять.mp4",
   "duration": 2.2,
   "expression_frames": 66
  },
@@ -442,8 +442,8 @@
    18,
    94
   ],
-  "gesture_id": "rsl-b68cc7ab06524851a30a46acc16caa7d",
-  "source_video": "data/uploads/bd5b7e02-водоплавающее.mp4",
+  "gesture_id": "rsl-4bd0242643da4612ad1920a4a7bcecc0",
+  "source_video": "data/uploads/6567a56e-водоплавающее.mp4",
   "duration": 2.533333333333333,
   "expression_frames": 76
  },
@@ -512,8 +512,8 @@
    12,
    70
   ],
-  "gesture_id": "rsl-b7b8c646c57a40c7bcb6dfcd838f27dc",
-  "source_video": "data/uploads/8461c5a3-воротник.mp4",
+  "gesture_id": "rsl-72f713f687874a9db7fca8b1787d1495",
+  "source_video": "data/uploads/b9c76a9f-воротник.mp4",
   "duration": 1.9333333333333333,
   "expression_frames": 58
  },
@@ -3592,8 +3592,8 @@
    10,
    69
   ],
-  "gesture_id": "rsl-97ce0ca5d89243208a0c24ba532f3093",
-  "source_video": "data/uploads/31a6162d-тигр.mp4",
+  "gesture_id": "rsl-e3892ba5f6344d42ad9724138058c1ea",
+  "source_video": "data/uploads/4aedcf89-тигр.mp4",
   "duration": 2.0,
   "expression_frames": 60
  },
@@ -4054,8 +4054,8 @@
    0,
    63
   ],
-  "gesture_id": "rsl-ccda6a534f96442d9851143447776017",
-  "source_video": "data/uploads/6d2cf2ed-соты.mp4",
+  "gesture_id": "rsl-08e4f3bf588e4726a8429f6b6ab75b54",
+  "source_video": "data/uploads/600febbb-соты.mp4",
   "duration": 2.1,
   "expression_frames": 63
  },

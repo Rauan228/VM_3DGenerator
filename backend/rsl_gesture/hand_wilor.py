@@ -34,21 +34,11 @@ MIN_RUN = 3
 # A palm that turns further than this (degrees) from one frame to the next, and back within MAX_FLIP_FRAMES frames to
 # where it was (the frames either side agreeing within FLIP_AGREE), was read from the wrong side: a real hand does not
 # turn that far in a thirtieth of a second. On blurred frames WiLoR does so for one to four frames, 120 to 170 degrees
-# off ("водоплавающее", "аллигатор"), and the avatar's palm flapped over and back.
+# off ("водоплавающее", "аллигатор"), and the avatar's palm flapped over and back; a hand hidden behind the other one it
+# read turned over for five frames, coming back over two ("тигр").
 FLIP_TURN = 90.0
 FLIP_AGREE = 60.0
-MAX_FLIP_FRAMES = 4
-
-# The palm's turn is averaged over the frames within this much time either way, weighted as the fingers' shape is (see
-# STEADY_SECONDS). On blurred frames WiLoR reads the palm 20 to 45 degrees off from frame to frame, back and forth, and
-# the avatar's palms jerked ("бабочка" as the wings flap); a sharp frame outweighs the blurred ones around it and stays
-# nearly as read, so a quick real turn keeps its timing.
-PALM_SECONDS = 0.07
-PALM_SIGMA_SECONDS = 0.05
-# Sharpness counts less for the palm than for the fingers (the square root of their weight, a sharp frame outweighing a
-# blurred one about threefold): weighted in full, the turn held still between sharp frames and leapt as one came into
-# reach, 40 degrees in a frame in "бык" where WiLoR read 23.
-PALM_SHARP_SHARE = 0.5
+MAX_FLIP_FRAMES = 6
 
 # Each finger's shape is taken from the frames within this much time either way, weighted by how sharp each frame is
 # and by its distance in time: the shape the most weight agrees on (within STEADY_AGREE degrees per bone, on average),
@@ -112,7 +102,6 @@ def add_wilor_hands(video_path: str | Path, tracks: dict[str, list[LandmarkFrame
         rows = rows[np.argsort(frames[rows])]
         keep[rows[_drop_flips(frames[rows], points3d[rows])]] = False
         rows = rows[keep[rows]]
-        points2d[rows], points3d[rows] = _steady_palm(frames[rows], points2d[rows], points3d[rows], weights[rows], fps)
         points2d[rows], points3d[rows] = _steady_fingers(frames[rows], points2d[rows], points3d[rows], weights[rows], fps)
     for side in SIDES:
         tracks[side] = [frame.model_copy(update={"landmarks": []}) for frame in tracks[side]]
@@ -220,36 +209,6 @@ def _sharpness(image: np.ndarray, points: np.ndarray) -> float:
     gradient = np.hypot(cv2.Sobel(gray, cv2.CV_32F, 1, 0), cv2.Sobel(gray, cv2.CV_32F, 0, 1))
     spread = float(gray[inside].std())
     return float(np.percentile(gradient[inside], 90)) / spread if spread > 1e-3 else float("nan")
-
-
-def _steady_palm(frames: np.ndarray, points2d: np.ndarray, points3d: np.ndarray, weights: np.ndarray, fps: float) -> tuple[np.ndarray, np.ndarray]:
-    """One hand's rows (in frame order) with each palm turned to the turn of the frames around it (see PALM_SECONDS),
-    the whole hand about its wrist: its shape and where it is stay as read."""
-    count = len(frames)
-    if count < 2:
-        return points2d, points3d
-    bases = _palm_bases(points3d)
-    reach = max(1, round(PALM_SECONDS * fps))
-    sigma = PALM_SIGMA_SECONDS * fps
-    new3d = points3d.copy()
-    for row in range(count):
-        near = np.flatnonzero(np.abs(frames - frames[row]) <= reach)
-        if len(near) < 2:
-            continue
-        weight = weights[near] ** PALM_SHARP_SHARE * np.exp(-0.5 * ((frames[near] - frames[row]) / sigma) ** 2)
-        # The weighted mean of the turns, made a rotation again (the nearest one to the mean of the matrices). Not the
-        # turn most of the weight agrees on, as for the fingers: between two readings of about equal weight that one
-        # jumped from frame to frame ("бык").
-        mean = (weight[:, None, None] * bases[near]).sum(axis=0)
-        u, _, vt = np.linalg.svd(mean)
-        turn = u @ vt
-        # The palm's axes are a left-handed set (`_palm_bases`); the mean has to stay one, not be mirrored.
-        if np.linalg.det(turn) * np.linalg.det(bases[row]) < 0:
-            u[:, -1] *= -1
-            turn = u @ vt
-        wrist = points3d[row, 0]
-        new3d[row] = wrist + (points3d[row] - wrist) @ bases[row].T @ turn
-    return _moved_in_picture(points2d, points3d, new3d), new3d
 
 
 def _moved_in_picture(points2d: np.ndarray, old3d: np.ndarray, new3d: np.ndarray) -> np.ndarray:

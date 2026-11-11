@@ -64,9 +64,9 @@ signs, the avatar's wrist is 0.05 shoulder widths from the tracked one (median; 
 of 64 hands), with the same steadiness; its finger segments point 2.9 degrees off the measured ones and its palm 2.5.
 WiLoR reads every frame on its own, and a hand blurred by fast movement it reads with less care, so its hands are
 cleaned against the frames around them before they are stored (`hand_wilor.py`). A palm that turns more than 90
-degrees in a frame and back within four frames was read from the wrong side (one to four frames, 120 to 170 degrees
+degrees in a frame and back within six frames was read from the wrong side (one to four frames, 120 to 170 degrees
 off, in 97 of the 698 hands, e.g. "водоплавающее", "аллигатор": the avatar's palm flapped over and back) and those
-frames are dropped. The palm's turn is then averaged over the frames within 0.07 s either way, weighted by how sharp the hand is in each (see below; the square root of the fingers' weight) and by distance in time: blurred, WiLoR read it 20 to 45 degrees off from frame to frame, back and forth, and the avatar's palms jerked as the wings of "бабочка" flap (up to 27 degrees a sixtieth of a second, now 13). And each finger's shape is taken from the frames within 0.1 s either way, weighted by how sharp
+frames are dropped (also a hand hidden behind the other one, read turned over for five frames in "тигр": up to six frames are taken). The palm's turn is otherwise left as read: smoothed against the sharp frames, the quick back-and-forth turns of the palms in "бабочка" (the wings flapping, 15 to 20 degrees every three to five frames, all blurred) were taken for misreadings and the wings stood still. And each finger's shape is taken from the frames within 0.1 s either way, weighted by how sharp
 the hand is in each (the strongest edges in the hand against the spread of its brightness, relative to the hand's
 sharper frames, to the fourth power) and by distance in time: the shape most of that weight agrees on, averaged over
 the frames that agree with it within 25 degrees per bone. The palm stays as read; the fingers keep each frame's bone

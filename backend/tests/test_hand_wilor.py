@@ -112,15 +112,3 @@ def test_a_shape_held_on_sharp_frames_is_not_averaged_away():
     hands = np.stack([hand] * 4 + [fist] * 4)
     new2d, new3d = hand_wilor._steady_fingers(frames, hands[:, :, :2] * 1000, hands, np.ones(8), 30.0)
     assert np.allclose(new3d[:4], hand, atol=1e-6) and np.allclose(new3d[4:], fist, atol=1e-6)
-
-
-def test_a_palm_read_askew_on_a_blurred_frame_is_turned_back():
-    hand = _flat_hand()
-    frames = np.arange(7)
-    hands = np.stack([hand] * 7)
-    hands[3] = _turned(hand, 40, axis=0)  # read 40 degrees off on the blurred middle frame
-    weights = np.array([1.0, 1.0, 1.0, 0.01, 1.0, 1.0, 1.0])
-    new2d, new3d = hand_wilor._steady_palm(frames, hands[:, :, :2] * 1000, hands, weights, 30.0)
-    assert hand_wilor._turn(hand_wilor._palm_bases(new3d[[3]])[0], hand_wilor._palm_bases(hand[None])[0]) < 8
-    assert np.allclose(new3d[3, 0], hands[3, 0])  # turned about its wrist, which stays where it was
-    assert np.allclose(new3d[0], hand, atol=1e-6)  # a palm held still stays as it is
