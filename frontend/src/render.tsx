@@ -17,6 +17,8 @@ const MODELS = { male: "/models/tilmind-male.glb", female: "/models/tilmind-fema
 // Head to below the waist, with room for hands raised to the side of the head. The man is 10 cm taller.
 const FLOOR_Y = -1.12;
 const FRAMING = { male: { lookAt: 0.36, distance: 2.1 }, female: { lookAt: 0.3, distance: 1.95 } };
+/** Height of the lips, for `view=face` (as in the words viewer). */
+const FACE_Y = { male: 0.51, female: 0.42 };
 
 type RenderWindow = Window & {
   renderAt?: (seconds: number) => Promise<void>;
@@ -93,14 +95,14 @@ function Render() {
               : view === "head"
                 ? [0, 0.5, 1.3]
                 : view === "face"
-                  ? [0, 0.44, 0.62]
+                  ? [0, FACE_Y[avatar] + 0.02, 0.62]
                 : view === "mid"
                   ? [0, 0.3, 1.05]
                 : [0, FRAMING[avatar].lookAt + 0.05, FRAMING[avatar].distance]
         }
         fov={38}
         onUpdate={(self) =>
-          self.lookAt(0, view === "side" || view === "close" ? 0.12 : view === "head" || view === "face" ? 0.42 : view === "mid" ? 0.3 : FRAMING[avatar].lookAt, 0)
+          self.lookAt(0, view === "side" || view === "close" ? 0.12 : view === "face" ? FACE_Y[avatar] : view === "head" ? 0.42 : view === "mid" ? 0.3 : FRAMING[avatar].lookAt, 0)
         }
       />
       <ambientLight intensity={0.8} />

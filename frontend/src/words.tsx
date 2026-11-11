@@ -38,7 +38,7 @@ const DEFAULT_PREFS: Prefs = { avatar: "female", rate: 1, after: "repeat", fit: 
 const AVATAR_NAMES: Record<Avatar, string> = { female: "Девушка", male: "Парень" };
 const ANGLE_NAMES: Record<Angle, string> = { front: "Спереди", side: "Сбоку", face: "Лицо" };
 /** The face close up, to read the lips (the man is 10 cm taller: his face is higher). */
-const FACE_Y: Record<Avatar, number> = { female: 0.42, male: 0.48 };
+const FACE_Y: Record<Avatar, number> = { female: 0.42, male: 0.51 };
 const FACE_DISTANCE = 0.62;
 const AFTER_NAMES: Record<After, string> = { repeat: "Повтор", next: "Следующее", stop: "Стоп" };
 const FIT_NAMES: Record<Fit, string> = { cover: "Крупно", contain: "Целиком" };
