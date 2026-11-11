@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom/client";
 import { fetchGesture, sourceVideoUrl } from "./api";
 import { AvatarRig } from "./components/AvatarRig";
+import { copyText, fetchEntries, loadNotes, saveNotes, SETS, type Entry, type SetName } from "./sign-sets";
 import type { GestureJson } from "./types";
 import "./styles.css";
 import "./gallery.css";
@@ -15,22 +16,7 @@ import "./gallery.css";
  * allows only about sixteen WebGL contexts, so a card has its canvas only while it is on screen.
  */
 
-type Entry = {
-  slug: string;
-  word: string;
-  page: string;
-  gesture_id: string;
-  source_video: string;
-  duration: number;
-  expression_frames: number;
-};
-
-/** Which batch the page shows (`?set=`): signflow.ru (tools/signflow_batch.py) or the Slovo dataset (tools/slovo_batch.py). */
-const SETS = {
-  signflow: { manifest: "/gallery/signflow.json", source: "signflow.ru", about: "видео signflow.ru (спереди, обычная скорость)", tool: "tools/signflow_batch.py" },
-  slovo: { manifest: "/gallery/slovo.json", source: "Slovo", about: "видео из датасета Slovo (выбранное исполнение, CC BY-SA 4.0)", tool: "tools/slovo_batch.py" },
-} as const;
-type SetName = keyof typeof SETS;
+/** Which batch the page shows (`?set=`). */
 const SET: SetName = new URLSearchParams(window.location.search).get("set") === "slovo" ? "slovo" : "signflow";
 
 type Avatar = "male" | "female";
@@ -49,28 +35,10 @@ const PRELOAD_MARGIN = "800px";
 const SHOWN_MARGIN = "100px";
 /** Fired by a card that starts playing, so the others pause. */
 const PLAY_EVENT = "gallery-play";
-/** The reviewer's notes, kept in this browser as they are typed (slug → text; "" is the note on the whole gallery). */
-// Each set keeps its own notes.
-const NOTES_KEY = SET === "slovo" ? "gallery-notes-slovo-v1" : "gallery-notes-v1";
+/** The key of the note on the whole gallery among the notes (see loadNotes). */
 const GENERAL = "";
 const AVATAR_NAMES: Record<Avatar, string> = { male: "Парень", female: "Девушка" };
 const ANGLE_NAMES: Record<Angle, string> = { front: "Спереди", side: "Сбоку" };
-
-function loadNotes(): Record<string, string> {
-  try {
-    return JSON.parse(localStorage.getItem(NOTES_KEY) ?? "{}") ?? {};
-  } catch {
-    return {};
-  }
-}
-
-function saveNotes(notes: Record<string, string>) {
-  try {
-    localStorage.setItem(NOTES_KEY, JSON.stringify(notes));
-  } catch {
-    // Storage blocked: the notes still live on the page until it is closed.
-  }
-}
 
 /** All notes as one text to paste back into the chat: each sign by its number, word, slug and gesture id. */
 function notesText(entries: Entry[], notes: Record<string, string>, avatar: Avatar, angle: Angle) {
@@ -82,19 +50,6 @@ function notesText(entries: Entry[], notes: Record<string, string>, avatar: Avat
     if (note) lines.push("", `### ${index + 1}. ${entry.word} (slug: ${entry.slug}, gesture_id: ${entry.gesture_id})`, note);
   });
   return lines.join("\n");
-}
-
-async function copyText(text: string) {
-  try {
-    await navigator.clipboard.writeText(text);
-  } catch {
-    const area = document.createElement("textarea");
-    area.value = text;
-    document.body.append(area);
-    area.select();
-    document.execCommand("copy");
-    area.remove();
-  }
 }
 
 /** Redraws a paused canvas when the time it shows changes (the canvas only draws on demand then). */
@@ -317,13 +272,13 @@ function Gallery() {
   const [entries, setEntries] = useState<Entry[]>();
   const [avatar, setAvatar] = useState<Avatar>("female");
   const [angle, setAngle] = useState<Angle>("front");
-  const [notes, setNotes] = useState<Record<string, string>>(loadNotes);
+  const [notes, setNotes] = useState<Record<string, string>>(() => loadNotes(SET));
   const [copied, setCopied] = useState(false);
 
   const setNote = (slug: string, text: string) =>
     setNotes((previous) => {
       const next = { ...previous, [slug]: text };
-      saveNotes(next);
+      saveNotes(SET, next);
       return next;
     });
   const noted = entries?.filter((entry) => notes[entry.slug]?.trim()).length ?? 0;
@@ -336,9 +291,7 @@ function Gallery() {
   };
 
   useEffect(() => {
-    fetch(SETS[SET].manifest, { cache: "no-store" })
-      .then((response) => response.json())
-      .then(setEntries, () => setEntries([]));
+    fetchEntries(SET).then(setEntries, () => setEntries([]));
   }, []);
 
   return (

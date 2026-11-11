@@ -14,6 +14,8 @@ export default defineConfig({
         candidates: resolve(__dirname, "candidates.html"),
         // Many signs at once, each next to its video (batches from tools/signflow_batch.py).
         gallery: resolve(__dirname, "gallery.html"),
+        // Every sign of the gallery's batches in one searchable list with one large player (tools/viewer.sh opens it).
+        words: resolve(__dirname, "words.html"),
         // One avatar drawn frame by frame for video export (tools/export_videos.py).
         render: resolve(__dirname, "render.html"),
         // A gesture as a three.js animation clip for other sites (tools/export_clips.py).

@@ -81,6 +81,14 @@ tracked frame in total, so it carries no extra information about the fingers.
 
 `/gallery.html?set=slovo` shows the signs taken from the Slovo dataset (github.com/hukenovs/slovo, CC BY-SA 4.0 variant: 20 recordings per word by many performers, phone videos), from `frontend/public/gallery/slovo.json` written by `tools/slovo_batch.py`. For each word one recording is chosen (`tools/slovo/`): every recording of the word is screened with MediaPipe (person whole in the picture, hands found and inside it, hand size), the recordings are compared by their wrist paths and hand shapes (DTW) and the most typical one is taken, preferring the two performers filmed best (Full HD, seated, camera at chest height). Many recordings are mirrored selfies or left-handed: signed with MediaPipe's left hand (signflow.ru: 88 signs with the right, 2 with the left) they are flipped, so the avatar signs with its right hand throughout. The chosen recording is then cut from Slovo's untrimmed video so that the hands start and end at rest (the trimmed clips begin and end mid-movement), stopping before the performer reaches for the phone.
 
+`frontend/words.html` (`/words.html`) is the viewer for going through every sign: both batches in one alphabetical list
+(430 entries; nine words are in both batches and are listed twice, by source) with a search and a source filter, and one
+large player with the chosen word's video next to the avatar, which starts once the avatar's animation is ready. Arrow
+keys step through words and frames; at the end of a word it repeats, moves to the next word or stops; the avatar is
+turned with the mouse; the video can be shown whole instead of cropped to the signer. The address keeps the word
+(`#slovo/alligator`). Notes are the gallery's own (same browser storage, `frontend/src/sign-sets.ts`). `tools/viewer.sh`
+starts the backend and the dev server if they are not running and opens the page; `tools/viewer.sh stop` stops them.
+
 Videos for sharing: `tools/export_videos.py [--avatar male|female]` renders each gallery sign's avatar frame by frame
 through `/render.html` (at the original clip's frame times) and composes word on top, original left, avatar right into
 `exports/signflow-<avatar>/NN_<word>.mp4`.

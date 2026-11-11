@@ -1,0 +1,224 @@
+/* The word viewer (words.tsx). Its buttons, boxes, player and note are the gallery's (gallery.css); this is the layout. */
+
+.words {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 16px;
+  height: 100vh;
+  padding: 16px;
+}
+
+.words .list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+  padding: 12px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.words .list-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.words .list-top h1 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.words .list-top p {
+  color: var(--muted);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.words input[type="search"] {
+  width: 100%;
+  background: #15112b;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-size: 14px;
+}
+
+.words input[type="search"]:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.words .list .segmented button {
+  flex: 1;
+  padding: 6px 8px;
+  font-size: 13px;
+}
+
+.words ol {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.words .row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  width: 100%;
+  padding: 6px 8px;
+  background: none;
+  border-color: transparent;
+  text-align: left;
+}
+
+.words .row:hover {
+  background: var(--panel-soft);
+  border-color: transparent;
+}
+
+.words .row.on {
+  background: var(--accent);
+}
+
+.words .row .word {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.words .row .source {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.words .row.on .source {
+  color: var(--text);
+}
+
+.words .row .noted {
+  color: var(--warn);
+  font-size: 10px;
+}
+
+.words .copy {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.words .stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* Two 3:4 boxes side by side, as tall as the window leaves room for; the controls keep their one row in a low window. */
+.words .stage > * {
+  width: 100%;
+  max-width: max(780px, calc((100vh - 350px) * 1.5));
+}
+
+.words .stage > .media {
+  max-width: max(420px, calc((100vh - 350px) * 1.5));
+}
+
+.words .stage header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.words .stage header button {
+  padding: 6px 12px;
+}
+
+.words button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.words .stage h2 {
+  flex: 1;
+  min-width: 0;
+  margin: 0 4px;
+  font-size: 26px;
+  overflow-wrap: anywhere;
+}
+
+.words .stage h2::first-letter {
+  text-transform: uppercase;
+}
+
+.words .where,
+.words .where a {
+  color: var(--muted);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.words .media {
+  cursor: default;
+}
+
+.words .box:first-child {
+  cursor: pointer;
+}
+
+.words .box.contain video {
+  object-fit: contain;
+}
+
+.words .box canvas {
+  cursor: grab;
+}
+
+.words .options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-top: 10px;
+}
+
+.words .option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.words .options button {
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+.words .keys {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+@media (max-width: 860px) {
+  .words {
+    grid-template-columns: minmax(0, 1fr);
+    height: auto;
+  }
+
+  .words .list {
+    max-height: 45vh;
+  }
+
+  .words .stage {
+    overflow: visible;
+  }
+}
