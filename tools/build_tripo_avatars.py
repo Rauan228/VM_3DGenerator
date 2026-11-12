@@ -291,9 +291,10 @@ def wet_lips(mesh, orm, projection, polygon):
 # own light and shade kept), eased in over FOREHEAD_EASE pixels above the cut (the reference's rows).
 FOREHEAD_REACH = 170
 FOREHEAD_EASE = 14
+FOREHEAD_FADE = 22
 
 
-def paint_forehead(mesh, texture, projection, top_row, columns, hair, oval):
+def paint_forehead(mesh, texture, projection, top_row, columns, hair, oval, hairline_row):
     """Paint the forehead above `top_row` (reference rows from the bottom), between `columns`, inside the face's
     `oval` (reference pixels), not the `hair` vertices nor hair-dark texels, in the reference's skin colour. Returns
     that colour."""
@@ -322,9 +323,11 @@ def paint_forehead(mesh, texture, projection, top_row, columns, hair, oval):
         lum = colour @ np.array([0.2126, 0.7152, 0.0722])
         weight = smoothstep(image[:, 1], top_row - FOREHEAD_EASE / 2, top_row + FOREHEAD_EASE)
         weight *= (image[:, 0] > columns[0]) & (image[:, 0] < columns[1])
-        # Only skin: inside the face's oval, and not the light strands of the girl's hair (darker than skin).
+        # Only skin: inside the face's oval, fading out just under the hairline (the reference's, at the top of the
+        # face) into Tripo's own hairline. (Kept off the girl's light strands by their tone instead, its edge was a
+        # ragged light band.)
         weight *= smoothstep(polygon_distance(image, oval), -2, 6)
-        weight *= smoothstep(lum, skin_lum * 0.72, skin_lum * 0.85)
+        weight *= 1 - smoothstep(image[:, 1], hairline_row - FOREHEAD_FADE, hairline_row)
         # Light and shade kept, a little: the forehead's own modelling against the flat colour.
         shade = np.clip(lum / max(skin_lum, 1e-3), 0.85, 1.1) ** 0.5
         texture[rows, cols, :3] = colour * (1 - weight[:, None]) + (skin[None] * shade[:, None]) * weight[:, None]
@@ -362,40 +365,8 @@ def paint_neck(mesh, texture, neck, head, skin):
     return changed
 
 
-# Tripo's fringe hangs over the forehead as a second layer of surface: laid onto the forehead it lay on the skin
-# twice and crumpled. Faces in front of the forehead with skin within OVERHANG_DEPTH behind them, or facing down (the
-# overhang's underside), are taken away.
-OVERHANG_DEPTH = 0.04
-
-
-def remove_overhang(body, projection, band):
-    """Delete the faces of the fringe hanging over the forehead. `band(points)`: whether points are in the forehead's
-    stretch of the face. Returns the number of faces deleted."""
-    mesh = body.data
-    tree = BVHTree.FromPolygons([v.co.copy() for v in mesh.vertices], [tuple(p.vertices) for p in mesh.polygons])
-    bm = bmesh.new()
-    bm.from_mesh(mesh)
-    doomed = []
-    for face in bm.faces:
-        c = face.calc_center_median()
-        if c.x <= 0 or not band(np.array([c[:]]))[0]:
-            continue
-        hit = tree.ray_cast(c - Vector((0.0005, 0.0, 0.0)), Vector((-1.0, 0.0, 0.0)), OVERHANG_DEPTH)
-        if (hit[0] is not None and hit[1].x > 0.2) or face.normal.x < 0.15:
-            doomed.append(face)
-    # Faces only: the vertices stay, so every per-vertex mask computed so far still holds.
-    bmesh.ops.delete(bm, geom=doomed, context="FACES_ONLY")
-    bm.to_mesh(mesh)
-    bm.free()
-    mesh.update()
-    return len(doomed)
-
-
-# Whose hair is recut (tripo_hair.py), and how fast the skull's front curves back over the forehead (1 / (2 R)).
+# Whose hair is recut (tripo_hair.py).
 RESTYLED_HAIR = {"male"}
-SKULL_CURVE = 6.0
-# A forehead leans back about 12 degrees from the brows up.
-FOREHEAD_LEAN = 0.21
 
 
 def paint_hood_lining(mesh, texture, neck, head, cloth):
@@ -961,56 +932,38 @@ def build(key, spec, args, landmarks_all):
         co = np.array([v.co[:] for v in mesh.vertices])
         image = face_projection.to_image(co)
         in_face = (polygon_distance(image, face_region) > -4) & (co[:, 0] > 0)
-        # In front, the hairline is a smooth arc, rising at the temples; above it is hair, below it the forehead.
+        # In front, the hairline is a smooth arc at the height of the fringe's main edge (the texture's hair ended in
+        # ragged tips there, light brown where Tripo faded the hair into the skin); above it is hair, and the tips
+        # below it, down to the face, are smoothed into the forehead.
         sides = (min(x for x, _ in face_region), max(x for x, _ in face_region))
         middle, half = (sides[0] + sides[1]) / 2, (sides[1] - sides[0]) / 2
         front = (co[:, 0] > 0) & (np.abs(image[:, 0] - middle) < half) & (image[:, 1] > top_row)
-        # The hairline's middle where the reference's is, at the top of the face (taken from the texture's dark hair it
-        # sat near the crown: the front of Tripo's fringe is painted light brown, and the front of the head was left
-        # bare of locks).
-        edge_row = pts["foreheadTop"][1]
+        edge_row = np.percentile(image[front & hair & (np.abs(image[:, 0] - middle) < 0.35 * half), 1], 30)
         arc = edge_row + 0.35 * (edge_row - top_row) * ((image[:, 0] - middle) / half) ** 2
         hair = np.where(front, image[:, 1] >= arc, hair)
         # Tripo's fringe hangs down nearly to the brows, below the face taken from the reference: everything in front
         # between a little over the brows and the hairline is the forehead.
         brow_row, eye_row = max(pts["browL"][1], pts["browR"][1]), (pts["eyeL"][1] + pts["eyeR"][1]) / 2
-        # (Its tips reach down onto the brows themselves: laid back only from a little over them, they stayed a crumpled
-        # band there.)
-        over_brows = brow_row + 0.08 * (brow_row - eye_row)
+        over_brows = brow_row + 0.3 * (brow_row - eye_row)
         front = (co[:, 0] > 0) & (np.abs(image[:, 0] - middle) < half) & (image[:, 1] > over_brows)
+        forehead = front & (image[:, 1] < arc)
         hair = hair & ~(front & (image[:, 1] < arc))
         in_face = in_face & (image[:, 1] <= over_brows)
-
-        def overhang_band(points):
-            rows_cols = face_projection.to_image(points)
-            return (np.abs(rows_cols[:, 0] - middle) < half) & (rows_cols[:, 1] > brow_row) & (rows_cols[:, 1] < arc_at(rows_cols[:, 0]) + 0.5 * (edge_row - over_brows))
-
-        def arc_at(cols):
-            return edge_row + 0.35 * (edge_row - top_row) * ((cols - middle) / half) ** 2
-
-        print("fringe overhang faces removed", remove_overhang(body, face_projection, overhang_band))
-        forehead = None
-        # The forehead's surface: its line just over the brows (x quadratic across), carried up leaning back like a
-        # forehead. (Fitted to the skin from the lids to the brows, it leaned forward with the brow ridge, and nothing
-        # in front of it was laid back.)
-        z_over = face_projection.to_model(middle, over_brows)[1]
-        skin = (co[:, 0] > 0) & (np.abs(image[:, 0] - middle) < 0.9 * half) & (np.abs(image[:, 1] - over_brows) < 10)
-        y = co[skin, 1]
-        fit = np.linalg.lstsq(np.stack([np.ones_like(y), y, y ** 2], 1), co[skin, 0], rcond=None)[0]
+        # The forehead's surface, carried up from the skin round the brows (x linear in height, quadratic across).
+        skin = (co[:, 0] > 0) & (np.abs(image[:, 0] - middle) < 0.8 * half) & (image[:, 1] > eye_row + 0.4 * (brow_row - eye_row)) & (image[:, 1] < over_brows)
+        y, z = co[skin, 1], co[skin, 2]
+        fit = np.linalg.lstsq(np.stack([np.ones_like(y), y, y ** 2, z], 1), co[skin, 0], rcond=None)[0]
 
         def forehead_x(y, z):
-            return np.stack([np.ones_like(y), y, y ** 2], 1) @ fit - FOREHEAD_LEAN * (z - z_over)
+            return np.stack([np.ones_like(y), y, y ** 2, z], 1) @ fit
 
         hairline = front & (image[:, 1] >= arc) & (image[:, 1] < arc + 1.5 * (arc - over_brows))
-        # The skull's front: the forehead carried up and curving back (a head about 0.08 across, half-depth).
-        def skull_x(y, z):
-            return forehead_x(y, z) - SKULL_CURVE * np.maximum(z - z_over, 0) ** 2
-
-        rise = (image[:, 1] - arc) / np.maximum(arc - over_brows, 1e-6)
-        front_weight = np.where(front, np.clip(2.0 - rise, 0, 1), 0.0)
-        hair, hair_frame = tripo_hair.underlayer(mesh, hair, in_face, forehead, forehead_x, hairline, front_weight, skull_x)
+        hair, hair_frame = tripo_hair.underlayer(mesh, hair, in_face, forehead, forehead_x, hairline)
+        # The forehead under the fringe, down to over the brows, is hair's shadow too (left skin-coloured, a ragged
+        # band of it showed between the fringe and the brows), and the fringe grows from it.
+        hair = hair | forehead
     sides = (min(x for x, _ in face_region), max(x for x, _ in face_region))
-    forehead_skin = paint_forehead(mesh, texture, face_projection, top_row, sides, hair, oval)
+    forehead_skin = paint_forehead(mesh, texture, face_projection, top_row, sides, hair, oval, pts["foreheadTop"][1])
     print("forehead painted", forehead_skin)
     if key in RESTYLED_HAIR and forehead_skin is not None:
         bones = {name: np.array(rig.matrix_world @ rig.data.bones[f"mixamorig:{name}"].head_local) for name in ("Neck", "Head")}
@@ -1024,10 +977,17 @@ def build(key, spec, args, landmarks_all):
         def on_hair(corners, normal):
             return all(tuple(np.round(c, 6)) in hair_points for c in corners)
 
-        tripo_hair.paint_underlayer(texture, normal_map, orm, rasterize(mesh, (texture.shape[1], texture.shape[0]), on_hair), colour,
-                                    tripo_hair.hairline_weight(mesh, hair))
+        def fringe_edge(points):
+            # Soft over the brows: from skin at the bottom of the forehead to hair a little higher.
+            rows = face_projection.to_image(points)[:, 1]
+            return np.where(points[:, 0] > 0, smoothstep(rows, over_brows, over_brows + 0.4 * (over_brows - eye_row)), 1.0)
+
+        tripo_hair.paint_underlayer(texture, normal_map, orm, rasterize(mesh, (texture.shape[1], texture.shape[0]), on_hair), colour, fringe_edge)
+        # The fringe's locks stop just over the brows; none goes below the top of the neck.
+        brow_z = max(face_projection.to_model(*pts[b])[1] for b in ("browL", "browR"))
+        eye_z = np.mean([face_projection.to_model(*pts[e])[1] for e in ("eyeL", "eyeR")])
         head_z = float((rig.matrix_world @ rig.data.bones["mixamorig:Head"].head_local).z)
-        hair_locks = tripo_hair.locks(body, hair, hair_frame, colour, head_z + 0.004)
+        hair_locks = tripo_hair.locks(body, hair, hair_frame, colour, brow_z + 0.12 * (brow_z - eye_z), head_z + 0.004)
         print("hair colour", np.round(colour, 3))
     if orm is not None:
         lip_outline = [(lm["all"][i][0], ref_h - lm["all"][i][1]) for i in tripo_mouth.OUTER_UPPER + tripo_mouth.OUTER_LOWER[-2:0:-1]]

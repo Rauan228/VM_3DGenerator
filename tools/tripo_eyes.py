@@ -45,12 +45,12 @@ IRIS_OF_OPENING = 0.6
 # Kept this far (r) behind the skin in front of it.
 BEHIND_SKIN = 0.05
 SCLERA = (0.86, 0.84, 0.8)
-SCLERA_SIDE = (0.72, 0.62, 0.6)
+SCLERA_SIDE = (0.74, 0.68, 0.64)
 
 # The lids' inside: (back toward the eyeball's centre in r, then onto the ball) and their colours (sRGB): the lid's
-# margin, and the shadow where the lid meets the eye.
+# margin, and the shadow where the lid meets the eye (redder, with a pinkish white, the eyes looked sore).
 LID_MARGIN_BACK = 0.07
-LID_COLOURS = ((0.74, 0.47, 0.45), (0.2, 0.11, 0.11))
+LID_COLOURS = ((0.72, 0.53, 0.48), (0.2, 0.14, 0.12))
 LID_ON_BALL = 1.012
 # Lashes: length along the upper lid (r, from the inner corner to the outer), how far they lean forward and curl up,
 # and their colour.
@@ -242,12 +242,16 @@ def lids_and_lashes(body, info, gender):
     """The lids' inside and the lashes, added to the body. Returns {new vertex: edge vertex it hangs from} and the set of
     new vertices that lie on the eyeball (kept on it through the lid's shapes), per eye key."""
     # One square for both (a second looked for before the first was used would land on the same free space).
-    bands = paint_bands(body, LID_COLOURS + LASH_COLOUR, 0.5, "the lids' inside and the lashes")
+    # The lashes matt: glossy, their thin faces caught the light in white specks.
+    bands = paint_bands(body, LID_COLOURS + LASH_COLOUR, (0.5, 0.6, 0.95, 0.95), "the lids' inside and the lashes")
     bands_lid, bands_lash = bands[:2], bands[2:]
     bm = bmesh.new()
     bm.from_mesh(body.data)
     bm.verts.ensure_lookup_table()
     uv_layer = bm.loops.layers.uv.active
+    # Skin weights: new vertices have none (extruded ones copy them), and lashes made without them stayed where the
+    # head had been when it moved: "the lashes fly".
+    deform = bm.verts.layers.deform.verify()
     rims = _rims(bm, info)
     parent, on_ball = {}, {}
     created = []  # (new vertex, edge vertex)
@@ -318,6 +322,8 @@ def lids_and_lashes(body, info, gender):
                         verts = [bm.verts.new(p + shift) for p in shape]
                         for w in verts:
                             created.append((w, hang))
+                            for group, weight in hang[deform].items():
+                                w[deform][group] = weight
                         for corners, band in (((0, 1, 2, 3), 1), ((3, 2, 4), 0)):
                             face = bm.faces.new([verts[i] for i in (corners if facing == 0 else corners[::-1])])
                             face.smooth = True

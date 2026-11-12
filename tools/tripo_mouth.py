@@ -149,8 +149,8 @@ def free_square(mesh):
 
 
 def paint_bands(body, colours, roughness, label):
-    """Paint horizontal colour bands (sRGB, top first) into a free square of the body's colour and ORM maps.
-    Returns the texture coordinates of each band's middle."""
+    """Paint horizontal colour bands (sRGB, top first) into a free square of the body's colour and ORM maps (one
+    `roughness`, or one per band). Returns the texture coordinates of each band's middle."""
     mesh = body.data
     nodes = body.active_material.node_tree.nodes
     images = [n.image for n in nodes if n.type == "TEX_IMAGE" and n.image]
@@ -177,7 +177,8 @@ def paint_bands(body, colours, roughness, label):
             bottom = cy + BLOCK * (n - k - 1) / n - (MARGIN if k == n - 1 else 0)
             rows = slice(int(bottom / grid * h), int(np.ceil(top / grid * h)))
             cols = slice(int((cx - MARGIN) / grid * w), int(np.ceil((cx + BLOCK + MARGIN) / grid * w)))
-            pixels[rows, cols, :3] = values[k] if values is not None else (1.0 - 0.25 * k / max(n - 1, 1), roughness, 0.0)
+            rough = roughness[k] if np.ndim(roughness) else roughness
+            pixels[rows, cols, :3] = values[k] if values is not None else (1.0 - 0.25 * k / max(n - 1, 1), rough, 0.0)
             pixels[rows, cols, 3] = 1.0
         image.pixels.foreach_set(pixels.ravel())
         image.pack()
