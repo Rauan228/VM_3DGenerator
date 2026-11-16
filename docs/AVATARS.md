@@ -87,15 +87,19 @@
    by its locks: about 100 broad locks in rows round the whorl at the top of the back, each a tapering band that waves
    a little and curls at its end, the hair as a whole turning aside together (scattered at random they crossed), the
    rows nearer the whorl lying over the ones they reach; a row of fringe locks comes forward and down, their pointed
-   ends hanging onto the upper half of the forehead, and the shell's edge follows the outer locks' ends (by any lock's
-   cover it ran straight, a bowl's), rolling under to the scalp. Its texture (`TM_hair_color`, `TM_hair_normal`, one
+   ends hanging down to a little over the brows, and the shell's edge follows the outer locks' ends (by any lock's
+   cover it ran straight, a bowl's), rolling under to the scalp; the sides are brought close to the head (Tripo's hair
+   stood out there as wide as on top, a mushroom) and the nape is cut level. Its texture (`TM_hair_color`, `TM_hair_normal`, one
    image round the whorl) draws on each lock its strands along it, lit along its middle, darker at its root, in the
    shade of the locks over it. (Before: one smooth shell, "a bowl cut", rejected 2026-11-13; about 750 lock tubes, "кучу …
    в голове"; Tripo's cap combed and repainted, a brain or a helmet; MakeHuman hair fitted by another agent, rejected.)
    Where Tripo's hair meets the skin (both avatars) its surface steps in ragged spikes; the vertices a few rings either
    side of the hairline, above the brows, are smoothed (Taubin), and over the girl's forehead the step is flattened
-   out. The face's texture above the part taken from the reference (both avatars) is repainted in the reference's skin
-   colour up to the hair; the light wisps Tripo painted into the girl's hair's edge are darkened to the hair; the
+   out. The face's texture above the part taken from the reference (both avatars) is repainted with the reference's skin
+   just under that cut, carried up column by column (one flat colour with Tripo's shading kept read as a blotchy band),
+   going over into the hair's own colour at the hair; on the girl the reference itself is then laid over the forehead
+   and its hairline (a clean arc and the parting), the hair's upturned edge darkened (it caught the light from above in
+   a light ring round the forehead); the light wisps Tripo painted into the girl's hair's edge are darkened to the hair; the
    texture's islands round the head are padded with their own edge colours (painted over, they no longer matched
    Tripo's padding, and the seams drew thin dark lines). Under the eyes the reference's painted white and lower lid,
    outside MediaPipe's contour, are filled in with skin before it is laid on, and round the eyes Tripo's own painted eye

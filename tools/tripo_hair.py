@@ -194,10 +194,13 @@ RADIUS_ROUNDS = 40
 OPEN_HOPS = 5
 SPIKE = 0.0012
 EDGE_ROUNDS = 6
+# The sides are brought this much (model units) closer to the head, from this far to the side (the direction's
+# share), fading out above this height (the direction's share up).
+SIDE_SLIM = (0.0035, 0.45, 0.35)
 # The hood a ray may pass through is no further forward than this past the head's centre.
 HOOD_BEHIND = 0.02
 # The haircut ends this far below the height it is given (the nape's line).
-NAPE_SLACK = 0.004
+NAPE_SLACK = -0.006
 # In front the edge comes this much further down (to a little over the brows, where the band of forehead ends).
 FRINGE_DOWN = 0.0
 # The locks: broad clumps of hair combed from the whorl, each waving a little on its way and its end curling aside, the
@@ -225,7 +228,7 @@ SWIRL = 0.35
 SWIRL_WAVES = (3, 2.2)
 # How far the locks' ends reach past the edge, the edge cut back as far between them: in front, at the sides (over the
 # ears), behind.
-TIP_REACH = (0.0065, 0.0012, 0.002)
+TIP_REACH = (0.005, 0.0012, 0.002)
 FRINGE_NOTCH_SPARE = 0.6
 # The texture, one image round the whorl (u round it, v away from it): its size, the strands' spacing across a lock
 # (radians), the colour the reference's (taken from its shadows as much as its lights) lit to this much, the gaps
@@ -553,6 +556,10 @@ def shell(body, hair, frame, colour, floor_z, under=None, seed=7):
         for _ in range(6):
             smooth += 0.5 * (mean(smooth) - smooth)
     radius = smooth[:, 0]
+    # The sides cut short: over the temples and the ears the hair lies close to the head (Tripo's hair stood out there
+    # as wide as on top, a mushroom), the volume kept on top.
+    side = _smooth((np.abs(dirs[:, 1]) - SIDE_SLIM[1]) / 0.3) * (1 - _smooth((dirs[:, 2] - SIDE_SLIM[2]) / 0.35))
+    radius = radius - SIDE_SLIM[0] * side
     spacing = float(np.mean(np.linalg.norm(dirs[edges[:, 0]] - dirs[edges[:, 1]], axis=1))) * float(np.median(radius[inside]))
 
     # The whorl's frame: round its axis (from the front) and away from it.
