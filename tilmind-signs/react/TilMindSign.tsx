@@ -16,6 +16,12 @@ import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js
  *                      clipUrl="/tilmind-signs/clips/male/privet.json" isPlaying loopMode="repeat" />
  *
  * Needs three, @react-three/fiber and @react-three/drei.
+ *
+ * Local changes to the file from the tilmind-signs package (keep them when copying a newer version):
+ *  - a failed clip download is not cached, so the viewer's "retry" really retries;
+ *  - `preloadSignClip(url)` warms the clip cache (the list pages preload neighbouring words);
+ *  - `onReady` fires once the avatar is loaded and the clip is playing, which the viewer's loading overlay waits for;
+ *  - a paused sign stays paused after `restartTrigger` rewinds it.
  */
 
 const clipCache = new Map<string, Promise<THREE.AnimationClip>>();
@@ -29,9 +35,16 @@ function loadClip(url: string): Promise<THREE.AnimationClip> {
         return response.json();
       })
       .then((json) => THREE.AnimationClip.parse(json));
+    clip.catch(() => clipCache.delete(url));
     clipCache.set(url, clip);
   }
   return clip;
+}
+
+/** Starts downloading a clip so that the sign appears instantly when it is picked. Errors are ignored here. */
+// eslint-disable-next-line react-refresh/only-export-components
+export function preloadSignClip(url: string): void {
+  loadClip(url).catch(() => undefined);
 }
 
 export type TilMindSignProps = {
@@ -45,6 +58,8 @@ export type TilMindSignProps = {
   restartTrigger?: number;
   onAnimationComplete?: () => void;
   onError?: (error: Error) => void;
+  /** Called once the avatar is loaded and the clip is ready to play. */
+  onReady?: () => void;
 };
 
 /** The avatar playing the sign; goes inside a react-three-fiber <Canvas>. Stands on y = 0 at its real height. */
@@ -57,6 +72,7 @@ export function TilMindSign({
   restartTrigger = 0,
   onAnimationComplete,
   onError,
+  onReady,
 }: TilMindSignProps) {
   const gltf = useGLTF(avatarUrl);
   // Its own copy of the avatar, so several signs can be on one page at once.
@@ -65,6 +81,10 @@ export function TilMindSign({
   const [action, setAction] = useState<THREE.AnimationAction>();
   const completed = useRef(onAnimationComplete);
   completed.current = onAnimationComplete;
+  const ready = useRef(onReady);
+  ready.current = onReady;
+  const playing = useRef(isPlaying);
+  playing.current = isPlaying;
 
   useEffect(() => {
     let cancelled = false;
@@ -89,6 +109,8 @@ export function TilMindSign({
     // Held on the last pose when played once.
     action.clampWhenFinished = true;
     action.play();
+    action.paused = !playing.current;
+    ready.current?.();
     const finished = () => completed.current?.();
     mixer.addEventListener("finished", finished);
     return () => mixer.removeEventListener("finished", finished);
