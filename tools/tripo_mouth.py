@@ -402,125 +402,324 @@ def mandible_weights(points, lips, lower, upper, pivot, chin, front_x):
     return weight
 
 
-# Rounded lips (orbicularis oris drawing the lips in and forward): the opening the edge between them is laid round,
-# (half width, half height) in W, and how far forward the lips come. A pucker (у, ю) leaves a small round hole, a funnel
-# (о, ш) a wider one that the jaw opens taller. Gathering the lips toward the middle in proportion, as before, squeezed
-# the opening to a point with a crease down it.
-PUCKER = {"opening": (0.05, 0.035), "forward": 0.22, "ring": (1.5, 1.15)}
-# For "о" the lips turn out, showing more of their red round a smaller opening: with the thin ring of the pucker the
-# man's lips were a thin edge round a hole full of teeth.
-FUNNEL = {"opening": (0.13, 0.085), "forward": 0.14, "ring": (1.9, 1.5)}
-# Gathered, the lips bunch into a ring ("ring" above: across, up) in the lips' height where they are (thin toward the
-# corners: at the middle's height there, the red by the corners was stretched into fan-like streaks). The painted red
-# reaches a little past MediaPipe's outer lip line (the lower lip's by more), so the ring takes the lips this far out.
+# Rounded lips (orbicularis oris drawing them in and forward into a tube). The mouth narrows evenly from corner to
+# corner; in its middle the lips' edges part round the opening (a pointed oval, the lips meeting at its ends), beyond it
+# they stay pressed together out to the corners; each lip's cross-section is laid on a tube along its edge: the edge on
+# the tube's inner front, the red over its front toward its outer side, the lips' inner side going on round behind.
+# The opening's height is mostly the jaw's (о opens it, у hardly). Spec, in W: the opening's half width and how high
+# the upper and lower edges arch from the line between the lips; where the corners come to (from the middle); the
+# tube's radius in the middle and at the corners; how far its front comes forward; how far the opening's middle sits
+# below the line between the lips; and how much the lower lip's edge rises in the middle. (Before, the lips' red was
+# ringed round the opening as thick as it is, thinning to nothing at the corners: the sides of the opening were skin
+# folded in, the lips looked squeezed, "просто сжали, а не трубочкой", and the skin creased from the corners outward.
+# Laid round a whole ring instead, the corners were drawn into the opening's sides, and the skin round each closed in
+# a wedge.)
+PUCKER = {"opening": (0.08, 0.035, 0.035), "corner": 0.27, "tube": (0.13, 0.07), "forward": 0.2, "drop": 0.0,
+          "lower_raise": 0.0, "jaw": 0.0}
+# For "о" a wider opening, the upper lip's edge low enough to cover the upper teeth but their edge, the lower lip's
+# raised over the lower teeth (the jaw that opens "о" drops the lower lip further than the lower incisors).
+FUNNEL = {"opening": (0.18, 0.06, 0.02), "corner": 0.33, "tube": (0.11, 0.06), "forward": 0.12, "drop": 0.03,
+          "lower_raise": 0.05, "jaw": 0.38}
+# Each is made for the jaw opened as much as "jaw" above (о is said with it open, у nearly shut): beyond the opening the
+# lower lip is kept up against the upper by what that jaw takes it down, or the jaw parted the lips out to the corners.
+# The cross-section, as angles round the tube from its outer side over its front (degrees): the edge between the lips,
+# the red's border (s = 1), the end of the lips (s = LIP_REACH), then the inner side's rings.
+EDGE_ANGLE, BORDER_ANGLE, REACH_ANGLE = 160.0, 20.0, -10.0
+RING_ANGLES = (195.0, 230.0, 265.0)
+# The tube's sides lie this much (W) behind its middle, as the face turns back there.
+SIDE_BACK = 0.04
+TUBE_TURN = 0.15
+# The lips go all the way round the tube where they are at least ROLL_FULL as thick as in their middle.
+ROLL_FULL = 0.6
+# The painted red reaches a little past MediaPipe's outer lip line (the lower lip's by more): the lips are taken this
+# far out (s).
 LIP_REACH = 1.3
-# The skin around stretches between the rounded lips and the face this far (W) from the mouth's middle, which stays,
-# like a membrane (relaxed over the mesh); the nose takes a third of it.
+# The skin round the lips is carried with them this far (W) from the mouth's middle, bending as little as it can (a
+# thin plate: stretched like a membrane instead, it creased where it left the lips); the nose takes a third of it.
 ROUND_REACH = 1.25
-MEMBRANE_ROUNDS = 800
+PLATE_BEND = 4.0
+SURFACE_ROUNDS = 4
+SKIN_ROUNDS = 8
+LIP_ROUNDS = 10
+# The lower lip's edge drops with the jaw over a round arc this much wider than the opening, and stays up beyond it.
+OPEN_ROUND = 1.5
+PLATE_ITERATIONS = 1500
+# Set to a dict (by data/work/mouth/lipdev.py) to get the lips' classification back.
+DEBUG = None
 
 
-def round_lip_shapes(points, lips, lower, upper, rim, edges, inner=()):
-    """mouthPucker and mouthFunnel: the lips' edge laid on a small round opening at the front, each lip's red ringed
-    round it and thickened, the corners drawn in and forward with the rest (the lips form a tube, the inner side going
-    back from the opening behind them); the skin around stretches like a membrane between them and the face (each skin
-    vertex taking the mean of its neighbours, the lips and the face beyond held): taken from the nearest lip vertices,
-    it tore along the lines where the nearest changed from one lip to the other."""
-    from mathutils.kdtree import KDTree
+def _rounded(spec, width, mid_y, seam_mid, front):
+    """A function (lip, t from corner to corner -1..1, theta round the tube in degrees) -> the point on the rounded
+    lips."""
+    reach, rise_up, rise_down = (v * width for v in spec["opening"])
+    corner = spec["corner"] * width
+    r_mid, r_corner = spec["tube"][0] * width, spec["tube"][1] * width
+    x_front = front + spec["forward"] * width
+    oz = seam_mid - spec["drop"] * width
+    raise_ = spec["lower_raise"] * width
 
+    def edge(lip, y):
+        bump = max(0.0, 1 - (y / reach) ** 2) ** 2
+        return oz + (rise_up * bump if lip == "upper" else -rise_down * bump + raise_ * bump)
+
+    def place(lip, t, theta):
+        y = corner * t
+        z = edge(lip, y)
+        h = 1e-4 * width
+        tangent = np.array([2 * h, edge(lip, y + h) - edge(lip, y - h)])
+        # The tube's cross-section turns with the edge only a little (TUBE_TURN): round the tight ends of a small
+        # opening a tube as thick as the lips, turned square to the edge, folded over itself.
+        n = np.array([-tangent[1] * TUBE_TURN, tangent[0]]) * (1.0 if lip == "upper" else -1.0)
+        n /= np.linalg.norm(n)
+        r = r_corner + (r_mid - r_corner) * (1 - t * t)
+        th, at = math.radians(theta), math.radians(EDGE_ANGLE)
+        centre = np.array([y, z]) - n * r * math.cos(at)
+        centre_x = x_front - r - SIDE_BACK * width * t * t
+        return np.array([centre_x + r * math.sin(th), mid_y + centre[0] + r * math.cos(th) * n[0],
+                         centre[1] + r * math.cos(th) * n[1]])
+
+    return place
+
+
+def _thin_plate(delta, free, edges, bend=None, iterations=PLATE_ITERATIONS):
+    """Fill in `delta` at the `free` vertices so it stretches and bends as little as it can (least squares of its
+    differences along the edges, a membrane, and `bend` times those of its Laplacian, a thin plate; by conjugate
+    gradients), the rest held."""
+    bend = PLATE_BEND if bend is None else bend
+    # Over the free vertices and two rings round them only.
+    support = np.zeros(len(delta), bool)
+    support[free] = True
+    for _ in range(2):
+        grown = support.copy()
+        grown[edges[:, 0][support[edges[:, 1]]]] = True
+        grown[edges[:, 1][support[edges[:, 0]]]] = True
+        support = grown
+    index = np.full(len(delta), -1)
+    index[support] = np.arange(support.sum())
+    local = edges[support[edges[:, 0]] & support[edges[:, 1]]]
+    out = delta.copy()
+    out[support] = _thin_plate_local(delta[support], index[free], index[local], bend, iterations)
+    return out
+
+
+def _thin_plate_local(delta, free, edges, bend, iterations):
+    n = len(delta)
+    deg = np.maximum(np.bincount(edges.ravel(), minlength=n), 1).astype(float)
+    rows = np.concatenate([edges[:, 0], edges[:, 1]])
+    cols = np.concatenate([edges[:, 1], edges[:, 0]])
+    vals = 1.0 / deg[rows]
+
+    def lap(x):
+        return np.stack([np.bincount(rows, vals * x[cols, k], n) for k in range(x.shape[1])], 1) - x
+
+    def lap_t(y):
+        return np.stack([np.bincount(cols, vals * y[rows, k], n) for k in range(y.shape[1])], 1) - y
+
+    def stretch(x):
+        return deg[:, None] * x - np.stack([np.bincount(rows, x[cols, k], n) for k in range(x.shape[1])], 1)
+
+    def energy(x):
+        return stretch(x) + bend * lap_t(lap(x))
+
+    def apply(x):
+        full = np.zeros_like(delta)
+        full[free] = x
+        return energy(full)[free]
+
+    held = delta.copy()
+    held[free] = 0.0
+    b = -energy(held)[free]
+    x = np.zeros_like(b)
+    r = b - apply(x)
+    p = r.copy()
+    rr = start = (r * r).sum(0)
+    for _ in range(iterations):
+        ap = apply(p)
+        alpha = rr / np.maximum((p * ap).sum(0), 1e-30)
+        x += p * alpha
+        r -= ap * alpha
+        new = (r * r).sum(0)
+        if np.all(new <= 1e-14 * np.maximum(start, 1e-30)):
+            break
+        p = r + p * (new / np.maximum(rr, 1e-30))
+        rr = new
+    out = delta.copy()
+    out[free] = x
+    return out
+
+
+def _smooth_outline(points, degree=4, samples=60):
+    """A polyline (y, z) from corner to corner, refitted as a smooth curve (z a polynomial in y), keeping its ends."""
+    points = np.asarray(points, float)
+    y, z = points[:, 0], points[:, 1]
+    span = np.ptp(y)
+    fit = np.polyfit((y - y.mean()) / span, z, min(degree, len(y) - 1))
+    ys = np.linspace(y.min(), y.max(), samples)
+    zs = np.polyval(fit, (ys - y.mean()) / span)
+    # The ends stay where they were (the corners), the fit's error there faded out toward the middle.
+    for end in (0, -1):
+        k = int(np.argmin(np.abs(ys - y[end])))
+        error = z[end] - zs[k]
+        zs += error * np.exp(-((ys - ys[k]) / (0.15 * span)) ** 2)
+    return np.stack([ys, zs], 1)
+
+
+def round_lip_shapes(points, lips, lower, upper, rim, edges, inner=(), jaw=None):
+    """mouthPucker and mouthFunnel: each lip's cross-section laid on a torus round the opening (see PUCKER), the corners
+    drawn in and forward with the rest; the skin around carried with the lips as a thin plate. Returns the shapes and,
+    for the lips' inner side (`inner`: {vertex: the edge vertex it hangs from}), where each shape puts it (set by
+    tube_rings once the inner side has taken its edge's motion)."""
+    # The lips' outlines as smooth curves (between MediaPipe's points they are straight, and the lips, laid round the
+    # tube by how far across them each vertex is, creased at every point where the outline bent).
+    lips = {**lips, **{key: _smooth_outline(lips[key]) for key in ("line", "upper", "lower")}}
     mid_y, half = _mouth_frame(lips)
     width = 2 * half
     line = lips["line"]
     seam_mid = _interp_line(line, mid_y)
-    # Both lips ring the opening alike (the lower lip, thicker, made the ring lopsided): their mean height at each place.
-    def thick(y):
-        y = min(max(y, mid_y - half), mid_y + half)
-        seam = _interp_line(line, y)
-        return (abs(_interp_line(lips["upper"], y) - seam) + abs(seam - _interp_line(lips["lower"], y))) / 2
-    lower, upper, inner = set(lower), set(upper), set(inner)
+    lower, upper = set(lower), set(upper)
+    inner = dict(inner)
     rim = sorted(rim)
     order = np.argsort(points[rim, 1])
-    rim_y, rim_x = points[rim, 1][order], points[rim, 0][order]
-    front = float(np.interp(mid_y, rim_y, rim_x))
+    front = float(np.interp(mid_y, points[rim, 1][order], points[rim, 0][order]))
 
     lip_index, lip_place = [], []
     edge = set(rim)
     for i, p in enumerate(points):
-        # (The lips' inner side goes with the edge it hangs from, later.) Every vertex of the opening's edge is on the
-        # lips: some by the corners lie a little past MediaPipe's corners, and moved with the skin instead they left the
-        # lips' inside sticking out sideways in dark flaps.
+        # Every vertex of the opening's edge is on the lips: some by the corners lie a little past MediaPipe's corners,
+        # and moved with the skin instead they left the lips' inside sticking out sideways in dark flaps.
         if i in inner or (i not in edge and (p[0] <= 0 or abs(p[1] - mid_y) > half * 1.02)):
             continue
         seam = _interp_line(line, min(max(p[1], mid_y - half), mid_y + half))
         if i not in lower and i not in upper and abs(p[2] - seam) > half * 0.6:
             continue
         side = "lower" if i in lower else "upper" if i in upper else ("lower" if p[2] < seam else "upper")
-        s, _ = (0.0, None) if i in edge else _lip_place((p[1], p[2]), lips, side)
+        s, height = (0.0, 0.0) if i in edge else _lip_place((p[1], p[2]), lips, side)
         if s <= LIP_REACH:
             lip_index.append(i)
-            lip_place.append((side, float(np.clip((p[1] - mid_y) / half, -1, 1)), s))
-    lip_index = np.array(lip_index)
+            lip_place.append((side, float(np.clip((p[1] - mid_y) / half, -1, 1)), s, height))
+    place_of = dict(zip(lip_index, lip_place))
+    thickest = {side: abs(_interp_line(lips[side], mid_y) - seam_mid) for side in ("upper", "lower")}
 
-    out = {}
-    tree = KDTree(len(lip_index))
-    for k, i in enumerate(lip_index):
-        tree.insert(points[i], k)
-    tree.balance()
-    on_lips = set(lip_index.tolist()) | inner
-    others = np.array([i for i in range(len(points)) if i not in on_lips and points[i][0] > front - 0.8 * width
-                       and np.hypot(points[i][1] - mid_y, points[i][2] - seam_mid) < ROUND_REACH * width])
-    count = np.maximum(np.bincount(edges.ravel(), minlength=len(points)), 1)
-    nose = (1 - 2 / 3 * _smooth((points[others, 2] - lips["subnasale_z"]) / (0.3 * width)))[:, None]
+    # The inner side's rings, counted from the edge.
+    ring = {}
+    frontier = set(rim)
+    neighbours = {}
+    for a, b in edges:
+        if a in inner or b in inner:
+            neighbours.setdefault(int(a), []).append(int(b))
+            neighbours.setdefault(int(b), []).append(int(a))
+    for k in range(1, len(RING_ANGLES) + 1):
+        frontier = {j for v in frontier for j in neighbours.get(v, ()) if j in inner and j not in ring}
+        for j in frontier:
+            ring[j] = k
+
+    # The plate is bent over places, not vertices: the mesh is split along its texture's seams, and the two sides of
+    # a seam, each with half the neighbours, bent apart and the seam opened into flaps by the corners. The edge between
+    # the lips keeps its two sides (the two lips) apart.
+    place = np.unique(np.round(points / 1e-6).astype(np.int64), axis=0, return_inverse=True)[1].ravel().copy()
+    place[rim] = place.max() + 1 + np.arange(len(rim))
+    places = int(place.max()) + 1
+    place_edges = place[edges]
+    place_edges = np.unique(np.sort(place_edges[place_edges[:, 0] != place_edges[:, 1]], axis=1), axis=0)
+    on_lips = set(lip_index) | set(inner)
+    near = np.hypot(points[:, 1] - mid_y, points[:, 2] - seam_mid) < ROUND_REACH * width
+    held = np.zeros(places, bool)
+    held[place[list(on_lips)]] = True
+    free = np.zeros(places, bool)
+    free[place[near & (points[:, 0] > front - 0.8 * width)]] = True
+    free &= ~held
+    free_places = np.where(free)[0]
+    place_z = np.zeros(places)
+    place_z[place] = points[:, 2]
+    nose = 1 - 2 / 3 * _smooth((place_z[free_places] - lips["subnasale_z"]) / (0.3 * width))
+    lip_index = np.array(lip_index, dtype=int)
+    place_pos = np.zeros((places, 3))
+    place_pos[place] = points
+    near_lips = np.hypot(place_pos[free_places, 1] - mid_y, place_pos[free_places, 2] - seam_mid)
+    skin_weight = 1 - _smooth((near_lips - 0.5 * width) / (0.6 * width))
+    # The jaw's offsets by place (the shapes are bent with the jaw opened as they are made for, see FUNNEL).
+    jaw_place = np.zeros((places, 3))
+    if jaw is not None:
+        np.add.at(jaw_place, place, jaw)
+        jaw_place /= np.maximum(np.bincount(place, minlength=places), 1)[:, None]
+    out, inside = {}, {}
     for name, spec in (("mouthPucker", PUCKER), ("mouthFunnel", FUNNEL)):
-        a, b = spec["opening"][0] * width, spec["opening"][1] * width
-        delta = np.zeros_like(points)
-        for i, (side, t, s) in zip(lip_index, lip_place):
-            p = points[i]
-            # Round the opening: the upper lip's edge over its top half, the lower's under it, the corners at its sides.
-            phi = math.pi / 2 * (1 - t) if side == "upper" else -math.pi / 2 * (1 - t)
-            ring_y = a + s * spec["ring"][0] * thick(p[1])
-            ring_z = b + s * spec["ring"][1] * thick(p[1])
-            # Forward to the opening's plane, the red sloping back a little toward its border (the tube's lip).
-            column_front = float(np.interp(p[1], rim_y, rim_x))
-            forward = front - column_front + spec["forward"] * width - 0.1 * width * s
-            delta[i] = [forward, mid_y + ring_y * math.cos(phi) - p[1], seam_mid + ring_z * math.sin(phi) - p[2]]
-        # The skin: started from the nearest lip vertices' motion, then relaxed as a membrane.
-        for i in others:
-            found = tree.find_n(points[i], 4)
-            w = 1 / np.maximum(np.array([d for _, _, d in found]), 1e-6) ** 2
-            fall = 1 - _smooth(min(d for _, _, d in found) / (ROUND_REACH * width))
-            delta[i] = fall * (w[:, None] * delta[lip_index[[k for _, k, _ in found]]]).sum(0) / w.sum()
-        for _ in range(MEMBRANE_ROUNDS):
-            mean = np.stack([np.bincount(edges[:, 0], delta[edges[:, 1], k], len(points)) +
-                             np.bincount(edges[:, 1], delta[edges[:, 0], k], len(points)) for k in range(3)], 1) / count[:, None]
-            delta[others] = mean[others]
-        delta[others] *= nose
+        lips_at = _rounded(spec, width, mid_y, seam_mid, front)
+        opened = spec["jaw"] * jaw_place
+        # Where the lips and skin are to be with the jaw opened as the shape is made for: the skin round them is
+        # bent between the lips so laid and the face moved by the jaw (bent between the lips and the face at rest, it
+        # folded where the jaw itself pulls the corners down), then the jaw is taken back off.
+        targets = opened.copy()
+        targets[held] = 0.0
+        counts = np.zeros(places)
+        reach = spec["opening"][0] * width
+        corner = spec["corner"] * width
+        for i, (side, t, s, d) in zip(lip_index, lip_place):
+            if jaw is not None:
+                # Opened by the jaw in a round arc in the middle, shut beyond: there both lips stay where they are laid
+                # (the upper lip's corners, which the jaw takes down a little, crossed the lower's there).
+                closed = 1 - max(0.0, 1 - (abs(t) * corner / (OPEN_ROUND * reach)) ** 2) ** 0.7
+                targets[place[i]] += spec["jaw"] * (1 - closed) * jaw[i]
+            roll = (EDGE_ANGLE - BORDER_ANGLE) * min(s, 1.0) + (BORDER_ANGLE - REACH_ANGLE) * max(s - 1.0, 0.0) / (LIP_REACH - 1.0)
+            # Rolled round the tube less where the lip is thinner, by the corners (laid all round it, the thin lips
+            # there fanned out in creases; cut off at a set reach instead, the lip creased where the cut-off began).
+            roll *= _smooth(d / (ROLL_FULL * thickest[side]))
+            targets[place[i]] += lips_at(side, t, EDGE_ANGLE - roll) - points[i]
+            counts[place[i]] += 1
+        lip_places = counts > 0
+        targets[lip_places] /= counts[lip_places, None]
+        targets = _thin_plate(targets, free_places, place_edges) - opened
+        targets[free_places] *= nose[:, None]
+        # The whole outer surface, lips and skin, smoothed a little: where the lips' laid shape met the skin's, folds
+        # turned faces over.
+        moving = (held | free)
+        moving[place[rim]] = False
+        moving[place[list(inner)]] = False
+        count = np.maximum(np.bincount(place_edges.ravel(), minlength=places), 1)[:, None]
+        for _ in range(SURFACE_ROUNDS):
+            total = np.zeros_like(targets)
+            np.add.at(total, place_edges[:, 0], targets[place_edges[:, 1]])
+            np.add.at(total, place_edges[:, 1], targets[place_edges[:, 0]])
+            targets[moving] = 0.5 * targets[moving] + 0.5 * (total / count)[moving]
+        # The skin round the lips, drawn in after them, kept the little bumps of its rest shape squeezed into ridges
+        # (down from the lower lip, for у): its moved shape is smoothed itself, near the lips, the volume kept.
+        moved = place_pos + opened + targets
+        for _ in range(SKIN_ROUNDS):
+            for step in (0.5, -0.53):
+                total = np.zeros_like(moved)
+                np.add.at(total, place_edges[:, 0], moved[place_edges[:, 1]])
+                np.add.at(total, place_edges[:, 1], moved[place_edges[:, 0]])
+                moved[free_places] += step * skin_weight[:, None] * (total / count - moved)[free_places]
+        # So are the lips themselves (but their edge and inner side): squeezed together for у, the lower lip's red,
+        # laid by how far across it each vertex is, crumpled in upright folds.
+        lip_moving = np.where(moving & held)[0]
+        for _ in range(LIP_ROUNDS):
+            for step in (0.5, -0.53):
+                total = np.zeros_like(moved)
+                np.add.at(total, place_edges[:, 0], moved[place_edges[:, 1]])
+                np.add.at(total, place_edges[:, 1], moved[place_edges[:, 0]])
+                moved[lip_moving] += step * (total / count - moved)[lip_moving]
+        targets = moved - place_pos - opened
+        delta = targets[place]
         out[name] = delta
-    return out
+        rings = {}
+        for j, k in ring.items():
+            side, t, _, _ = place_of.get(inner[j], ("upper", 0.0, 0.0, 0.0))
+            rings[j] = lips_at(side, t, RING_ANGLES[k - 1]) - points[j]
+        inside[name] = rings
+    if DEBUG is not None:
+        DEBUG.update(lip_index=lip_index, lip_place=lip_place, free_places=free_places, place=place, held=held)
+    print("rounded lips: lip vertices", len(lip_index), "skin carried", len(free_places), "inner rings", len(ring))
+    return out, inside
 
 
-# Rounded, the lips' inner side turns from facing up and down to running back as a tube: for the pucker it closes in
-# toward the opening's axis, a little behind its edge and nearly shut at its deepest ring, hiding the teeth behind the
-# small opening as the dark inside of a real one does (the player has no occlusion, and the incisors showed white in
-# the hole); for the funnel it runs straight back.
-TUBE_NARROW = {"mouthPucker": 0.85, "mouthFunnel": 0.0}
-
-
-def tube_rings(shapes, points, inner, lips):
-    """Turn the lips' inner rings into the tube of rounded lips (in place, after they took their edge's motion)."""
-    mid_y, half = _mouth_frame(lips)
-    width = 2 * half
-    axis = np.array([mid_y, _interp_line(lips["line"], mid_y)])
-    hanging = np.array(list(inner.keys()), dtype=int)
-    edge = np.array(list(inner.values()), dtype=int)
-    rise = points[hanging, 2] - points[edge, 2]
-    # How deep each ring is: the deepest in the lips' middle is 1 (toward the corners the rings run deeper still).
-    depth = np.minimum((points[edge, 0] - points[hanging, 0]) / (INNER_RINGS[-1][0] * width), 1.0)
-    for name, narrow in TUBE_NARROW.items():
+def tube_rings(shapes, inside):
+    """Put the lips' inner rings where the rounded lips' torus has them (in place, after they took their edge's
+    motion)."""
+    for name, targets in inside.items():
         delta = shapes[name]
-        delta[hanging, 2] -= rise  # straight back from the edge
-        across = points[hanging][:, 1:] + delta[hanging, 1:] - axis
-        delta[hanging, 1:] -= across * (narrow * depth)[:, None]
+        for j, d in targets.items():
+            delta[j] = d
 
 
 # At 1, the upper lip's red rises this much (W) over the canine of its side (levator labii superioris), the lower lip's
@@ -916,6 +1115,29 @@ def follow_skin(verts, points, shapes, lips):
     nearest, weight = np.array(nearest), np.array(weight)
     return {name: delta[nearest] * weight[:, None] for name, delta in shapes.items()
             if name != "jawOpen" and name.startswith(("mouth", "cheek")) and np.abs(delta[nearest]).max() > 1e-7}
+
+
+def behind_moved_skin(verts, shapes, body, points, skin_shapes, lips, names=("mouthFunnel", "mouthPucker")):
+    """In each of `names`, put back behind the skin as that shape moves it whatever of the inside (`verts` with its
+    `shapes`) would come out in front of it: rounded, the lips draw the corners in past the cavity's sides, and its
+    dark showed through the cheeks in black flaps (following the nearest skin, it was left behind there)."""
+    width = 2 * _mouth_frame(lips)[1]
+    faces = [tuple(p.vertices) for p in body.data.polygons]
+    spec = {"mouthFunnel": FUNNEL, "mouthPucker": PUCKER}
+    for name in names:
+        if name not in skin_shapes:
+            continue
+        # With the jaw opened as the shape is made for.
+        opened = spec[name]["jaw"] if name in spec else 0.0
+        moved = points + skin_shapes[name] + opened * skin_shapes.get("jawOpen", 0.0)
+        tree = BVHTree.FromPolygons([Vector(p) for p in moved], faces)
+        delta = shapes.get(name, np.zeros_like(verts))
+        for i, p in enumerate(verts + delta + opened * shapes.get("jawOpen", np.zeros_like(verts))):
+            hit, normal, _, _ = tree.ray_cast(Vector((5.0, p[1], p[2])), Vector((-1.0, 0.0, 0.0)))
+            if hit is not None and normal.x > 0.2 and p[0] > hit.x - BEHIND_SKIN * width:
+                delta[i, 0] += hit.x - BEHIND_SKIN * width - p[0]
+        shapes[name] = delta
+    return shapes
 
 
 def mouth_interior(body, lips, front_x, seam_x, pivot, angle, slide):

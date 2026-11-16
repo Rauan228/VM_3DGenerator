@@ -1,3 +1,4 @@
+import { SIGNER_MODELS } from "./signer-models";
 import { PerspectiveCamera } from "@react-three/drei";
 import { Canvas, useThree } from "@react-three/fiber";
 import * as THREE from "three";
@@ -13,7 +14,7 @@ import type { GestureJson } from "./types";
  * resolves once it is on the canvas.
  */
 
-const MODELS = { male: "/models/tilmind-male.glb", female: "/models/tilmind-female.glb" };
+const MODELS = SIGNER_MODELS;
 // Head to below the waist, with room for hands raised to the side of the head. The man is 10 cm taller.
 const FLOOR_Y = -1.12;
 const FRAMING = { male: { lookAt: 0.36, distance: 2.1 }, female: { lookAt: 0.3, distance: 1.95 } };
@@ -70,8 +71,15 @@ function Driver({ time }: { time: React.MutableRefObject<number> }) {
     // After the animation has set the frame's shapes, before it is drawn.
     // `hide=<name>,<name>` leaves those meshes out (to see what is behind them).
     const hidden = new Set((new URLSearchParams(location.search).get("hide") ?? "").split(",").filter(Boolean));
+    // `clay=1` draws every mesh in plain grey, to tell creases in the surface from lines in the texture.
+    // `clay=wire` draws the mesh's edges.
+    const clayParam = new URLSearchParams(location.search).get("clay");
+    const clay = clayParam ? new THREE.MeshStandardMaterial({ color: "#b8b0a8", roughness: 0.6, wireframe: clayParam === "wire" }) : undefined;
+    // (The eyeballs red, to see where they show through the skin.)
+    const eyeClay = new THREE.MeshStandardMaterial({ color: "#d02020", roughness: 0.6, wireframe: clayParam === "wire" });
     scene.onBeforeRender = () => {
       if (hidden.size) scene.traverse((object) => hidden.has(object.name) && (object.visible = false));
+      if (clay) scene.traverse((object) => (object as THREE.Mesh).isMesh && ((object as THREE.Mesh).material = object.name.startsWith("TM_eye") ? eyeClay : clay));
       if (!shapes) return;
       scene.traverse((object) => {
         const mesh = object as THREE.Mesh;
@@ -97,6 +105,8 @@ function Driver({ time }: { time: React.MutableRefObject<number> }) {
       }
       return out;
     };
+    (target as RenderWindow & { colourOf?: (name: string) => number[] | undefined }).colourOf = (name) =>
+      ((scene.getObjectByName(name) as THREE.Mesh | undefined)?.material as THREE.MeshStandardMaterial | undefined)?.color.toArray();
     target.bonePositions = (names) =>
       Object.fromEntries(names.flatMap((name) => {
         const bone = scene.getObjectByName(name);
@@ -115,11 +125,20 @@ function Render() {
   const view = params.get("view");
   // `model=<path>` loads another build of the avatar (a test build under /models), for checking it before it replaces the player's.
   const model = params.get("model");
+  // `cam=x,y,z,tx,ty,tz` puts the camera anywhere (looking at tx, ty, tz), and `fov=<degrees>` narrows it, for
+  // close-ups the views do not frame (the camera clips what is nearer than 0.1).
+  const cam = params.get("cam")?.split(",").map(Number);
+  const fov = Number(params.get("fov") ?? 38);
   const [gesture, setGesture] = useState<GestureJson>();
   const time = useRef(0);
 
   useEffect(() => {
-    fetchGesture(params.get("id") ?? "").then(setGesture, (reason) => ((window as RenderWindow).renderError = String(reason)));
+    // `still=1` leaves the signer's face out (no head turn, eyes ahead), to frame the face the same for every check.
+    const still = params.has("still");
+    fetchGesture(params.get("id") ?? "").then(
+      (loaded) => setGesture(still ? { ...loaded, expression: [] } : loaded),
+      (reason) => ((window as RenderWindow).renderError = String(reason)),
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -131,7 +150,9 @@ function Render() {
       <PerspectiveCamera
         makeDefault
         position={
-          view && HEAD_VIEWS[view]
+          cam?.length === 6
+            ? [cam[0], cam[1], cam[2]]
+            : view && HEAD_VIEWS[view]
             ? HEAD_VIEWS[view](avatar)[0]
             : view === "side"
             ? [-1.2, 0.15, 0.25]
@@ -149,9 +170,11 @@ function Render() {
                   ? [0, 0.3, 1.05]
                 : [0, FRAMING[avatar].lookAt + 0.05, FRAMING[avatar].distance]
         }
-        fov={38}
+        fov={fov}
         onUpdate={(self) =>
-          view && HEAD_VIEWS[view]
+          cam?.length === 6
+            ? self.lookAt(cam[3], cam[4], cam[5])
+            : view && HEAD_VIEWS[view]
             ? self.lookAt(...HEAD_VIEWS[view](avatar)[1])
             : view === "face34" || view === "faceside"
             ? self.lookAt(0, FACE_Y[avatar], FACE_Z)

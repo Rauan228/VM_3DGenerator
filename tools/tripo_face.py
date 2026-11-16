@@ -39,6 +39,12 @@ SUBDIVIDE_CUTS = 2
 LIP_SLACK = 0.06
 # The eyeball's radius as a share of the eye opening's width.
 EYEBALL_RADIUS = 0.55
+# The skin beside the opening's edge is evened out across this many rounds.
+RIM_RELAX_ROUNDS = 4
+# The skin this far round the opening (a share of the eye's width) is smoothed in depth this many rounds, most at the
+# rim (Taubin, so the lids keep their fullness).
+LID_SMOOTH_REACH = 0.4
+LID_SMOOTH_ROUNDS = 12
 
 
 def _pixels_to_model(projection, points, ref_h):
@@ -69,6 +75,43 @@ def _inside(p, polygon):
             if p[0] < x:
                 inside = not inside
     return inside
+
+
+def _lid_curve(points, samples=24):
+    """A smooth line (Catmull-Rom) through a lid's points (y, z), corner to corner, sampled densely."""
+    points = np.asarray(points, float)
+    padded = np.vstack([2 * points[0] - points[1], points, 2 * points[-1] - points[-2]])
+    out = []
+    for i in range(1, len(padded) - 2):
+        p0, p1, p2, p3 = padded[i - 1:i + 3]
+        for t in np.linspace(0, 1, samples, endpoint=False):
+            out.append(0.5 * (2 * p1 + (p2 - p0) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t ** 2 + (3 * p1 - p0 - 3 * p2 + p3) * t ** 3))
+    out.append(points[-1])
+    return np.array(out)
+
+
+def _rim_loop(bm, curve, width):
+    """The opening's rim, in order: walked along the boundary edges from the vertex nearest the curve's start, each
+    step to the unvisited boundary neighbour nearest the curve."""
+    def gap(v):
+        return float(np.min(np.hypot(curve[:, 0] - v.co.y, curve[:, 1] - v.co.z)))
+
+    middle = curve.mean(0)
+    candidates = [v for v in bm.verts if v.is_boundary and np.hypot(v.co.y - middle[0], v.co.z - middle[1]) < width and gap(v) < 0.25 * width]
+    if not candidates:
+        return []
+    start = min(candidates, key=lambda v: np.hypot(v.co.y - curve[0, 0], v.co.z - curve[0, 1]))
+    loop, seen = [start], {start}
+    while True:
+        here = loop[-1]
+        nxt = [e.other_vert(here) for e in here.link_edges if e.is_boundary and e.other_vert(here) not in seen]
+        nxt = [v for v in nxt if gap(v) < 0.25 * width]
+        if not nxt:
+            break
+        v = min(nxt, key=gap)
+        loop.append(v)
+        seen.add(v)
+    return loop
 
 
 def _interp_line(line, y):
@@ -130,24 +173,64 @@ def carve_eyes(body, projection, all_points, ref_h):
         info[key] = {"centre": centre, "radius": radius, "upper": upper, "lower": lower, "polygon": polygon, "width": width}
     bmesh.ops.delete(bm, geom=list(doomed), context="FACES")
     bmesh.ops.delete(bm, geom=[v for v in bm.verts if not v.link_faces], context="VERTS")
-    # Snap the opening's rim onto the lid lines, so the edge follows the painted lid instead of the grid.
-    for v in bm.verts:
-        if not v.is_boundary:
+    # The opening's rim laid on the lid lines, smooth curves through MediaPipe's points (on the straight lines between
+    # them, the lid's edge was a polygon and its margin a frame with corners): the rim, walked round in order from the
+    # outer corner, is spread evenly along the upper lid's curve to the inner corner and back along the lower's. (Each
+    # vertex snapped to its nearest point on the curve, the rim doubled back on itself where the cut edge zigzagged,
+    # and the lid's inside, extruded from it, stood out in jagged pale flaps.) Then the skin round the opening is
+    # evened out: the rings beside the rim across, the band under and over it in depth (its creases caught the light as
+    # cracks under the eye).
+    rim = set()
+    for eye in info.values():
+        upper_curve, lower_curve = _lid_curve(eye["upper"]), _lid_curve(eye["lower"])
+        eye["curve"] = np.vstack([upper_curve, lower_curve[::-1]])
+        loop = _rim_loop(bm, eye["curve"], eye["width"])
+        if len(loop) < 6:
             continue
-        for eye in info.values():
-            p = np.array([v.co.y, v.co.z])
-            if np.linalg.norm(p - eye["polygon"].mean(0)) > eye["width"]:
+        ends = [int(np.argmin([np.hypot(v.co.y - c[0], v.co.z - c[1]) for v in loop])) for c in (upper_curve[0], upper_curve[-1])]
+        k_out, k_in = ends
+        first = loop[k_out:] + loop[:k_out]
+        k_in = (k_in - k_out) % len(loop)
+        chains = [first[:k_in + 1], first[k_in:] + first[:1]]
+        if np.mean([v.co.z for v in chains[0]]) < np.mean([v.co.z for v in chains[1]]):
+            chains = [chains[1][::-1], chains[0][::-1]]
+        # chains[0] runs outer corner -> inner corner over the top, chains[1] inner -> outer under.
+        for chain, curve in ((chains[0], upper_curve), (chains[1], lower_curve[::-1])):
+            arc = np.concatenate([[0.0], np.cumsum(np.linalg.norm(np.diff(curve, axis=0), axis=1))])
+            for v, at in zip(chain, np.linspace(0.0, arc[-1], len(chain))):
+                v.co.y = float(np.interp(at, arc, curve[:, 0]))
+                v.co.z = float(np.interp(at, arc, curve[:, 1]))
+                rim.add(v)
+    near = {u for v in rim for e in v.link_edges for u in e.verts if u not in rim and not u.is_boundary}
+    near |= {u for v in near for e in v.link_edges for u in e.verts if u not in rim and not u.is_boundary}
+    for _ in range(RIM_RELAX_ROUNDS):
+        moved = {}
+        for v in near:
+            others = [e.other_vert(v) for e in v.link_edges]
+            mean = sum((u.co for u in others), Vector()) / len(others)
+            moved[v] = (v.co.y + 0.5 * (mean.y - v.co.y), v.co.z + 0.5 * (mean.z - v.co.z))
+        for v, (y, z) in moved.items():
+            hit, _ = _surface(tree, y, z)
+            v.co.y, v.co.z = y, z
+            if hit is not None:
+                v.co.x = hit.x
+    band = {}
+    for eye in info.values():
+        middle, reach = eye["polygon"].mean(0), eye["width"] * LID_SMOOTH_REACH
+        for v in bm.verts:
+            if v in rim or v.is_boundary or v.co.x <= 0:
                 continue
-            ring = np.vstack([eye["polygon"], eye["polygon"][:1]])
-            best, nearest = np.inf, p
-            for a, b in zip(ring[:-1], ring[1:]):
-                ab = b - a
-                t = np.clip(((p - a) @ ab) / (ab @ ab + 1e-12), 0, 1)
-                q = a + t * ab
-                if np.linalg.norm(p - q) < best:
-                    best, nearest = np.linalg.norm(p - q), q
-            if best < eye["width"] * 0.15:
-                v.co.y, v.co.z = float(nearest[0]), float(nearest[1])
+            p = np.array([v.co.y, v.co.z])
+            if np.linalg.norm(p - middle) > eye["width"] * 1.2:
+                continue
+            d = float(np.min(np.linalg.norm(eye["curve"] - p, axis=1)))
+            if d < reach:
+                band[v] = max(band.get(v, 0.0), 1.0 - _smooth(d / reach))
+    for _ in range(LID_SMOOTH_ROUNDS):
+        for step in (0.5, -0.53):
+            depth = {v: sum(e.other_vert(v).co.x for e in v.link_edges) / len(v.link_edges) for v in band}
+            for v, w in band.items():
+                v.co.x += step * w * (depth[v] - v.co.x)
     bm.to_mesh(body.data)
     bm.free()
     body.data.update()

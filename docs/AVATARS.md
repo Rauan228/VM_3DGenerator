@@ -24,10 +24,18 @@
    pupil, under a clear-coated cornea that bulges a little in front, whose highlights make the eye look wet; skinned
    to `LeftEye`/`RightEye`. The texture is laid out from the pupil outward (to 100° round the ball): mapped round a
    pole at the pupil, it was squeezed to a point there, the GPU took a blur of iris and white from afar, and the
-   irises looked grey and the eyes frightening. The lids get their thickness, their edge turning in to a pink margin and down onto the ball
+   irises looked grey and the eyes frightening. The opening's rim is spread evenly along smooth curves through
+   MediaPipe's lid points (snapped vertex by vertex onto the straight lines between them, it was a polygon, its margin
+   a frame with corners, and where the cut edge zigzagged the rim doubled back and the lid's inside stood out in pale
+   flaps), and the skin round it is smoothed in depth (its creases caught the light as cracks under the eyes). The
+   ball is tucked behind the skin wherever the skin covers it, facing any way forward and for small turns of the eye,
+   the dents spread and smoothed over its hidden part, what shows through the opening at rest left round (tucked only
+   at rest and only behind skin facing the front, the ball showed through by the outer corners, which face the side).
+   The lids get their thickness, their edge turning in to a pink margin and down onto the ball (onto the ball as
+   tucked)
    with a dark line where they meet it (kept on the ball through every lid shape), and single thin lashes stand on
-   the upper lid (longer and flicking out at the outer corner for the girl, a few short ones on her lower lid, short
-   for the boy), closing with it: skinned like the lid they stand on (made without skin weights, they stayed where
+   the upper lid (longer and flicking out at the outer corner for the girl, short for the boy; none on the lower lid,
+   where they read as a row of teeth), closing with it: skinned like the lid they stand on (made without skin weights, they stayed where
    the head had been when it moved), and matt (glossy, their thin faces caught the light in white specks). The lids' inside and the lashes are painted into free squares of the body's texture,
    like the lips' inside. The shapes that matter most are built
    from that geometry instead of transferred: blink (upper lid over the eyeball), brows down / inner up / outer up.
@@ -41,11 +49,21 @@
    way from the head bone to the lips) and slides it forward a little, as the condyles do, with the chin, the lower
    lip, the lower teeth and the tongue, the cheeks and the skin under the chin stretching between; at 1 the lower lip
    drops 0.58 of the mouth's width (23–25°). `mouthUpperUp`/`mouthLowerDown` lift the lips off the teeth (the
-   transferred ones barely moved the painted lips). `mouthPucker` (у, ю) and `mouthFunnel` (о, ш) lay the lips' edge on
-   a round opening at the front (small for the pucker, wider for the funnel, which the jaw opens taller), each lip's
-   red ringed round it and thickened, the corners drawn in and forward with it, so the lips make a tube with their
-   inner side going back behind; the skin around follows, less and less over 0.9 of the mouth's width (gathering the
-   lips toward the middle in proportion, as before, squeezed the opening to a point with a crease down it). Teeth stand in arches of a person's proportions (incisors, canine,
+   transferred ones barely moved the painted lips). `mouthPucker` (у, ю) and `mouthFunnel` (о, ш) round the lips into a tube (2026-11-12, after "буква о страшно…
+   будто просто сжали, а не губки трубочкой"): the mouth narrows evenly from corner to corner; in its middle the lips'
+   edges part round a pointed-oval opening, beyond it they stay pressed together out to the corners; each lip's
+   cross-section is laid on a tube along its edge (the edge on the tube's inner front, the red rolled over its front,
+   less where the lip is thin by the corners, the inner side going on round behind), the upper lip arching over the
+   opening. The opening's height is the jaw's: `mouthFunnel` is made for `jawOpen` 0.38 (beyond the opening it keeps
+   the lips together against what that jaw does), `mouthPucker` for the jaw shut, a small hole the lips make
+   themselves. The skin round the lips is carried with them as a membrane that also resists bending (conjugate
+   gradients over the mesh's places, so the two sides of a texture seam move as one), bent with the jaw opened as the
+   shape is made for, then smoothed a little where it is drawn in (the rest shape's bumps squeezed into ridges). The
+   lips' outlines are refitted as smooth curves first (between MediaPipe's points they are straight, and the lips
+   creased at every bend). Earlier tries: the lips' red ringed round the opening as thick as it is (the opening's sides
+   were skin folded in: "squeezed"); laid round a whole ring (the corners were drawn into the opening's sides and the
+   skin round each closed in a wedge). The mouth's cavity is kept behind the skin as these shapes move it (following
+   the nearest skin, it was left behind by the corners and showed through the cheeks in black flaps). Teeth stand in arches of a person's proportions (incisors, canine,
    premolars and first molar a side, scaled to the mouth's width, the upper incisors over and before the lower) in
    scalloped gums (`TM_teeth_*`, `TM_gums_*`); the tongue (`TM_tongue`) lies in the lower arch with shapes of its own,
    `tongueTipUp` (tip on the ridge behind the upper teeth: т, д, н, л, р), `tongueBackUp` (к, г, х), `tongueFrontUp`
@@ -53,21 +71,37 @@
    with the skin. Everything inside is kept behind the skin in front of it and shaded darker deeper in through vertex
    colours (the player has no ambient occlusion). The shapes carry normal offsets, so the light follows the lips; the
    exporter writes those for every vertex, and the build rewrites them as sparse (46 MB → 11–12 MB a file).
+   The player has no ambient occlusion, so the teeth, gums, tongue and cavity are drawn darker the smaller the mouth's
+   opening (`face-expression.ts`, reckoned from the jaw and the lips' rounding and spread): behind the small hole of
+   "у" the incisors shone white as in a wide-open "а".
 
    The boy's hair is cut anew (`tools/tripo_hair.py`, 2026-11-12; Tripo gave him a dark lumpy cap with blotches
    painted in it and a fringe hanging over the forehead as a second layer of surface, ending in ragged tips): Tripo's
-   hair becomes the scalp's dark underlayer, sunk 7 mm, smoothed, painted flat dark brown; in front the hairline is a
-   smooth arc at the height of the fringe's main edge, the fringe's tips below it laid onto the forehead and painted as
-   the hair's shadow, fading into the skin over the brows; on it grow about 750 locks (`TM_hair`, skinned to the
-   head): flattened tubes tapering to a third, combed away from the whorl at the top of the back and swept toward the
-   character's left in front, the fringe down over the forehead to just over the brows, the others ending where the
-   hair does and never below the top of the neck; brown from the reference, darker at the root, each its own shade
-   (vertex colours, converted to linear). (Swept up off the forehead instead, the front had to be cleared of Tripo's
-   fringe; deleting its overhanging layer and laying the front onto a skull left flaps and seams over the brows every
-   time.) The face's texture above the part taken from the reference (both avatars) is repainted in the reference's
-   skin colour, fading out just under the reference's hairline; the hood's shadow Tripo painted on the boy's neck is
-   painted out, and the hood's inside round the neck (painted dark and spotted like hair) is the hoodie's colour in
-   shadow.
+   hair becomes the scalp's dark underlayer, sunk 7 mm, smoothed, painted flat dark brown. Tripo's fringe was a solid
+   ledge standing out of the forehead down to the brows, its underside ragged ("трещинки" over the brows): from the
+   brows to just above it the surface is evened out (a membrane between the face below and the hair above; carried far
+   into the hair it cut across the head's front corner and sank the hair 4 cm back), the reference is laid again on
+   its underside, and the forehead's band up to the hair is painted skin, darker toward the fringe. Over the scalp lies
+   the haircut (`TM_hair`), a shell on a fine icosphere round the head (each direction taken out to the hair, through
+   the hood's collar behind but never through the face, the radius smoothed and kept outside what it covers), raised
+   by its locks: about 100 broad locks in rows round the whorl at the top of the back, each a tapering band that waves
+   a little and curls at its end, the hair as a whole turning aside together (scattered at random they crossed), the
+   rows nearer the whorl lying over the ones they reach; a row of fringe locks comes forward and down, their pointed
+   ends hanging onto the upper half of the forehead, and the shell's edge follows the outer locks' ends (by any lock's
+   cover it ran straight, a bowl's), rolling under to the scalp. Its texture (`TM_hair_color`, `TM_hair_normal`, one
+   image round the whorl) draws on each lock its strands along it, lit along its middle, darker at its root, in the
+   shade of the locks over it. (Before: one smooth shell, "a bowl cut", rejected 2026-11-13; about 750 lock tubes, "кучу …
+   в голове"; Tripo's cap combed and repainted, a brain or a helmet; MakeHuman hair fitted by another agent, rejected.)
+   Where Tripo's hair meets the skin (both avatars) its surface steps in ragged spikes; the vertices a few rings either
+   side of the hairline, above the brows, are smoothed (Taubin), and over the girl's forehead the step is flattened
+   out. The face's texture above the part taken from the reference (both avatars) is repainted in the reference's skin
+   colour up to the hair; the light wisps Tripo painted into the girl's hair's edge are darkened to the hair; the
+   texture's islands round the head are padded with their own edge colours (painted over, they no longer matched
+   Tripo's padding, and the seams drew thin dark lines). Under the eyes the reference's painted white and lower lid,
+   outside MediaPipe's contour, are filled in with skin before it is laid on, and round the eyes Tripo's own painted eye
+   is not spared as "hair" (both showed as grey smudges under the 3D lids). The body's colour is exported at 2048 (the
+   face was 200 texels across at 1024). The hood's shadow Tripo painted on the boy's neck is painted out, and the hood's
+   inside round the neck (painted dark and spotted like hair) is the hoodie's colour in shadow.
 
    The chest print is a decal of its own (`TM_print`): a copy of the hoodie's surface under the letters, lifted 1.5 mm
    and skinned like it, textured with the team's wordmark "Til Mind" (`assets/logo/til-mind-text.png`, made by

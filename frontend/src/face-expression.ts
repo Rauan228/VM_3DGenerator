@@ -33,8 +33,47 @@ function rotationIn(root: THREE.Object3D, object: THREE.Object3D): THREE.Quatern
   return rootRotation.invert().multiply(rotation);
 }
 
+/**
+ * Light reaching into the mouth: the teeth, gums, tongue and the mouth's inside are drawn darker the smaller the
+ * opening, as the lips shade them (the player has no ambient occlusion: behind the small round opening of "у" and
+ * "о" the incisors shone white as in a wide-open "а"). The opening's area is reckoned from the jaw and the lips'
+ * rounding (narrower) and stretching (wider); the light runs from `MOUTH_LIGHT_MIN` up to full over this range of it.
+ */
+const MOUTH_LIGHT_MIN = 0.12;
+const MOUTH_LIGHT_AREA: [number, number] = [0.03, 0.45];
+const MOUTH_INSIDE = /^TM_(teeth|gums|tongue|mouth)/;
+
+function shadeMouthInside(root: THREE.Object3D) {
+  let body: THREE.Mesh | undefined;
+  const inside: THREE.Mesh[] = [];
+  root.traverse((object) => {
+    const mesh = object as THREE.Mesh;
+    if (!mesh.isMesh) return;
+    if (MOUTH_INSIDE.test(mesh.name) || MOUTH_INSIDE.test((mesh.material as THREE.Material)?.name ?? "")) inside.push(mesh);
+    // The face: the mesh with the most shapes (the mouth's cavity has a few of the same names, to follow the skin).
+    else if (mesh.morphTargetDictionary && "jawOpen" in mesh.morphTargetDictionary &&
+      Object.keys(mesh.morphTargetDictionary).length > Object.keys(body?.morphTargetDictionary ?? {}).length) body = mesh;
+  });
+  if (!body || !inside.length) return;
+  const dictionary = body.morphTargetDictionary!;
+  const weight = (name: string) => body!.morphTargetInfluences![dictionary[name]] ?? 0;
+  const pair = (name: string) => (weight(`${name}Left`) + weight(`${name}Right`)) / 2;
+  for (const mesh of inside) {
+    const material = mesh.material as THREE.MeshStandardMaterial;
+    if (!material.color) continue;
+    mesh.onBeforeRender = () => {
+      const narrow = Math.min(1, 0.75 * weight("mouthPucker") + 0.55 * weight("mouthFunnel"));
+      const wide = 0.3 * (pair("mouthStretch") + pair("mouthSmile"));
+      const area = (0.05 + weight("jawOpen")) * Math.max(0, 1 - narrow + wide);
+      const light = MOUTH_LIGHT_MIN + (1 - MOUTH_LIGHT_MIN) * THREE.MathUtils.smoothstep(area, ...MOUTH_LIGHT_AREA);
+      material.color.setScalar(light);
+    };
+  }
+}
+
 export function buildFaceRig(root: THREE.Object3D): FaceRig {
   root.updateMatrixWorld(true);
+  shadeMouthInside(root);
   const meshes: FaceRig["meshes"] = [];
   root.traverse((object) => {
     const mesh = object as THREE.Mesh;

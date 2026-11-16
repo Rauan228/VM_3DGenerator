@@ -24,6 +24,7 @@ import bmesh
 import bpy
 import numpy as np
 from mathutils import Vector
+from mathutils.bvhtree import BVHTree
 
 from tripo_face import _pixels_to_model, _smooth
 from tripo_mouth import paint_bands
@@ -42,8 +43,14 @@ THETA_MAX = math.radians(100)
 # top under the upper lid): MediaPipe reads the painted irises of these cartoon eyes as about half their size, and the
 # eyes stared with white all round.
 IRIS_OF_OPENING = 0.6
-# Kept this far (r) behind the skin in front of it.
+# Kept this far (r) behind the skin in front of it, wherever the eye turns within these (yaw, pitch) degrees: tucked only
+# at rest and only behind skin facing the front, the ball showed through the skin by the outer corners, which faces
+# the side, and more when the eye turned ("трещинки" under the eye). The iris and a little round it, and whatever
+# shows through the opening at rest, are left round.
 BEHIND_SKIN = 0.05
+TUCK_TURNS = ((0, 0), (8, 0), (-8, 0), (0, 6), (0, -6))
+TUCK_SPARE_IRIS = 1.15
+TUCK_SPREAD = 2
 SCLERA = (0.86, 0.84, 0.8)
 SCLERA_SIDE = (0.74, 0.68, 0.64)
 
@@ -55,7 +62,9 @@ LID_ON_BALL = 1.012
 # Lashes: length along the upper lid (r, from the inner corner to the outer), how far they lean forward and curl up,
 # and their colour.
 LASHES = {
-    "female": {"upper": (0.22, 0.4, 0.55), "lower": (0.0, 0.1, 0.14), "curl": 0.75, "per_edge": 3, "width": 0.035},
+    # (No lower lashes: standing on the lower lid's edge they read as a row of teeth, black on the skin, white where the
+    # light caught them, "трещинки".)
+    "female": {"upper": (0.22, 0.4, 0.55), "lower": None, "curl": 0.75, "per_edge": 3, "width": 0.035},
     "male": {"upper": (0.1, 0.17, 0.2), "lower": None, "curl": 0.45, "per_edge": 2, "width": 0.03},
 }
 LASH_COLOUR = ((0.07, 0.05, 0.05), (0.12, 0.09, 0.08))
@@ -138,8 +147,6 @@ def eyeballs(info, reference, all_points, ref_h, projection, body=None):
     irises = _iris(reference, all_points, ref_h, projection)
     skin = None
     if body is not None:
-        from mathutils.bvhtree import BVHTree
-
         skin = BVHTree.FromPolygons([v.co.copy() for v in body.data.vertices], [tuple(p.vertices) for p in body.data.polygons])
     out = []
     for key, eye in info.items():
@@ -155,21 +162,59 @@ def eyeballs(info, reference, all_points, ref_h, projection, body=None):
         iris_angle = math.asin(min(iris["radius"] / radius, 0.92))
         eye["forward"], eye["iris_angle"] = forward, iris_angle
         bm = bmesh.new()
-        bmesh.ops.create_uvsphere(bm, u_segments=48, v_segments=32, radius=1.0)
+        bmesh.ops.create_uvsphere(bm, u_segments=64, v_segments=48, radius=1.0)
+        bm.verts.ensure_lookup_table()
         # A frame with its pole on the forward axis, so the rings are finest round the iris.
         up = np.array([0.0, 0.0, 1.0]) - forward * forward[2]
         up /= np.linalg.norm(up)
         right = np.cross(up, forward)
+        turns = [_turn(yaw, pitch) for yaw, pitch in TUCK_TURNS]
+        placed = []
         for v in bm.verts:
             x, y, z = v.co
             local = forward * z + right * x + up * y  # the sphere's pole (z) on the forward axis
             theta = math.acos(max(-1.0, min(1.0, float(local @ forward))))
             bulge = CORNEA_BULGE * math.cos(min(theta / (iris_angle * CORNEA_REACH), 1.0) * math.pi / 2) ** 2
-            v.co = Vector(centre + local * radius * (1 + bulge))
+            length = radius * (1 + bulge)
             if skin is not None:
-                hit, normal, _, _ = skin.ray_cast(Vector((5.0, v.co.y, v.co.z)), Vector((-1.0, 0.0, 0.0)))
-                if hit is not None and normal.x > 0.2 and v.co.x > hit.x - BEHIND_SKIN * radius:
-                    v.co.x = hit.x - BEHIND_SKIN * radius
+                # How far in (along its radius) the vertex must go to stay behind the skin at every turn.
+                # (What shows through the opening at rest is left round: dented for the turns, the white showed
+                # crumpled facets.)
+                shrink, hidden = 0.0, False
+                for k, turn in enumerate(turns):
+                    direction = turn @ local
+                    p = centre + direction * length
+                    hit, normal, _, _ = skin.ray_cast(Vector((5.0, p[1], p[2])), Vector((-1.0, 0.0, 0.0)))
+                    covered = hit is not None and normal.x > 0.0
+                    hidden = hidden or (not k and covered)
+                    if not k and (not covered or theta < iris_angle * TUCK_SPARE_IRIS):
+                        if covered and p[0] > hit.x - BEHIND_SKIN * radius:
+                            shrink = (p[0] - hit.x + BEHIND_SKIN * radius) / max(direction[0], 0.3)
+                        break
+                    if covered and p[0] > hit.x - BEHIND_SKIN * radius:
+                        shrink = max(shrink, (p[0] - hit.x + BEHIND_SKIN * radius) / max(direction[0], 0.3))
+            else:
+                shrink, hidden = 0.0, True
+            placed.append((local, length, shrink, hidden))
+        # The dents spread and smoothed over the ball (vertex by vertex they were steps, which showed as a crumpled
+        # white by the corners).
+        # Only behind the skin: what shows through the opening at rest stays round.
+        shrink = np.array([p[2] for p in placed])
+        hidden = np.array([p[3] for p in placed])
+        pairs = np.array([(e.verts[0].index, e.verts[1].index) for e in bm.edges])
+        count = np.maximum(np.bincount(pairs.ravel(), minlength=len(shrink)), 1)
+        for _ in range(TUCK_SPREAD):
+            spread = shrink.copy()
+            np.maximum.at(spread, pairs[:, 0], shrink[pairs[:, 1]])
+            np.maximum.at(spread, pairs[:, 1], shrink[pairs[:, 0]])
+            shrink = np.where(hidden, spread, 0.0)
+        for _ in range(3 * TUCK_SPREAD):
+            total = shrink.copy()
+            np.add.at(total, pairs[:, 0], shrink[pairs[:, 1]])
+            np.add.at(total, pairs[:, 1], shrink[pairs[:, 0]])
+            shrink = np.where(hidden, total / (count + 1), 0.0)
+        for v, (local, length, _, _), cut in zip(bm.verts, placed, shrink):
+            v.co = Vector(centre + local * max(length - cut, 0.4 * radius))
         uv_layer = bm.loops.layers.uv.new()
         for face in bm.faces:
             for loop in face.loops:
@@ -192,9 +237,18 @@ def eyeballs(info, reference, all_points, ref_h, projection, body=None):
         bsdf.inputs["Coat Weight"].default_value = 0.5
         bsdf.inputs["Coat Roughness"].default_value = 0.02
         mesh.materials.append(material)
+        eye["ball"] = ball
         out.append((key, ball))
         print("eye", key, "iris colour", np.round(iris["colour"], 3), "iris angle", round(math.degrees(iris_angle), 1))
     return out
+
+
+def _turn(yaw, pitch):
+    """A turn of the eye (degrees: yaw toward +Y, pitch up), as a matrix acting on model-space directions."""
+    a, b = math.radians(yaw), math.radians(pitch)
+    about_z = np.array([[math.cos(a), -math.sin(a), 0.0], [math.sin(a), math.cos(a), 0.0], [0.0, 0.0, 1.0]])
+    about_y = np.array([[math.cos(b), 0.0, -math.sin(b)], [0.0, 1.0, 0.0], [math.sin(b), 0.0, math.cos(b)]])
+    return about_z @ about_y
 
 
 def _rims(bm, info):
@@ -269,10 +323,21 @@ def lids_and_lashes(body, info, gender):
         margin_edges = [g for g in first["geom"] if isinstance(g, bmesh.types.BMEdge) and all(u in margin for u in g.verts)]
         second = bmesh.ops.extrude_edge_only(bm, edges=margin_edges)
         ball = {g for g in second["geom"] if isinstance(g, bmesh.types.BMVert)}
+        # Onto the ball as it is (tucked in by the corners): laid on the whole sphere, the lid's inside by the outer
+        # corners, where the sphere is in front of the skin, stood out of the face in pale flaps.
+        surface = None
+        if eye.get("ball") is not None:
+            ball_mesh = eye["ball"].data
+            surface = BVHTree.FromPolygons([v.co.copy() for v in ball_mesh.vertices], [tuple(p.vertices) for p in ball_mesh.polygons])
         for v in ball:
             source = next(e.other_vert(v) for e in v.link_edges if e.other_vert(v) in margin)
             root[v] = root[source]
-            v.co = centre + (source.co - centre).normalized() * radius * LID_ON_BALL
+            on_sphere = centre + (source.co - centre).normalized() * radius * LID_ON_BALL
+            if surface is not None:
+                hit, _, _, _ = surface.find_nearest(source.co)
+                if hit is not None:
+                    on_sphere = centre + (hit - centre) * LID_ON_BALL
+            v.co = on_sphere
         for face in {f for v in margin | ball for f in v.link_faces}:
             face.smooth = True
             for loop in face.loops:
@@ -348,10 +413,13 @@ def keep_on_balls(shapes, points, on_ball, info):
         for idx, exact in ((np.array(sorted(ball), dtype=int), True), (np.array(sorted(margin), dtype=int), False)):
             if not len(idx):
                 continue
+            # Each as far from the centre as it is at rest (by the corners the ball is tucked in, and pushed out to the
+            # whole sphere's radius the lid's inside stood out of the face).
+            rest = np.linalg.norm(points[idx] - centre, axis=1)
             for delta in shapes.values():
                 if not np.abs(delta[idx]).any():
                     continue
                 out = points[idx] + delta[idx] - centre
                 length = np.maximum(np.linalg.norm(out, axis=1), 1e-9)
-                want = np.full(len(idx), radius * LID_ON_BALL) if exact else np.maximum(length, radius * (LID_ON_BALL + 0.012))
+                want = rest if exact else np.maximum(length, np.minimum(rest, radius * (LID_ON_BALL + 0.012)))
                 delta[idx] = centre + out * (want / length)[:, None] - points[idx]

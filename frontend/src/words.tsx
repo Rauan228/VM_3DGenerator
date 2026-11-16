@@ -1,3 +1,4 @@
+import { SIGNER_MODELS } from "./signer-models";
 import { OrbitControls } from "@react-three/drei";
 import { Canvas, useThree } from "@react-three/fiber";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -26,7 +27,7 @@ type After = "repeat" | "next" | "stop";
 type Fit = "cover" | "contain";
 type Prefs = { avatar: Avatar; rate: number; after: After; fit: Fit };
 
-const MODELS: Record<Avatar, string> = { male: "/models/tilmind-male.glb", female: "/models/tilmind-female.glb" };
+const MODELS = SIGNER_MODELS;
 const FLOOR_Y = -1.12;
 // Framed like the gallery's cards: head to waist, with room for hands raised above the head.
 const LOOK_AT_Y = 0.27;
@@ -60,7 +61,7 @@ function plain(text: string) {
  * `?list=<name>` shows only the words of frontend/public/gallery/lists/<name>.json (`{ title, items: ["set/slug", ...] }`),
  * in its order: a set of words to look at again, as the reviewer named them.
  */
-const LIST = new URLSearchParams(window.location.search).get("list");
+const LIST = new URLSearchParams(window.location.search).get("list") ?? "model-300";
 type WordList = { title: string; items: string[] };
 
 async function fetchList(): Promise<WordList | undefined> {

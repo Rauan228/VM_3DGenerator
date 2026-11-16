@@ -4,12 +4,14 @@ Each clip is baked by the player's own code (/clip.html; the dev server must be 
 :8010), so it moves the avatar exactly as the player does; the page checks that by playing the clip back. Needs
 Playwright and Chrome:
 
-    <python with playwright> tools/export_clips.py [--out tilmind-signs] [slug ...]
+    <python with playwright> tools/export_clips.py [--out tilmind-signs] [--words words.json] [slug ...]
 
 Writes <out>/clips/<avatar>/<slug>.json (`THREE.AnimationClip.toJSON`), copies the avatars to <out>/avatars/ and
 writes <out>/signs.json, the list of signs: the signflow.ru gallery's first, then the Slovo dataset's
 (frontend/public/gallery/slovo.json). A word both have keeps the signflow.ru clip (a cleaner studio recording of the
-same sign); each sign says which source it comes from, as the Slovo license asks.
+same sign); each sign says which source it comes from, as the Slovo license asks. With `--words` (`{"words": [...]}`,
+e.g. the recognition model's vocabulary, data/model-vocabulary.json) only those words are exported, and the list is
+copied to <out>/model-words.json.
 """
 
 from __future__ import annotations
@@ -31,6 +33,11 @@ AVATARS = ("male", "female")
 MAX_HAND_ERROR = 0.001
 
 
+def _plain(word: str) -> str:
+    """A word as the lists are compared: case and ё left out."""
+    return word.strip().casefold().replace("ё", "е")
+
+
 def export(page, gesture_id: str, avatar: str) -> dict:
     page.goto(f"{PAGE}?id={gesture_id}&avatar={avatar}")
     page.wait_for_function("() => window.exportClip")
@@ -44,14 +51,26 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("slugs", nargs="*")
     parser.add_argument("--out", default=str(ROOT / "tilmind-signs"))
+    parser.add_argument("--words")
     args = parser.parse_args()
     out = Path(args.out)
+    wanted = None
+    if args.words:
+        wanted = {_plain(word) for word in json.loads(Path(args.words).read_text())["words"]}
     entries, seen = [], set()
     for source in SOURCES:
         for entry in json.loads((GALLERY / f"{source}.json").read_text()):
-            if entry["slug"] not in seen:
-                seen.add(entry["slug"])
+            if wanted is not None and _plain(entry["word"]) not in wanted:
+                continue
+            if entry["slug"] not in seen and _plain(entry["word"]) not in seen:
+                seen.update((entry["slug"], _plain(entry["word"])))
                 entries.append({**entry, "source": source})
+    if wanted is not None:
+        missing = wanted - {_plain(entry["word"]) for entry in entries}
+        if missing:
+            raise SystemExit(f"no sign for: {', '.join(sorted(missing))}")
+        out.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(args.words, out / "model-words.json")
     (out / "avatars").mkdir(parents=True, exist_ok=True)
     for avatar in AVATARS:
         (out / "clips" / avatar).mkdir(parents=True, exist_ok=True)

@@ -67,7 +67,7 @@ const POSES: Record<Viseme, Record<string, number>> = {
   FV: { jawOpen: 0.04, mouthRollLower: 0.7, mouthUpperUp: 0.3, mouthFrown: 0.25 },
   TD: { jawOpen: 0.15, mouthUpperUp: 0.1, mouthLowerDown: 0.15, mouthFrown: 0.3, tongueTipUp: 0.9 },
   SZ: { jawOpen: 0.06, mouthStretch: 0.45, mouthUpperUp: 0.3, mouthLowerDown: 0.4, mouthFrown: 0.2, tongueTipUp: 0.45, tongueFrontUp: 0.3 },
-  SH: { jawOpen: 0.1, mouthFunnel: 0.45, mouthPucker: 0.2, mouthUpperUp: 0.2, mouthLowerDown: 0.25, tongueTipUp: 0.65, tongueBackUp: 0.25 },
+  SH: { jawOpen: 0.2, mouthFunnel: 0.55, mouthUpperUp: 0.15, mouthLowerDown: 0.2, tongueTipUp: 0.65, tongueBackUp: 0.25 },
   L: { jawOpen: 0.3, mouthUpperUp: 0.1, mouthLowerDown: 0.1, mouthFrown: 0.3, tongueTipUp: 1 },
   R: { jawOpen: 0.24, mouthUpperUp: 0.1, mouthLowerDown: 0.1, mouthFrown: 0.3, tongueTipUp: 0.85 },
   KG: { jawOpen: 0.28, mouthFrown: 0.35, tongueBackUp: 1 },
@@ -75,10 +75,12 @@ const POSES: Record<Viseme, Record<string, number>> = {
   A: { jawOpen: 0.7, mouthLowerDown: 0.1, mouthUpperUp: 0.15, mouthFrown: 0.3 },
   AR: { jawOpen: 0.45, mouthLowerDown: 0.05, mouthFrown: 0.35 },
   SCHWA: { jawOpen: 0.25, mouthFrown: 0.35 },
-  OR: { jawOpen: 0.3, mouthFunnel: 0.45, mouthFrown: 0.2, tongueBackUp: 0.2 },
-  O: { jawOpen: 0.38, mouthFunnel: 0.85, mouthPucker: 0.1, mouthFrown: 0.2, tongueBackUp: 0.35 },
-  // The jaw hardly open: the lips' tube is made shut, and a jaw opened under it split it from top to bottom.
-  U: { jawOpen: 0.04, mouthPucker: 0.85, mouthFunnel: 0.2, mouthFrown: 0.2, tongueBackUp: 0.55 },
+  // The rounded lips narrow the mouth; for о the jaw opens it (mouthFunnel is made for the jaw at 0.38: beyond the
+  // round opening it keeps the lips together), у is a small hole the lips make themselves. No frown on them: it pulled
+  // the lips' sides down.
+  OR: { jawOpen: 0.3, mouthFunnel: 0.5, tongueBackUp: 0.2 },
+  O: { jawOpen: 0.38, mouthFunnel: 1, tongueBackUp: 0.35 },
+  U: { jawOpen: 0.02, mouthPucker: 1, tongueBackUp: 0.55 },
   E: { jawOpen: 0.35, mouthStretch: 0.45, mouthLowerDown: 0.15, mouthUpperUp: 0.15, mouthFrown: 0.15, tongueFrontUp: 0.45 },
   I: { jawOpen: 0.15, mouthStretch: 0.7, mouthSmile: 0.15, mouthUpperUp: 0.25, mouthLowerDown: 0.35, tongueFrontUp: 0.8 },
   Y: { jawOpen: 0.25, mouthStretch: 0.35, mouthLowerDown: 0.2, mouthFrown: 0.35, tongueBackUp: 0.5 },

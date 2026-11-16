@@ -1,3 +1,4 @@
+import { SIGNER_MODELS } from "../signer-models";
 import { useGLTF } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
@@ -92,5 +93,5 @@ export function AvatarRig({
   );
 }
 
-useGLTF.preload("/models/tilmind-male.glb");
-useGLTF.preload("/models/tilmind-female.glb");
+useGLTF.preload(SIGNER_MODELS.male);
+useGLTF.preload(SIGNER_MODELS.female);
