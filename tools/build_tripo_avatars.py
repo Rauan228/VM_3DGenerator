@@ -33,8 +33,10 @@ sys.path.insert(0, os.path.join(ROOT, "tools"))
 import build_mpfb_avatars as mpfb  # noqa: E402
 import build_stylized_avatars as sty  # noqa: E402
 import tripo_face  # noqa: E402
+import tripo_forehead  # noqa: E402
 import tripo_eyes  # noqa: E402
 import tripo_hair  # noqa: E402
+import tripo_haircut  # noqa: E402
 import tripo_mouth  # noqa: E402
 
 TRIPO = os.path.join(ROOT, "models", "tripo")
@@ -580,38 +582,87 @@ def darken_wisps(mesh, texture, projection, hair, top_row, columns):
     return changed
 
 
-# Tripo painted the hood's shadow onto the boy's neck: a purple patch under each ear. The neck's skin (within NECK_REACH
-# of the line from the neck bone to the head bone, below the jaw) is repainted where it is purple.
-NECK_REACH = 0.042
+# Tripo painted the hood's shadow onto the boy's neck, a purple patch under each ear, and a brown strip from behind the
+# ear down under the jaw. The neck's skin (within NECK_REACH of the line from the neck bone to the head bone, fading
+# out over the second distance, below the jaw) is repainted the skin's colour.
+NECK_REACH = (0.05, 0.075)
+# ... no further forward of the neck bone than this (fading out; further is the chin and the lips); the hood's purple
+# shadow, within this.
+NECK_AHEAD = (0.05, 0.06)
+NECK_SHADOW = 0.042
 
 
 def paint_neck(mesh, texture, neck, head, skin):
-    """Repaint purple texels on the neck's skin (`neck`, `head`: the bones' heads; `skin`: sRGB) in the skin's colour.
-    Returns the number of texels changed."""
+    """Repaint the neck's skin (`neck`, `head`: the bones' heads; `skin`: sRGB) in the skin's colour, the hood's purple
+    shadow on it too. Returns the number of texels changed."""
     axis = (head - neck) / np.linalg.norm(head - neck)
+    skin_lum = float(np.asarray(skin) @ np.array([0.2126, 0.7152, 0.0722]))
+
+    top = np.linalg.norm(head - neck) + 0.02
 
     def on_neck(points):
+        """How much each point is on the neck (0..1), and how far it is from the neck's line."""
         rel = points - neck
         along = rel @ axis
         across = np.linalg.norm(rel - np.outer(along, axis), axis=1)
-        return (across < NECK_REACH) & (along > -0.01) & (along < np.linalg.norm(head - neck) + 0.02)
+        return ((1 - smoothstep(across, *NECK_REACH)) * smoothstep(along, -0.015, -0.005)
+                * (1 - smoothstep(along, top - 0.01, top)) * (1 - smoothstep(rel[:, 0], *NECK_AHEAD))), across
 
     def keep(corners, normal):
-        return bool(on_neck(np.asarray(corners)).all())
+        return bool(on_neck(np.asarray(corners))[0].max() > 0)
 
     changed = 0
     for rows, cols, points, normal in rasterize(mesh, (texture.shape[1], texture.shape[0]), keep):
         colour = texture[rows, cols, :3]
         # Purple: blue over red (skin is the other way round); eased in so the shadow's edge leaves no line.
+        # (Only near the neck's line: further out, purple is the hood itself.)
         purple = smoothstep(colour[:, 2] - colour[:, 0] * 0.8, -0.05, 0.08)
         lum = colour @ np.array([0.2126, 0.7152, 0.0722])
-        target = np.array(skin)[None] * np.clip(lum / (np.array(skin) @ np.array([0.2126, 0.7152, 0.0722])), 0.7, 1.05)[:, None] ** 0.5
-        texture[rows, cols, :3] = colour * (1 - purple[:, None]) + target * purple[:, None]
-        changed += int((purple > 0.05).sum())
+        # The rest, the skin, evened out to the skin's colour, a little of its shading kept: Tripo ran a brown strip
+        # from behind the ear down under the jaw, as light as the skin round it but browner (picked out by how dark
+        # it was, it stayed).
+        weight, across = on_neck(points)
+        weight = weight * (1 - purple) + purple * (across < NECK_SHADOW)
+        target = np.array(skin)[None] * np.clip(lum / skin_lum, 0.9, 1.05)[:, None] ** 0.5
+        texture[rows, cols, :3] = colour * (1 - weight[:, None]) + target * weight[:, None]
+        changed += int((weight > 0.05).sum())
     return changed
 
 
-# Whose hair is recut (tripo_hair.py).
+# Tripo's hair also ran down the boy's temples in front of the ears, outside the scalp (the face's oval reaches there),
+# and was left nearly black under the haircut's sides. Over this far below the eyes, this far behind their front or
+# this far to the side of their middle (model units: the brows are in front and nearer the middle), what is darker
+# than the clipped hair is painted like it.
+TEMPLE_BELOW_EYES = 0.025
+TEMPLE_BEHIND = 0.022
+TEMPLE_SIDE = 0.058
+
+
+def paint_temples(mesh, texture, hair, eyes, colour):
+    """Paint the dark beside the scalp at the temples (`hair`: the scalp's vertices; `eyes`: the front of each eye,
+    model positions) short clipped hair's brown. Returns the number of texels changed."""
+    pos = np.array([v.co[:] for v in mesh.vertices])
+    eyes = np.asarray(eyes)
+    temples = (~hair & (pos[:, 2] > eyes[:, 2].mean() - TEMPLE_BELOW_EYES)
+               & ((pos[:, 0] < eyes[:, 0].min() - TEMPLE_BEHIND) | (np.abs(pos[:, 1] - eyes[:, 1].mean()) > TEMPLE_SIDE)))
+    # (With the scalp's own vertices: the faces across its edge, half in it, were painted by neither and showed as a
+    # dark seam. The scalp, as light as the clipped hair, is left as it is.)
+    points = {tuple(np.round(pos[i], 6)) for i in np.where(temples | hair)[0]}
+    clipped = np.asarray(colour) * tripo_hair.CLIPPED_SHADE
+    clipped_lum = float(clipped @ np.array([0.2126, 0.7152, 0.0722]))
+    rng = np.random.default_rng(3)
+    changed = 0
+    for rows, cols, _, _ in rasterize(mesh, (texture.shape[1], texture.shape[0]),
+                                      lambda corners, normal: all(tuple(np.round(c, 6)) in points for c in corners)):
+        lum = texture[rows, cols, :3] @ np.array([0.2126, 0.7152, 0.0722])
+        w = smoothstep(clipped_lum - lum, 0.0, 0.06)[:, None]
+        paint = clipped[None] * (0.9 + 0.2 * rng.random((len(rows), 1)))
+        texture[rows, cols, :3] = texture[rows, cols, :3] * (1 - w) + paint * w
+        changed += int((w > 0.05).sum())
+    return changed
+
+
+# Whose hair is recut (the scalp tripo_hair.py's, the haircut tripo_haircut.py's).
 RESTYLED_HAIR = {"male"}
 # Tripo's fringe is what stands this far out of the forehead's skin (model units, ~2.5 mm); the skin is looked for this
 # far behind the first surface in front of it.
@@ -626,9 +677,8 @@ FOREHEAD_LEDGE = (-0.12, 0.3)
 # haircut covers the band above this share of it (from over the brows).
 FRINGE_SHADOW = 0.22
 FRINGE_COVER = 0.72
-# The short cut's shell, as skin, comes down over the brows' top by this share of their height over the eyes (its
-# edge hidden in them: ending over them, it drew a line across the forehead).
-SHELL_OVER_BROWS = 0.3
+# The boy's forehead is made anew from this share of the brows' height over the eyes above them.
+FOREHEAD_FROM = 0.05
 
 
 def paint_band(mesh, texture, projection, band, rows, edge, skin, reference, skin_tone, normal_map=None, orm=None):
@@ -677,7 +727,7 @@ def paint_hood_lining(mesh, texture, neck, head, cloth):
         radial = rel - np.outer(along, axis)
         across = np.linalg.norm(radial, axis=1)
         inward = np.asarray(normal) @ radial.mean(0) < 0
-        return bool(inward and (across > NECK_REACH).all() and (across < 0.1).all() and (along > -0.07).all()
+        return bool(inward and (across > NECK_REACH[0]).all() and (across < 0.1).all() and (along > -0.07).all()
                     and (along < np.linalg.norm(head - neck) + 0.02).all())
 
     changed = 0
@@ -1422,7 +1472,7 @@ def build(key, spec, args, landmarks_all):
     z_lo = projection.to_model(0, print_rows[0] - 60)[1]
     z_hi = projection.to_model(0, print_rows[1] + 180)[1]
     print("back print texels", paint_out_back_print(mesh, texture, (z_lo, z_hi), cloth, normal_map, orm))
-    # The boy's haircut (tripo_hair.py; the girl's straight hair Tripo made well). The hair is the dark texture high on
+    # The boy's scalp (tripo_hair.py; the girl's straight hair Tripo made well). The hair is the dark texture high on
     # the head, but not the face below the top of the forehead: the brows are as dark and as high, and were combed
     # into the fringe.
     hair_frame = None
@@ -1468,9 +1518,6 @@ def build(key, spec, args, landmarks_all):
             return out
 
         hairline = front & (image[:, 1] >= arc) & (image[:, 1] < arc + 1.5 * (arc - over_brows))
-        # The haircut's fringe covers the band's upper part (Tripo's hair begins high on the forehead, its fringe hung
-        # down nearly to the brows); its locks' ends hang lower onto the band's skin.
-        under_fringe = forehead & (image[:, 1] > over_brows + FRINGE_COVER * (arc - over_brows))
         # Under Tripo's fringe the forehead's own skin goes on up: the fringe is a second layer in front of it. That
         # layer (what stands out of the forehead's skin) is put behind the skin; laid onto it instead, the two fought
         # through each other in crumpled facets under the fringe ("трещинки").
@@ -1484,8 +1531,8 @@ def build(key, spec, args, landmarks_all):
         ledge = ((co[:, 0] > 0) & (np.abs(image[:, 0] - middle) < half)
                  & (image[:, 1] > brow_row + FOREHEAD_LEDGE[0] * (brow_row - eye_row))
                  & (image[:, 1] < arc + FOREHEAD_LEDGE[1] * (arc - over_brows)))
-        # (For the short cut: the skull under it, over the forehead above the brows too.)
-        skull = (ledge | forehead) if tripo_hair.STYLE == "short" else None
+        # The skull under the haircut, over the forehead above the brows too.
+        skull = ledge | forehead
         hair, hair_frame = tripo_hair.underlayer(mesh, hair, in_face, layer, forehead_x, hairline, ledge, skull)
         # The ledge's underside, turned to the front now, still had Tripo's paint for it (the hair fading into skin, in
         # blotches over the brows): the reference is laid on it again.
@@ -1531,26 +1578,47 @@ def build(key, spec, args, landmarks_all):
             rows = face_projection.to_image(points)[:, 1]
             return np.where(points[:, 0] > 0, smoothstep(rows, over_brows, over_brows + 0.4 * (over_brows - eye_row)), 1.0)
 
-        tripo_hair.paint_underlayer(texture, normal_map, orm, rasterize(mesh, (texture.shape[1], texture.shape[0]), on_hair), colour, fringe_edge)
-        # The haircut over the scalp, its fringe's locks hanging onto the band of forehead under it, and down the back
-        # to the top of the neck (lower, it hung down behind the ears in tails).
+        # Short clipped hair: under the haircut and where it does not reach (round the ears, the nape).
+        tripo_hair.paint_underlayer(texture, normal_map, orm, rasterize(mesh, (texture.shape[1], texture.shape[0]), on_hair), colour,
+                                    fringe_edge, shade=tripo_hair.CLIPPED_SHADE)
+        # (The eyes' fronts: the surface's foremost point at each eye of the reference.)
+        eyes = []
+        for name in ("eyeL", "eyeR"):
+            at = np.linalg.norm(image - np.array(pts[name][:2]), axis=1) < 0.15 * (brow_row - eye_row)
+            eyes.append(co[at][np.argmax(co[at, 0])])
+        print("temples' hair texels", paint_temples(mesh, texture, hair, eyes, colour), "eyes' fronts", np.round(eyes, 4).tolist())
         head_z = float((rig.matrix_world @ rig.data.bones["mixamorig:Head"].head_local).z)
-        if os.environ.get("TM_DUMP_HAIR"):  # for working on the haircut without a whole build
+        print("hair colour", np.round(colour, 3))
+    if hair_frame is not None and "skull" in hair_frame:
+        # A new forehead in place of the one Tripo's fringe folded (see tripo_forehead.py), from just over the brows.
+        skull_middle, skull_axes = hair_frame["skull"]
+
+        def skull_x(y, z):
+            inner = 1 - ((y - skull_middle[1]) / skull_axes[1]) ** 2 - ((z - skull_middle[2]) / skull_axes[2]) ** 2
+            return np.where(inner > 0, skull_middle[0] + skull_axes[0] * np.sqrt(np.maximum(inner, 0)), np.nan)
+
+        zone = (forehead | ledge) & (image[:, 1] > brow_row + FOREHEAD_FROM * (brow_row - eye_row))
+        square = tripo_forehead.rebuild(body, zone, skull_x, hair)
+        if square is not None:
+            skin_here = face_and_forehead(face_reference, face_projection, top_row, forehead_skin)
+
+            def forehead_paint(points):
+                at = face_projection.to_image(points)
+                high = over_brows + FRINGE_COVER * (fringe_row(at) - over_brows)
+                shade = 1 - FRINGE_SHADOW * smoothstep(at[:, 1], high - 0.5 * (high - over_brows), high)
+                return skin_here(points) * shade[:, None]
+
+            roughness = float(np.median(orm[..., 1])) if orm is not None else 0.6
+            print("new forehead texels", tripo_forehead.paint(mesh, (texture, normal_map, orm), square, forehead_paint, roughness, rasterize))
+    if hair_frame is not None:
+        # The haircut (tripo_haircut.py), on the head as it now is, the fringe over the brows.
+        eye_z = float(face_projection.to_model(0, eye_row)[1])
+        if os.environ.get("TM_DUMP_HAIR"):  # for working on the haircut without a whole build (data/work/hairv/dev_cut.py)
             import pickle
             with open(os.environ["TM_DUMP_HAIR"] + f"-{key}.pkl", "wb") as dump:
                 pickle.dump({"co": np.array([v.co[:] for v in mesh.vertices]), "polys": [tuple(p.vertices) for p in mesh.polygons],
-                             "hair": hair | under_fringe, "frame": hair_frame, "colour": colour, "floor": head_z + 0.002,
-                             "under": forehead & ~under_fringe}, dump)
-        # (The short cut's shell goes on over the forehead as skin: Tripo's surface there stayed blotched under every
-        # repair.)
-        # (Down to the brows' top: the evened-out ledge's lip over them, left uncovered, still showed its blotches.)
-        over_brow_line = ledge & (image[:, 1] > brow_row - SHELL_OVER_BROWS * (brow_row - eye_row)) & (image[:, 1] < arc)
-        bare = ((forehead | over_brow_line) & ~under_fringe & ~hair) if tripo_hair.STYLE == "short" else None
-        shell_hair = (hair | forehead | over_brow_line) if bare is not None else (hair | under_fringe)
-        haircut = tripo_hair.shell(body, shell_hair, hair_frame, colour, head_z + 0.002, None if bare is not None else forehead & ~under_fringe,
-                                   skin_colour=forehead_skin, bare=bare,
-                                   skin_at=face_and_forehead(face_reference, face_projection, top_row, forehead_skin))
-        print("hair colour", np.round(colour, 3))
+                             "frame": hair_frame, "colour": colour, "floor": head_z, "eye_z": eye_z}, dump)
+        haircut = tripo_haircut.haircut(body, hair_frame, colour, head_z, eye_z)
     print("texels padded round the head's islands", pad_islands(mesh, (texture, normal_map, orm)))
     if orm is not None:
         lip_outline =[(lm["all"][i][0], ref_h - lm["all"][i][1]) for i in tripo_mouth.OUTER_UPPER + tripo_mouth.OUTER_LOWER[-2:0:-1]]
@@ -1684,8 +1752,8 @@ def build(key, spec, args, landmarks_all):
 
     for side, ball in eyeballs:
         attach(ball, "LeftEye" if side == "L" else "RightEye")
-    if haircut is not None:
-        attach(haircut, "mixamorig:Head")
+    for part in haircut or []:
+        attach(part, "mixamorig:Head")
     rim = sorted(set(inner_lip.values()))
     mid_y = float(np.mean(lip_line[:, 0]))
     middle = [i for i in rim if abs(points[i, 1] - mid_y) < 0.1 * np.ptp(lip_line[:, 0])]

@@ -75,19 +75,28 @@
    opening (`face-expression.ts`, reckoned from the jaw and the lips' rounding and spread): behind the small hole of
    "у" the incisors shone white as in a wide-open "а".
 
-   The boy's hair is cut anew (`tools/tripo_hair.py`, `STYLE = "short"`, 2026-11-17: "обычный короткий полубокс"; Tripo
-   gave him a long cut's volume and a fringe that was a solid ledge over the forehead down to the brows, its surface
-   crumpled under it, and every repair of that surface showed in blotches and creases). A skull is made under it: a
-   sphere in a head's proportions fitted to Tripo's hair, brought in by the hair's thickness, takes the hair and the
-   forehead above the brows (eased in from the face), its vertices spread over it so the fringe's folded layers no
-   longer flicker. Over it lies the haircut (`TM_hair`), a shell on a fine icosphere round the head (each direction
-   taken out to the hair, through the hood's collar behind but never through the face), a few millimetres thick on
-   top, close-cropped at the sides and the back, where its texture shows the scalp through clipped hair, cut level at
-   the nape. The shell goes on down over the forehead and the brows' top, lying flat on them, painted there as skin:
-   the reference itself under the brows' top, its skin carried up above, darker toward the hairline (its shadow), so
-   the crumpled surface under it never shows and the shell's edge hides in the brows. (Before: broad locks with a
-   pointed fringe, "в целом плохая прическа"; a smooth shell, "a bowl cut"; about 750 lock tubes, "кучу … в голове";
-   Tripo's cap repainted, a brain or a helmet; MakeHuman hair, rejected. The locks remain as `STYLE = "locks"`.)
+   The boy's haircut is an artist's (`tools/tripo_haircut.py`, 2026-11-17): the ninth of Vincent Page's "FREE Male
+   Fashion Hair collection 01 lowpoly" (Sketchfab, **CC-BY-4.0, the author must be credited wherever the avatars are
+   shown**: `assets/hair/CREDITS.txt`), a fringe swept to the side, 220 cards, 7.4k vertices. `tools/extract_haircut.py`
+   took it out of the collection with the base head it was made on into `assets/hair/haircut-09.npz`. In the build the
+   base head is laid onto the boy's skull (across and front to back, the ellipsoid round its cranium onto his scalp's;
+   up and down, its eyes onto his and its crown onto his), the haircut with it; then each vertex is moved along the
+   line from the skull's middle by how much further out his head is there than the base head (evened out round it), at
+   60 % of its height over the scalp (fuller, it was a mushroom on his narrower head), never nearer the scalp than
+   2 mm. The collection came without textures (its texture coordinates all 0): each card gets coordinates across it and
+   from root (the end nearer the crown) to tip, into a generated atlas of four clumps of ~220 strands each, opaque but
+   at the ragged tips and sides (alpha clip), darker at the root and in partings, with the strands' relief as a normal
+   map; normals mostly the skull's, so the cards shade as one mass. (Before, all grown by code in `tripo_hair.py` and
+   all rejected: Tripo's cap repainted, "a brain or a helmet"; a smooth shell, "a bowl cut"; ~750 lock tubes, "кучу …
+   в голове"; broad locks, "в целом плохая прическа"; a short-cut shell; cards of thin strands rooted on the scalp,
+   "вообще не естественное"; the artist's cards with thin strands apart, "слишком тонкие и нереалистичные".)
+   Under it the scalp (`tools/tripo_hair.py`): Tripo's hair laid on a skull (a sphere in a head's proportions fitted to
+   the hair, brought in by the hair's thickness), the fringe's ledge evened out, painted the brown of short clipped
+   hair, and the dark Tripo left on the temples in front of the ears too (painted darker under the haircut, it showed
+   in black patches). The forehead above the brows is made anew (`tools/tripo_forehead.py`): Tripo's fringe was a
+   solid ledge there, two folded layers that every repair showed in blotches; its faces are replaced by an even
+   membrane (a constrained Delaunay triangulation of the hole, its depth eased between the brows and the skull) with its
+   own square of the texture painted with the reference's skin, darker toward the hair.
    Where Tripo's hair meets the skin (both avatars) its surface steps in ragged spikes; the vertices a few rings either
    side of the hairline, above the brows, are smoothed (Taubin), and over the girl's forehead the step is flattened
    out. The face's texture above the part taken from the reference (both avatars) is repainted with the reference's skin
@@ -99,8 +108,9 @@
    Tripo's padding, and the seams drew thin dark lines). Under the eyes the reference's painted white and lower lid,
    outside MediaPipe's contour, are filled in with skin before it is laid on, and round the eyes Tripo's own painted eye
    is not spared as "hair" (both showed as grey smudges under the 3D lids). The body's colour is exported at 2048 (the
-   face was 200 texels across at 1024). The hood's shadow Tripo painted on the boy's neck is painted out, and the hood's
-   inside round the neck (painted dark and spotted like hair) is the hoodie's colour in shadow.
+   face was 200 texels across at 1024). The hood's shadow Tripo painted on the boy's neck and a brown strip from behind his ears
+   down under the jaw are painted out (the neck's skin evened out to the skin's colour, fading out round it), and the
+   hood's inside round the neck (painted dark and spotted like hair) is the hoodie's colour in shadow.
 
    The chest print is a decal of its own (`TM_print`): a copy of the hoodie's surface under the letters, lifted 1.5 mm
    and skinned like it, textured with the team's wordmark "Til Mind" (`assets/logo/til-mind-text.png`, made by

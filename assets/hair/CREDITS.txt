@@ -1,0 +1,10 @@
+haircut-09.npz (the boy's haircut) is cut out of:
+
+This work is based on "FREE Male Fashion Hair collection 01 lowpoly"
+(https://sketchfab.com/3d-models/free-male-fashion-hair-collection-01-lowpoly-2735370f6f764078a18f5d80651050a2)
+by Vincent Page (https://sketchfab.com/vincentpage)
+licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+
+Changes: one haircut (the ninth of the collection's preview, a fringe swept to the side) taken out with the base head
+it was made on, its vertices welded, fitted to the avatar's head, given texture coordinates and a strand texture
+(tools/extract_haircut.py, tools/tripo_haircut.py). The credit must go wherever the avatars are shown.
