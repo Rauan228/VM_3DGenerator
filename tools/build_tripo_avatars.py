@@ -340,12 +340,13 @@ def clean_lower_lids(reference, points, ref_h):
 
 
 def project_regions(mesh, texture, reference, projection, regions, normal_map=None, keep_hair=False, colour=True, only=None,
-                    no_hair=(), facing=None, shade_up=0.0):
+                    no_hair=(), facing=None, shade_up=0.0, shift=(0.0, 0.0)):
     """Blend the reference into the texture where `regions` (polygons in reference pixels) cover front-facing skin or
     cloth (with `colour` off, only the normal map is flattened there); with `only` (vertices), on their faces only.
     `keep_hair` leaves hair-dark texels alone, but inside the `no_hair` polygons. `facing` (least, full) is how far
     toward the front a face must turn to take the reference (FACING_MIN, FACING_FULL); faces turned up are darkened by
-    up to `shade_up`. Returns the number of texels changed."""
+    up to `shade_up`; the reference is sampled `shift` (pixels) off where the texel lies. Returns the number of texels
+    changed."""
     facing_min, facing_full = facing or (FACING_MIN, FACING_FULL)
     width, height = texture.shape[1], texture.shape[0]
     bounds = [(np.min(np.asarray(p)[:, 1]) - FEATHER, np.max(np.asarray(p)[:, 1]) + FEATHER) for p in regions]
@@ -375,7 +376,7 @@ def project_regions(mesh, texture, reference, projection, regions, normal_map=No
         if not weight.any():
             continue
         if colour:
-            color = sample(reference, image_points)
+            color = sample(reference, image_points + np.asarray(shift))
             if shade_up:
                 color = color * (1 - shade_up * (1 - smoothstep(normal[0], 0.1, 0.55)))
             texture[rows, cols, :3] = texture[rows, cols, :3] * (1 - weight[:, None]) + color[:, :3] * weight[:, None]
@@ -431,6 +432,7 @@ FOREHEAD_HAIR_FADE = (0.0, 0.0015)
 # and the skin's tone is taken instead). (One flat skin colour with Tripo's light and shade kept read as a lighter,
 # blotchy band across the boy's forehead under the fringe: "что это вообще".)
 FOREHEAD_SAMPLE = (3, 6, 9)
+FOREHEAD_ACROSS = (-8, -4, 0, 4, 8)
 FOREHEAD_BROW = 0.85
 
 
@@ -441,11 +443,24 @@ def forehead_colour(reference, projection, top_row, skin):
 
     def colour(points):
         image = projection.to_image(points)
-        samples = np.mean([sample(reference, np.stack([image[:, 0], np.full(len(image), top_row - d)], 1))[:, :3]
-                           for d in FOREHEAD_SAMPLE], axis=0)
+        # (Over a window across too: one column's samples, carried up, drew upright streaks.)
+        samples = np.mean([sample(reference, np.stack([image[:, 0] + dx, np.full(len(image), top_row - d)], 1))[:, :3]
+                           for d in FOREHEAD_SAMPLE for dx in FOREHEAD_ACROSS], axis=0)
         lum = samples @ np.array([0.2126, 0.7152, 0.0722])
         brow = 1 - smoothstep(lum / skin_lum, FOREHEAD_BROW - 0.1, FOREHEAD_BROW)
         return samples * (1 - brow[:, None]) + skin[None] * brow[:, None]
+
+    return colour
+
+
+def face_and_forehead(reference, projection, top_row, skin):
+    """A function: model points -> the reference itself under `top_row` (the brows), its skin carried up above it."""
+    carried = forehead_colour(reference, projection, top_row, skin)
+
+    def colour(points):
+        image = projection.to_image(points)
+        own = sample(reference, image)[:, :3]
+        return own + (carried(points) - own) * smoothstep(image[:, 1], top_row - 6, top_row)[:, None]
 
     return colour
 
@@ -517,6 +532,9 @@ HAIRLINE_FACING = (-0.35, -0.05)
 # There, faces turned up (the hair's edge over the forehead) are darkened by this much: in the reference's light brown
 # they caught the light from above in a light ring round the forehead.
 HAIRLINE_SHADE = 0.45
+# The reference's hairline lies over the edge of Tripo's hair (on it, the skin's light ran into the groove behind the
+# forehead's raised edge, a stripe across the forehead): it is laid this many reference pixels lower.
+HAIRLINE_SHIFT = 5.0
 
 
 def darken_wisps(mesh, texture, projection, hair, top_row, columns):
@@ -607,7 +625,10 @@ FOREHEAD_LEDGE = (-0.12, 0.3)
 # The band of forehead under the fringe is painted skin, darkening by this much toward the fringe (its shadow). The
 # haircut covers the band above this share of it (from over the brows).
 FRINGE_SHADOW = 0.22
-FRINGE_COVER = 0.0
+FRINGE_COVER = 0.72
+# The short cut's shell, as skin, comes down over the brows' top by this share of their height over the eyes (its
+# edge hidden in them: ending over them, it drew a line across the forehead).
+SHELL_OVER_BROWS = 0.3
 
 
 def paint_band(mesh, texture, projection, band, rows, edge, skin, reference, skin_tone, normal_map=None, orm=None):
@@ -631,7 +652,9 @@ def paint_band(mesh, texture, projection, band, rows, edge, skin, reference, ski
         row, high = image[:, 1], edge(image)
         own = sample(reference, image)[:, :3]
         weight = smoothstep(row, brow_row - 2, brow_row + 2)
-        weight *= smoothstep(own @ np.array([0.2126, 0.7152, 0.0722]) / tone, FOREHEAD_BROW - 0.12, FOREHEAD_BROW)
+        # (Only by the brows: higher up the reference has the fringe's hair, which is no brow.)
+        brow = 1 - smoothstep(own @ np.array([0.2126, 0.7152, 0.0722]) / tone, FOREHEAD_BROW - 0.12, FOREHEAD_BROW)
+        weight *= 1 - brow * (1 - smoothstep(row, cut, cut + 6))
         target = own + (skin(points) - own) * smoothstep(row, cut - 6, cut)[:, None]
         shade = 1 - FRINGE_SHADOW * smoothstep(row, low + 0.4 * (high - low), high + 0.3 * (high - low))
         colour = texture[texel_rows, cols, :3]
@@ -1094,6 +1117,10 @@ HAIRLINE_FLAT_RINGS = 9
 HAIRLINE_FLAT_ROUNDS = 90
 # Not higher than this over the hair's lowest point in the middle of the forehead (the parting starts there).
 HAIRLINE_CEILING = 0.008
+# The groove behind the forehead's edge is evened out this far from the hairline on the skin's side and the hair's
+# (model units), this many rounds.
+HAIRLINE_GROOVE = (0.004, 0.012)
+HAIRLINE_GROOVE_ROUNDS = 200
 
 
 def smooth_hairline(mesh, hair, floor):
@@ -1196,6 +1223,23 @@ def flatten_hairline(mesh, hair, floor, ceiling):
         np.add.at(total, edges[:, 1], pos[edges[:, 0]])
         along = ((total / count - pos) * normals).sum(1, keepdims=True) * normals
         pos += 0.5 * weight[:, None] * along
+    # Then the groove Tripo left behind the forehead's raised edge (a channel the light drew as a stripe across the
+    # forehead) is bridged: within HAIRLINE_GROOVE of the hairline (skin side, hair side) the surface is evened out
+    # between what is round it.
+    tree = KDTree(int(line.sum()))
+    for k, i in enumerate(np.where(line)[0]):
+        tree.insert(Vector(pos[i]), k)
+    tree.balance()
+    distance = np.array([tree.find(Vector(p))[2] for p in pos])
+    zone = usable.copy()
+    zone &= np.where(region, distance < HAIRLINE_GROOVE[1], distance < HAIRLINE_GROOVE[0])
+    print("  hairline line", int(line.sum()), "usable", int(usable.sum()), "groove zone", int(zone.sum()), "ceiling", round(float(ceiling), 4),
+          "floor", round(float(np.min(floor)), 4))
+    for _ in range(HAIRLINE_GROOVE_ROUNDS):
+        total = np.zeros_like(pos)
+        np.add.at(total, edges[:, 0], pos[edges[:, 1]])
+        np.add.at(total, edges[:, 1], pos[edges[:, 0]])
+        pos[zone] = (total / count)[zone]
     mesh.vertices.foreach_set("co", pos[inverse].ravel())
     mesh.update()
     return int((weight > 0).sum())
@@ -1440,7 +1484,9 @@ def build(key, spec, args, landmarks_all):
         ledge = ((co[:, 0] > 0) & (np.abs(image[:, 0] - middle) < half)
                  & (image[:, 1] > brow_row + FOREHEAD_LEDGE[0] * (brow_row - eye_row))
                  & (image[:, 1] < arc + FOREHEAD_LEDGE[1] * (arc - over_brows)))
-        hair, hair_frame = tripo_hair.underlayer(mesh, hair, in_face, layer, forehead_x, hairline, ledge)
+        # (For the short cut: the skull under it, over the forehead above the brows too.)
+        skull = (ledge | forehead) if tripo_hair.STYLE == "short" else None
+        hair, hair_frame = tripo_hair.underlayer(mesh, hair, in_face, layer, forehead_x, hairline, ledge, skull)
         # The ledge's underside, turned to the front now, still had Tripo's paint for it (the hair fading into skin, in
         # blotches over the brows): the reference is laid on it again.
         print("ledge's underside texels", project_regions(mesh, texture, face_reference, face_projection, [face_region], only=ledge))
@@ -1457,7 +1503,8 @@ def build(key, spec, args, landmarks_all):
         hairline_region = [(sides[0] - 10, top_row - 4), (sides[1] + 10, top_row - 4), (sides[1] + 10, reach), (sides[0] - 10, reach)]
         # (Faces turned up too: the hair's edge and the groove behind it, left with Tripo's paint, frayed the line.)
         print("hairline from the reference", project_regions(mesh, texture, face_reference, face_projection, [hairline_region],
-                                                             facing=HAIRLINE_FACING, shade_up=HAIRLINE_SHADE))
+                                                             facing=HAIRLINE_FACING, shade_up=HAIRLINE_SHADE,
+                                                             shift=(0.0, HAIRLINE_SHIFT)))
     if key in RESTYLED_HAIR and forehead_skin is not None:
         bones = {name: np.array(rig.matrix_world @ rig.data.bones[f"mixamorig:{name}"].head_local) for name in ("Neck", "Head")}
         print("neck repainted texels", paint_neck(mesh, texture, bones["Neck"], bones["Head"], forehead_skin * 0.96))
@@ -1494,7 +1541,15 @@ def build(key, spec, args, landmarks_all):
                 pickle.dump({"co": np.array([v.co[:] for v in mesh.vertices]), "polys": [tuple(p.vertices) for p in mesh.polygons],
                              "hair": hair | under_fringe, "frame": hair_frame, "colour": colour, "floor": head_z + 0.002,
                              "under": forehead & ~under_fringe}, dump)
-        haircut = tripo_hair.shell(body, hair | under_fringe, hair_frame, colour, head_z + 0.002, forehead & ~under_fringe)
+        # (The short cut's shell goes on over the forehead as skin: Tripo's surface there stayed blotched under every
+        # repair.)
+        # (Down to the brows' top: the evened-out ledge's lip over them, left uncovered, still showed its blotches.)
+        over_brow_line = ledge & (image[:, 1] > brow_row - SHELL_OVER_BROWS * (brow_row - eye_row)) & (image[:, 1] < arc)
+        bare = ((forehead | over_brow_line) & ~under_fringe & ~hair) if tripo_hair.STYLE == "short" else None
+        shell_hair = (hair | forehead | over_brow_line) if bare is not None else (hair | under_fringe)
+        haircut = tripo_hair.shell(body, shell_hair, hair_frame, colour, head_z + 0.002, None if bare is not None else forehead & ~under_fringe,
+                                   skin_colour=forehead_skin, bare=bare,
+                                   skin_at=face_and_forehead(face_reference, face_projection, top_row, forehead_skin))
         print("hair colour", np.round(colour, 3))
     print("texels padded round the head's islands", pad_islands(mesh, (texture, normal_map, orm)))
     if orm is not None:

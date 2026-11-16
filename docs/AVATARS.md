@@ -75,24 +75,19 @@
    opening (`face-expression.ts`, reckoned from the jaw and the lips' rounding and spread): behind the small hole of
    "у" the incisors shone white as in a wide-open "а".
 
-   The boy's hair is cut anew (`tools/tripo_hair.py`, 2026-11-12; Tripo gave him a dark lumpy cap with blotches
-   painted in it and a fringe hanging over the forehead as a second layer of surface, ending in ragged tips): Tripo's
-   hair becomes the scalp's dark underlayer, sunk 7 mm, smoothed, painted flat dark brown. Tripo's fringe was a solid
-   ledge standing out of the forehead down to the brows, its underside ragged ("трещинки" over the brows): from the
-   brows to just above it the surface is evened out (a membrane between the face below and the hair above; carried far
-   into the hair it cut across the head's front corner and sank the hair 4 cm back), the reference is laid again on
-   its underside, and the forehead's band up to the hair is painted skin, darker toward the fringe. Over the scalp lies
-   the haircut (`TM_hair`), a shell on a fine icosphere round the head (each direction taken out to the hair, through
-   the hood's collar behind but never through the face, the radius smoothed and kept outside what it covers), raised
-   by its locks: about 100 broad locks in rows round the whorl at the top of the back, each a tapering band that waves
-   a little and curls at its end, the hair as a whole turning aside together (scattered at random they crossed), the
-   rows nearer the whorl lying over the ones they reach; a row of fringe locks comes forward and down, their pointed
-   ends hanging down to a little over the brows, and the shell's edge follows the outer locks' ends (by any lock's
-   cover it ran straight, a bowl's), rolling under to the scalp; the sides are brought close to the head (Tripo's hair
-   stood out there as wide as on top, a mushroom) and the nape is cut level. Its texture (`TM_hair_color`, `TM_hair_normal`, one
-   image round the whorl) draws on each lock its strands along it, lit along its middle, darker at its root, in the
-   shade of the locks over it. (Before: one smooth shell, "a bowl cut", rejected 2026-11-13; about 750 lock tubes, "кучу …
-   в голове"; Tripo's cap combed and repainted, a brain or a helmet; MakeHuman hair fitted by another agent, rejected.)
+   The boy's hair is cut anew (`tools/tripo_hair.py`, `STYLE = "short"`, 2026-11-17: "обычный короткий полубокс"; Tripo
+   gave him a long cut's volume and a fringe that was a solid ledge over the forehead down to the brows, its surface
+   crumpled under it, and every repair of that surface showed in blotches and creases). A skull is made under it: a
+   sphere in a head's proportions fitted to Tripo's hair, brought in by the hair's thickness, takes the hair and the
+   forehead above the brows (eased in from the face), its vertices spread over it so the fringe's folded layers no
+   longer flicker. Over it lies the haircut (`TM_hair`), a shell on a fine icosphere round the head (each direction
+   taken out to the hair, through the hood's collar behind but never through the face), a few millimetres thick on
+   top, close-cropped at the sides and the back, where its texture shows the scalp through clipped hair, cut level at
+   the nape. The shell goes on down over the forehead and the brows' top, lying flat on them, painted there as skin:
+   the reference itself under the brows' top, its skin carried up above, darker toward the hairline (its shadow), so
+   the crumpled surface under it never shows and the shell's edge hides in the brows. (Before: broad locks with a
+   pointed fringe, "в целом плохая прическа"; a smooth shell, "a bowl cut"; about 750 lock tubes, "кучу … в голове";
+   Tripo's cap repainted, a brain or a helmet; MakeHuman hair, rejected. The locks remain as `STYLE = "locks"`.)
    Where Tripo's hair meets the skin (both avatars) its surface steps in ragged spikes; the vertices a few rings either
    side of the hairline, above the brows, are smoothed (Taubin), and over the girl's forehead the step is flattened
    out. The face's texture above the part taken from the reference (both avatars) is repainted with the reference's skin

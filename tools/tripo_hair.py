@@ -41,8 +41,18 @@ UNDERLAYER_SHADE = 0.55
 FOREHEAD_SINK = 0.0012
 # The hair's front edge lies this far over the forehead.
 HAIRLINE_THICK = 0.0012
+# The skull: the hair's ellipsoid brought in by this much (model units) front to back, side to side, up and down (the
+# hair's thickness), eased in over this many rings from the face and the ears.
+SKULL = (0.012, 0.008, 0.008)
+SKULL_RINGS = 4
+# A head's proportions: front to back, side to side, up and down.
+SKULL_SHAPE = (1.12, 0.92, 1.0)
+SKULL_RELAX = 500
 # Rounds of evening out the fringe's ledge (enough for the membrane to settle across it).
 LEDGE_ROUNDS = 600
+# Its edge is eased over this many rings either side, this many rounds.
+LEDGE_SEAM = 3
+LEDGE_SEAM_ROUNDS = 15
 
 
 def _weld(mesh):
@@ -83,7 +93,7 @@ def _normals(mesh, inverse, count):
     return normals / np.maximum(np.linalg.norm(normals, axis=1, keepdims=True), 1e-12)
 
 
-def underlayer(mesh, hair, keep_out, forehead=None, forehead_x=None, hairline=None, ledge=None):
+def underlayer(mesh, hair, keep_out, forehead=None, forehead_x=None, hairline=None, ledge=None, skull=None):
     """Turn Tripo's hair into the scalp's underlayer (moves the mesh's vertices): closed over blotches, never
     `keep_out`; `forehead` vertices (the fringe's layer over the forehead, ragged tips hanging in folds) smoothed and
     put just behind the forehead's skin, at `forehead_x(y, z)` (NaN where none). Returns the hair vertices and the
@@ -107,7 +117,40 @@ def underlayer(mesh, hair, keep_out, forehead=None, forehead_x=None, hairline=No
         np.add.at(total, edges[:, 1], values[edges[:, 0]])
         return total / count
 
-    if forehead is not None:
+    # A skull under it all: Tripo's hair is a long cut's volume over a forehead that its fringe left crumpled, and every
+    # repair of that surface showed. An ellipsoid fitted to the hair's outer surface, brought in by the hair's
+    # thickness, takes the hair and (`ledge`) the forehead above the brows, eased in from the face and the ears.
+    if skull is not None:
+        top = region.copy()
+        top[inverse[skull]] = True
+        top &= ~out
+        # (A sphere in a head's proportions: a free ellipsoid fitted to the cap of the hair ran 14 cm out in front.)
+        q = pos[region] / np.array(SKULL_SHAPE)
+        design = np.concatenate([q, np.ones((len(q), 1))], 1)
+        solution = np.linalg.lstsq(design, (q * q).sum(1), rcond=None)[0]
+        middle = solution[:3] / 2
+        size = math.sqrt(solution[3] + middle @ middle)
+        middle = middle * np.array(SKULL_SHAPE)
+        axes = size * np.array(SKULL_SHAPE) - np.array(SKULL)
+        rel = pos - middle
+        onto = middle + rel / np.maximum(np.sqrt(((rel / axes) ** 2).sum(1)), 1e-9)[:, None]
+        rings = np.full(len(pos), SKULL_RINGS + 1.0)
+        reached = ~top
+        for r in range(1, SKULL_RINGS + 1):
+            grown = _grow(reached, edges, 1)
+            rings[grown & ~reached] = r
+            reached = grown
+        fade = _smooth((rings - 1) / SKULL_RINGS)[:, None]
+        pos[top] = (pos + (onto - pos) * fade)[top]
+        # Then spread out over it (evened out and laid back on it, a few times): the fringe's ledge was a fold, its
+        # front and underside two layers that, laid on the skull together, flickered through each other in blotches.
+        for _ in range(SKULL_RELAX):
+            pos[top] = mean(pos)[top]
+            rel = pos - middle
+            onto = middle + rel / np.maximum(np.sqrt(((rel / axes) ** 2).sum(1)), 1e-9)[:, None]
+            pos[top] = (pos + (onto - pos) * fade)[top]
+        print("skull: centre", np.round(middle, 4), "axes", np.round(axes, 4), "vertices", int(top.sum()))
+    if forehead is not None and skull is None:
         flat = np.zeros(len(pos), bool)
         flat[inverse[forehead]] = True
         for _ in range(FLATTEN_ROUNDS):
@@ -122,6 +165,12 @@ def underlayer(mesh, hair, keep_out, forehead=None, forehead_x=None, hairline=No
         even[inverse[ledge]] = True
         for _ in range(LEDGE_ROUNDS):
             pos[even] = mean(pos)[even]
+        # And its edge eased (Taubin, either side of it): evened out between fixed edges, it met the brows in a crease
+        # across the forehead.
+        seam = _grow(even, edges, LEDGE_SEAM) & _grow(~even, edges, LEDGE_SEAM)
+        for _ in range(LEDGE_SEAM_ROUNDS):
+            for step in (0.5, -0.53):
+                pos[seam] += step * (mean(pos) - pos)[seam]
         print("the fringe's ledge evened out:", int(even.sum()), "vertices")
     inner = region & ~_grow(~region, edges, 1)
     for _ in range(SMOOTH_ROUNDS):
@@ -138,9 +187,9 @@ def underlayer(mesh, hair, keep_out, forehead=None, forehead_x=None, hairline=No
         grown = _grow(reached, edges, 1)
         rings[grown & ~reached] = r
         reached = grown
-    sink = INSET * np.clip((rings - 1) / (EDGE_RINGS - 1), 0, 1)
+    sink = INSET * np.clip((rings - 1) / (EDGE_RINGS - 1), 0, 1) * (skull is None)
     pos[region] -= normals[region] * sink[region, None]
-    if hairline is not None and forehead_x is not None:
+    if hairline is not None and forehead_x is not None and skull is None:
         edge = np.zeros(len(pos), bool)
         edge[inverse[hairline]] = True
         edge &= region
@@ -219,6 +268,20 @@ LOCK_STEPS = 16
 LOCK_WAVE = (0.05, 0.15)
 LOCK_CURL = (0.3, 0.75)
 FRINGE_SWEEP = 0.7
+# The haircut: "locks" (broad locks and a fringe) or "short" (a short cut: the user, of the locks: "сделай ему обычный
+# короткий полубокс"). The short cut's layer over the scalp: on top, at the sides and the back, at its edge (model
+# units); its texture's strands (how many to a radian round the whorl and along the hair, the clumps' the same), and how
+# much the scalp's skin shows through at the sides and the back.
+STYLE = "short"
+SHORT_LIFT = (0.008, 0.0012, 0.0008)
+SHORT_STRANDS = (220.0, 26.0, 60.0, 8.0)
+SHORT_SKIN = 1.0
+SHORT_TONE = (1.0, 0.75)
+# The shell over the forehead: its lift (model units), softened over this many rounds, darker toward the hair by this
+# much.
+BARE_LIFT = 0.00015
+BARE_SOFT = 4
+BARE_SHADOW = 0.25
 # The fringe's locks, one to this angle round the whorl, where the hair's edge faces forward at least this much; they
 # fan out, turn and curl this much of the rest's (sideways, they ran along the edge, not down onto the forehead).
 FRINGE_LOCKS = (0.22, 0.45)
@@ -404,6 +467,101 @@ def _blur(field, radius, rounds=3):
     return out
 
 
+def _noise(theta, psi, across, along, rng):
+    """Smooth value noise over (theta round the whorl, psi away from it), `across` cells a radian round it (whole,
+    so it wraps) and `along` along the hair: streaks along the hair where across >> along."""
+    cols = max(int(round(across * 2 * math.pi)), 1)
+    rows = max(int(math.ceil(along * math.pi)) + 2, 2)
+    grid = rng.random((rows, cols))
+    x = (theta + math.pi) / (2 * math.pi) * cols
+    y = psi * along
+    x0, y0 = np.floor(x).astype(int), np.floor(y).astype(int)
+    fx, fy = x - x0, y - y0
+    fx, fy = fx * fx * (3 - 2 * fx), fy * fy * (3 - 2 * fy)
+    x0, x1 = x0 % cols, (x0 + 1) % cols
+    y0, y1 = np.clip(y0, 0, rows - 1), np.clip(y0 + 1, 0, rows - 1)
+    top = grid[y0, x0] * (1 - fx) + grid[y0, x1] * fx
+    bottom = grid[y1, x0] * (1 - fx) + grid[y1, x1] * fx
+    return top * (1 - fy) + bottom * fy
+
+
+def _short_texture(colour, skin, axis, e1, e2, psi_top, rng):
+    """The short cut's colour and normal maps round the whorl: fine strands along the hair over broader clumps, the
+    scalp's skin showing through at the sides and the back, lower down more."""
+    w, h = TEXTURE
+    v, u = np.mgrid[0:h, 0:w]
+    theta = (u + 0.5) / w * 2 * math.pi - math.pi
+    psi = (v + 0.5) / h * psi_top
+    d = np.cos(psi)[..., None] * axis + np.sin(psi)[..., None] * (np.cos(theta)[..., None] * e1 + np.sin(theta)[..., None] * e2)
+    fine = 0.6 * _noise(theta, psi, SHORT_STRANDS[0], SHORT_STRANDS[1], rng) + 0.4 * _noise(theta, psi, 2 * SHORT_STRANDS[0], 2 * SHORT_STRANDS[1], rng)
+    clump = _noise(theta, psi, SHORT_STRANDS[2], SHORT_STRANDS[3], rng)
+    # (Darker than the long cut's: lit to LIGHTER, short hair read orange.)
+    base = np.asarray(colour) * SHORT_TONE[0]
+    grey = float(base @ np.array([0.2126, 0.7152, 0.0722]))
+    base = grey + SHORT_TONE[1] * (base - grey)
+    value = (0.7 + 0.45 * fine) * (0.85 + 0.25 * clump)
+    colour_map = base[None, None] * value[..., None]
+    if skin is not None:
+        # The clipped sides and back: from above the ears down, more skin the lower (a fade).
+        low = _smooth((np.abs(d[..., 1]) - 0.25) / 0.35) * (1 - _smooth((d[..., 2] - 0.62) / 0.25))
+        low = np.maximum(low, _smooth((-d[..., 0] - 0.15) / 0.4) * (1 - _smooth((d[..., 2] - 0.55) / 0.25)))
+        show = SHORT_SKIN * low * (0.4 + 0.45 * _smooth((0.4 - d[..., 2]) / 0.6)) * (0.8 + 0.4 * (1 - fine))
+        # Clipped hair over the scalp: the skin, darkened and greyed by the stubble.
+        stubble = np.asarray(skin) * 0.7 * (0.9 + 0.2 * fine[..., None]) + 0.05
+        colour_map = colour_map * (1 - show[..., None]) + stubble * show[..., None]
+    colour_map = np.clip(colour_map, 0, 1)
+    gy, gx = np.gradient(fine * 3.0)
+    normal = _unit(np.stack([-gx, -gy, np.ones_like(gx)], -1))
+    return colour_map, normal * 0.5 + 0.5
+
+
+def _bare_skin(colour_map, normal_map, bare, u, v, centre, radius, skin_at, skin_colour, axis, e1, e2, psi_top):
+    # (`radius`: per vertex, how far out from `centre` the shell lies.)
+    """Paint the shell's forehead as skin: where `bare` (per vertex, 0..1, at texture coordinates u, v) the skin's colour
+    (`skin_at(points)`, or `skin_colour`), darker toward the hair (its shadow), the hair's strands gone."""
+    h, w = colour_map.shape[:2]
+    gh, gw = h // 4, w // 4
+    rows = np.clip((v * gh).astype(int), 0, gh - 1)
+    cols = np.clip((u * gw).astype(int) % gw, 0, gw - 1)
+
+    def splat(values):
+        """`values` per vertex onto the coarse grid, the cells no vertex fell in filled from round them."""
+        total, count = np.zeros((gh, gw)), np.zeros((gh, gw))
+        np.add.at(total, (rows, cols), values)
+        np.add.at(count, (rows, cols), 1)
+        known = count > 0
+        grid = np.where(known, total / np.maximum(count, 1), 0.0)
+        for _ in range(40):
+            spread = sum(np.roll(np.roll(grid * known, dy, 0), dx, 1) for dy in (-1, 0, 1) for dx in (-1, 0, 1))
+            weights = sum(np.roll(np.roll(known.astype(float), dy, 0), dx, 1) for dy in (-1, 0, 1) for dx in (-1, 0, 1))
+            grid = np.where(known, grid, spread / np.maximum(weights, 1e-9))
+            known = known | (weights > 0)
+        return grid
+
+    grid = splat(bare)
+    radius_grid = splat(radius)
+    for _ in range(3):
+        grid = sum(np.roll(np.roll(grid, dy, 0), dx, 1) for dy in (-1, 0, 1) for dx in (-1, 0, 1)) / 9
+    weight = np.kron(grid, np.ones((4, 4)))[:h, :w]
+    # The skin's colour where each cell of the texture lies on the head (taken only where vertices fell, the rest in the
+    # flat colour, it came out dotted).
+    gv, gu = np.mgrid[0:gh, 0:gw]
+    theta = (gu + 0.5) / gw * 2 * math.pi - math.pi
+    psi = (gv + 0.5) / gh * psi_top
+    cell = (np.cos(psi)[..., None] * axis + np.sin(psi)[..., None] * (np.cos(theta)[..., None] * e1 + np.sin(theta)[..., None] * e2))
+    skin = np.tile(np.asarray(skin_colour, float), (gh, gw, 1))
+    near = grid > 0.05
+    if skin_at is not None and near.any():
+        skin[near] = skin_at(centre + cell[near] * radius_grid[near][:, None])
+    skin_full = np.kron(skin, np.ones((4, 4, 1)))[:h, :w]
+    shadow = 1 - BARE_SHADOW * _smooth((0.85 - weight) / 0.5)
+    skin_full = skin_full * shadow[..., None]
+    mix = _smooth((weight - 0.35) / 0.3)[..., None]
+    colour_map = colour_map * (1 - mix) + skin_full * mix
+    normal_map = normal_map * (1 - mix) + np.array([0.5, 0.5, 1.0]) * mix
+    return np.clip(colour_map, 0, 1), normal_map
+
+
 def _lock_texture(colour, locks, axis, e1, e2, psi_top):
     """The colour and normal maps round the whorl: on each lock its strands (each its own shade) running along it, the
     lock lit along its middle, darker at its root and toward its edges, in the shade of the locks over it; the gaps
@@ -455,7 +613,7 @@ def _image(name, rgb, data=False):
     return image
 
 
-def shell(body, hair, frame, colour, floor_z, under=None, seed=7):
+def shell(body, hair, frame, colour, floor_z, under=None, skin_colour=None, bare=None, skin_at=None, seed=7):
     """The haircut, as a new object (TM_hair) in the body's space: the shell over `hair` (the underlayer, no lower than
     `floor_z`), its locks' ends lying on the `under` vertices' skin past it (the forehead under the fringe)."""
     mesh = body.data
@@ -465,6 +623,7 @@ def shell(body, hair, frame, colour, floor_z, under=None, seed=7):
     tree = BVHTree.FromPolygons([Vector(c) for c in co], polys)
     on_hair = np.array([sum(hair[v] for v in p) * 2 > len(p) for p in polys])
     on_under = np.array([under is not None and sum(under[v] for v in p) * 2 > len(p) for p in polys])
+    on_bare = np.array([bare is not None and sum(bare[v] for v in p) * 2 > len(p) for p in polys])
 
     bm = bmesh.new()
     bmesh.ops.create_icosphere(bm, subdivisions=SHELL_LEVEL, radius=1.0)
@@ -496,6 +655,7 @@ def shell(body, hair, frame, colour, floor_z, under=None, seed=7):
     # met it first stopped the haircut short of the nape over a band of bare underlayer.
     reach = 1.15 * float(np.median(np.linalg.norm(co[hair] - centre, axis=1)))
     skin = np.zeros(n, bool)
+    bare_dir = np.zeros(n)
     for i, d in enumerate(dirs):
         start = Vector(centre + d * far)
         for _ in range(4):
@@ -511,6 +671,7 @@ def shell(body, hair, frame, colour, floor_z, under=None, seed=7):
         radius[i] = float((np.array(hit[:]) - centre) @ d)
         inside[i] = on_hair[index] and hit.z > floor_z and radius[i] > 0
         skin[i] = on_under[index]
+        bare_dir[i] = on_bare[index]
     # Specks and pinholes out of the region (a vertex goes with most of its neighbours), and thin strips (opened: worn
     # away, then grown back): the hair Tripo ran down behind the ears hung there in tails.
     for _ in range(2):
@@ -559,7 +720,7 @@ def shell(body, hair, frame, colour, floor_z, under=None, seed=7):
     # The sides cut short: over the temples and the ears the hair lies close to the head (Tripo's hair stood out there
     # as wide as on top, a mushroom), the volume kept on top.
     side = _smooth((np.abs(dirs[:, 1]) - SIDE_SLIM[1]) / 0.3) * (1 - _smooth((dirs[:, 2] - SIDE_SLIM[2]) / 0.35))
-    radius = radius - SIDE_SLIM[0] * side
+    radius = radius - SIDE_SLIM[0] * side * (STYLE == "locks")
     spacing = float(np.mean(np.linalg.norm(dirs[edges[:, 0]] - dirs[edges[:, 1]], axis=1))) * float(np.median(radius[inside]))
 
     # The whorl's frame: round its axis (from the front) and away from it.
@@ -569,7 +730,8 @@ def shell(body, hair, frame, colour, floor_z, under=None, seed=7):
     e1 /= np.linalg.norm(e1)
     e2 = np.cross(axis, e1)
     psi = np.arccos(np.clip(dirs @ axis, -1, 1))
-    locks = _locks(dirs, inside, psi, axis, (e1, e2), rng)
+    # A short cut (STYLE "short") has no locks: an even layer of short hair, its edge the hair's own line.
+    locks = _locks(dirs, inside, psi, axis, (e1, e2), rng) if STYLE == "locks" else []
     # How much the lock on top covers each direction: the edge follows the outer locks' own shapes, their pointed
     # ends (by how much any lock covered it, the locks underneath filled the gaps and the edge ran straight, a bowl's).
     _, _, top_lock, _, across = _lock_field(dirs, locks)
@@ -607,6 +769,8 @@ def shell(body, hair, frame, colour, floor_z, under=None, seed=7):
     tips = reach * (2 * cover - 1)
     # (Cut back less in front, where the scalp's dark edge is just behind it.)
     tips = np.where(tips < 0, tips * (1 - FRINGE_NOTCH_SPARE * front), tips)
+    if STYLE == "short":
+        tips = np.zeros(n)
     edge_field = signed + tips * (np.abs(signed) < 2 * reach) + FRINGE_DOWN * front
     # Never below the nape's line (a strip of the region past it hung down the neck in a tail on one side).
     edge_field = np.minimum(edge_field, centre[2] + dirs[:, 2] * radius - (floor_z - NAPE_SLACK))
@@ -657,6 +821,17 @@ def shell(body, hair, frame, colour, floor_z, under=None, seed=7):
     dirs = moved
     # Radius on the moved directions: the nearest smoothed value will do (they moved less than a hop).
     lift = EDGE_LIFT + (SHELL_LIFT - EDGE_LIFT) * _smooth(np.maximum(signed, 0) / EDGE_TAPER)
+    if STYLE == "short":
+        # Thicker on top, close-cropped at the sides and the back.
+        low = _smooth((np.abs(dirs[:, 1]) - 0.3) / 0.4) * (1 - _smooth((dirs[:, 2] - 0.55) / 0.3))
+        low = np.maximum(low, _smooth((-dirs[:, 0] - 0.2) / 0.4) * (1 - _smooth((dirs[:, 2] - 0.5) / 0.3)))
+        top_lift = SHORT_LIFT[0] + (SHORT_LIFT[1] - SHORT_LIFT[0]) * low
+        lift = SHORT_LIFT[2] + (top_lift - SHORT_LIFT[2]) * _smooth(np.maximum(signed, 0) / EDGE_TAPER)
+    # The forehead under the short cut's front (`bare`): the shell goes on over it, close, as skin (the surface Tripo's
+    # fringe left there could not be made clean; every repair showed in blotches and creases).
+    for _ in range(BARE_SOFT):
+        bare_dir = 0.5 * bare_dir + 0.5 * mean(bare_dir[:, None])[:, 0]
+    lift = lift + (BARE_LIFT - lift) * _smooth((bare_dir - 0.3) / 0.4)
     relief, _, _, _, _ = _lock_field(dirs, locks)
     points = centre + dirs * (radius + lift + relief)[:, None]
     # Texture coordinates: u round the whorl (from behind), v away from it.
@@ -682,8 +857,10 @@ def shell(body, hair, frame, colour, floor_z, under=None, seed=7):
         for share, bulge, sink in ((0.45, 0.35, 0.0), (0.0, 0.12, 0.0016)):
             mapping = {}
             for i in rim:
-                r = radius[i] + (lift[i] + relief[i]) * share - sink
-                p = centre + dirs[i] * r + outward[i] * lift[i] * bulge
+                # (Over the forehead the edge lies flat on the skin: rolled under, it drew a line over the brows.)
+                flat = _smooth((bare_dir[i] - 0.3) / 0.4)
+                r = radius[i] + (lift[i] + relief[i]) * share - sink * (1 - flat)
+                p = centre + dirs[i] * r + outward[i] * lift[i] * bulge * (1 - flat)
                 mapping[i] = len(verts)
                 verts.append(p)
                 uvs.append((u[i], v[i] + 0.004 * (1 + (share == 0))))
@@ -709,7 +886,13 @@ def shell(body, hair, frame, colour, floor_z, under=None, seed=7):
         top = max(p[0] for p in us)
         for l, (pu, pv) in zip(loops, us):
             uv_layer.data[l].uv = (pu + 1 if top - pu > 0.5 else pu, pv)
-    colour_map, normal_map = _lock_texture(colour, locks, axis, e1, e2, psi_top)
+    if STYLE == "short":
+        colour_map, normal_map = _short_texture(colour, skin_colour, axis, e1, e2, psi_top, rng)
+        if bare is not None and bare_dir[used].max() > 0:
+            colour_map, normal_map = _bare_skin(colour_map, normal_map, bare_dir[used], u[used], v[used], centre,
+                                                (radius + lift)[used], skin_at, skin_colour, axis, e1, e2, psi_top)
+    else:
+        colour_map, normal_map = _lock_texture(colour, locks, axis, e1, e2, psi_top)
     material = bpy.data.materials.new("TM_hair")
     material.use_nodes = True
     nodes, links = material.node_tree.nodes, material.node_tree.links

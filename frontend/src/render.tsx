@@ -77,8 +77,18 @@ function Driver({ time }: { time: React.MutableRefObject<number> }) {
     const clay = clayParam ? new THREE.MeshStandardMaterial({ color: "#b8b0a8", roughness: 0.6, wireframe: clayParam === "wire" }) : undefined;
     // (The eyeballs red, to see where they show through the skin.)
     const eyeClay = new THREE.MeshStandardMaterial({ color: "#d02020", roughness: 0.6, wireframe: clayParam === "wire" });
+    // `flat=1` drops the meshes' normal maps, to tell relief painted in them from the surface's own.
+    const flat = new URLSearchParams(location.search).has("flat");
     scene.onBeforeRender = () => {
       if (hidden.size) scene.traverse((object) => hidden.has(object.name) && (object.visible = false));
+      if (flat)
+        scene.traverse((object) => {
+          const material = (object as THREE.Mesh).material as THREE.MeshStandardMaterial | undefined;
+          if ((object as THREE.Mesh).isMesh && material?.normalMap) {
+            material.normalMap = null;
+            material.needsUpdate = true;
+          }
+        });
       if (clay) scene.traverse((object) => (object as THREE.Mesh).isMesh && ((object as THREE.Mesh).material = object.name.startsWith("TM_eye") ? eyeClay : clay));
       if (!shapes) return;
       scene.traverse((object) => {
