@@ -156,7 +156,8 @@ function Render() {
   const aspect = gesture.normalization?.aspect_corrected ? 1 : (gesture.metadata?.video_height ?? 1) / (gesture.metadata?.video_width ?? 1);
   return (
     <Canvas frameloop="demand" dpr={1} gl={{ preserveDrawingBuffer: true, antialias: true }}>
-      <color attach="background" args={["#15112b"]} />
+      {/* `bg=<hex>` another background (the site's previews are on its lavender). */}
+      <color attach="background" args={[`#${params.get("bg") ?? "15112b"}`]} />
       <PerspectiveCamera
         makeDefault
         position={
