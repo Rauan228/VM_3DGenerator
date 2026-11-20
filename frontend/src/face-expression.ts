@@ -130,6 +130,14 @@ const REST_CAP = 0.15;
 /** A blink measures well under 1 even fully closed: this much above rest closes the avatar's eyes all the way. */
 const BLINK_FULL = 0.45;
 const BLINK_START = 0.08;
+/**
+ * The lids' shapes are both eyes': a lid that shuts by itself is the tracker misreading the eye further from the camera
+ * as the head turns, or one a hand passes over (in 128 of the 471 signs one eye closed alone for a frame or two, a
+ * twitch). Both eyes take the less of the two, and each this share of its own beyond it (a squint may be a little
+ * uneven).
+ */
+const EYE_PAIRS = ["eyeBlink", "eyeSquint", "eyeWide"];
+const EYE_OWN_SHARE = 0.3;
 
 /** Gaze: eyeLook weights above the clip's median turn the eyes this far at weight 1. */
 const GAZE_SIDE_DEGREES = 32;
@@ -237,18 +245,17 @@ function medianFilter(values: Float32Array, halfWindow: number): Float32Array {
   return out;
 }
 
-/** A measured value at every 1/60 s sample, linear between the video frames and held past the first and last. */
-function resample(frames: ExpressionFrame[], count: number, read: (frame: ExpressionFrame) => number): Float32Array {
+/** Values measured at the video frames, at every 1/60 s sample: linear between the frames, held past the first and last. */
+function resample(frames: ExpressionFrame[], count: number, values: ArrayLike<number>): Float32Array {
   const out = new Float32Array(count);
   let j = 0;
   for (let k = 0; k < count; k += 1) {
     const time = k / BAKE_FPS;
     while (j < frames.length - 2 && frames[j + 1].timestamp <= time) j += 1;
-    const a = frames[j];
-    const b = frames[Math.min(j + 1, frames.length - 1)];
-    const span = b.timestamp - a.timestamp;
-    const t = span > 0 ? THREE.MathUtils.clamp((time - a.timestamp) / span, 0, 1) : 0;
-    out[k] = read(a) * (1 - t) + read(b) * t;
+    const b = Math.min(j + 1, frames.length - 1);
+    const span = frames[b].timestamp - frames[j].timestamp;
+    const t = span > 0 ? THREE.MathUtils.clamp((time - frames[j].timestamp) / span, 0, 1) : 0;
+    out[k] = values[j] * (1 - t) + values[b] * t;
   }
   return out;
 }
@@ -266,27 +273,47 @@ export function bakeFace(gesture: GestureJson, rig: FaceRig, faceTouch?: Float32
   let head: Float32Array | undefined;
 
   if (frames.length >= 2) {
-    const weight = (name: string) => (frame: ExpressionFrame) => frame.blendshapes[name] ?? 0;
+    // Each weight as measured, a tracker glitch on a single frame dropped at the video's own rate: resampled first, the
+    // spike spanned three samples, and a running median over three kept most of it.
+    const cleaned = new Map<string, Float32Array>();
+    const measured = (name: string) => {
+      let values = cleaned.get(name);
+      if (!values) {
+        values = medianFilter(Float32Array.from(frames, (frame) => frame.blendshapes[name] ?? 0), 1);
+        cleaned.set(name, values);
+      }
+      return values;
+    };
+    const lidPair = (name: string) => EYE_PAIRS.find((stem) => name === `${stem}Left` || name === `${stem}Right`);
+    const both = (name: string, stem: string) => {
+      const own = measured(name);
+      const other = measured(`${stem}${name.endsWith("Left") ? "Right" : "Left"}`);
+      return own.map((value, k) => {
+        const shared = Math.min(value, other[k]);
+        return shared + EYE_OWN_SHARE * (value - shared);
+      });
+    };
     for (const name of shapeNames) {
       if (name.startsWith("eyeLook")) continue;
-      const raw = resample(frames, count, weight(name));
+      const stem = lidPair(name);
+      const values = stem ? both(name, stem) : measured(name);
       const rule = { ...DEFAULT_RULE, ...RULES[name] };
-      const measured = frames.map(weight(name));
-      const rest = rule.rest === "median" ? percentile(measured, 0.5) : Math.min(percentile(measured, REST_PERCENTILE), REST_CAP);
-      const values = gaussian(medianFilter(raw, 1), rule.sigma);
+      const sorted = Array.from(values);
+      const rest = rule.rest === "median" ? percentile(sorted, 0.5) : Math.min(percentile(sorted, REST_PERCENTILE), REST_CAP);
+      const curve = gaussian(resample(frames, count, values), rule.sigma);
       let peak = 0;
       for (let k = 0; k < count; k += 1) {
-        let v = Math.max(0, values[k] - rest) * rule.gain;
+        let v = Math.max(0, curve[k] - rest) * rule.gain;
         if (name.startsWith("eyeBlink")) v = THREE.MathUtils.smoothstep(v, BLINK_START, BLINK_FULL);
-        values[k] = Math.min(v, rule.max);
-        peak = Math.max(peak, values[k]);
+        curve[k] = Math.min(v, rule.max);
+        peak = Math.max(peak, curve[k]);
       }
-      if (peak > 0.01) shapes.set(name, values);
+      if (peak > 0.01) shapes.set(name, curve);
     }
 
     // Gaze. MediaPipe's weights follow ARKit: "Left" is the signer's left eye, "In" toward the nose. The eyes are turned
     // together (the tracker's per-eye difference is noise at this size); + side is toward the signer's left.
-    const look = (name: string) => resample(frames, count, weight(name));
+    const look = (name: string) => resample(frames, count, measured(name));
     const side = new Float32Array(count);
     const up = new Float32Array(count);
     const outL = look("eyeLookOutLeft"), inL = look("eyeLookInLeft"), inR = look("eyeLookInRight"), outR = look("eyeLookOutRight");
@@ -303,7 +330,7 @@ export function bakeFace(gesture: GestureJson, rig: FaceRig, faceTouch?: Float32
     eyeTurn.push(side, up);
 
     // Head: the face's rotation, relative to the signer's usual pose over the clip (the camera is rarely square on).
-    const angle = (axis: number) => resample(frames, count, (frame) => frame.head?.[axis] ?? 0);
+    const angle = (axis: number) => resample(frames, count, frames.map((frame) => frame.head?.[axis] ?? 0));
     const euler = [angle(0), angle(1), angle(2)].map((curve) => {
       const rest = percentile(Array.from(curve), 0.5);
       const clean = gaussian(medianFilter(curve, HEAD_GLITCH_HALF_WINDOW), HEAD_SIGMA);
