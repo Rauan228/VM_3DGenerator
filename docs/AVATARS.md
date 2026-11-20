@@ -121,6 +121,29 @@
    edges so no letters are left in the UV seams. (Until 2026-11-03 the print read "Visual Mind" and the files were
    `visualmind-*.glb`; the team is called Til Mind.)
 
+   With `--face ict` (2026-11-19; the user liked it, "супер лица"; in the words viewer's «Аватар: Новый») the
+   brows', lids' (squint, wide), cheeks' (squint, puff) and nose's shapes come from **ICT-FaceKit** (USC Institute for
+   Creative Technologies' Vision and Graphics Lab, github.com/USC-ICT/ICT-FaceKit, **MIT licence**: its notice must go
+   with copies, `models/ict/LICENSE`): a head scanned in a light stage, with 53 expressions named like ARKit's.
+   `tools/ict_face.py prepare` reads its OBJs (kept in `~/.local/share/visualmind/ict-facekit/`) into
+   `models/ict/ict_face.npz` and finds MediaPipe's landmarks on a render of its head (`models/ict/ict_landmarks.png`);
+   the build dumps the face as its shapes are made and runs `tools/ict_face.py transfer` (the project's venv: it needs
+   scipy). There ICT's head is fitted onto the face (a similarity and a thin-plate warp through ~370 shared
+   landmarks, the face's outline left out, then laid onto the surface) and each expression carried over by deformation
+   transfer (Sumner & Popović 2004): every face triangle takes the stretch and turn of the ICT triangle under it (on the
+   same side of the mouth's and the lids' lines), and the vertices are solved by least squares, the rest of the body
+   held. The lips are held in all but the mouth's own shapes and the cheek puff (the nose's sneer lifted them off the
+   teeth, black in the corners), the eyes' openings in all but the brows' and lids' (puffed, the lower lid came off the
+   eyeball, grey); ICT's brows moved a third less than the earlier ones on the cartoon face and are scaled up
+   (`GAIN`). The mouth, the blink and the gaze stay the avatar's own.
+
+   With `--sleeves slim` (2026-11-20, on trial with `--face ict` as the words viewer's «Аватар: Новый»,
+   `frontend/public/models/next/`) the hoodie's sleeves are drawn in (`tools/tripo_sleeves.py`): Tripo made them
+   11-13 cm across, the signers' bare forearms are 6-7 cm, and crossed forearms filled half the chest («бегемот»,
+   «нашествие», «динозавр»). Each sleeve goes toward its own middle line (Tripo's bones do not run through the middle of
+   the arms), the forearm to 70% of its width, the upper arm to 80%, eased in from the shoulder seam and out toward the
+   cuff, the move evened out over the edges so the two halves meet at the elbow.
+
    The player's files are `frontend/public/models/tilmind-male.glb` and `tilmind-female.glb`; meshes, materials and
    images in them are named `TM_*`.
 

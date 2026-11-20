@@ -6,10 +6,11 @@
 * Bones lose the `mixamorig:` prefix; `LeftEye` / `RightEye` bones are added where the painted eyes are, which the
   player's body measurement needs.
 * The 52 ARKit face shapes are transferred from MakeHuman's faceunits01, through the face landmarks MediaPipe found on
-  the reference image (models/tripo/ref_landmarks.json).
+  the reference image (models/tripo/ref_landmarks.json); with `--face ict` the brows', lids', cheeks' and nose's are
+  carried over from ICT-FaceKit's scanned expressions instead (tools/ict_face.py).
 * The figure is stood up at its real height, facing the player's camera.
 
-    blender --background --python tools/build_tripo_avatars.py -- --out frontend/public/models [--only male]
+    blender --background --python tools/build_tripo_avatars.py -- --out frontend/public/models [--only male] [--face ict]
 """
 
 from __future__ import annotations
@@ -35,9 +36,11 @@ import build_stylized_avatars as sty  # noqa: E402
 import tripo_face  # noqa: E402
 import tripo_forehead  # noqa: E402
 import tripo_eyes  # noqa: E402
+import ict_face  # noqa: E402
 import tripo_hair  # noqa: E402
 import tripo_haircut  # noqa: E402
 import tripo_mouth  # noqa: E402
+import tripo_sleeves  # noqa: E402
 
 TRIPO = os.path.join(ROOT, "models", "tripo")
 # `ink`: colour of the chest print. White reads on the purple hoodie; on the light pink one it hardly shows, so the
@@ -1043,6 +1046,77 @@ def surface_point(tree, projection, col, row, depth_back=0.0):
     return np.array(hit) - np.array([depth_back, 0.0, 0.0])
 
 
+def face_landmarks(tree, projection, all_points, ref_h):
+    """MediaPipe's 478 face landmarks on the model's front surface (NaN where no surface is under one; x is the
+    depth, y and z are always where the reference puts them)."""
+    marks = np.full((len(all_points), 3), np.nan)
+    for i, (x, y) in enumerate(all_points):
+        marks[i, 1:] = projection.to_model(x, ref_h - y)
+        try:
+            marks[i] = surface_point(tree, projection, x, ref_h - y)
+        except RuntimeError:
+            pass
+    return marks
+
+
+# A haircut's vertex goes fully with the skin within the first distance of it (metres), not at all beyond the second.
+HAIR_FOLLOWS = (0.01, 0.04)
+
+
+def follow_skin_shapes(obj, points, shapes, names, unit):
+    """Shape keys on `obj` (a haircut) carrying each vertex with the nearest skin vertex in each of `names`."""
+    tree = KDTree(len(points))
+    for i, p in enumerate(points):
+        tree.insert(p, i)
+    tree.balance()
+    co = np.array([v.co[:] for v in obj.data.vertices])
+    found = [tree.find(v) for v in co]
+    nearest = np.array([f[1] for f in found])
+    far = (np.array([f[2] for f in found]) - HAIR_FOLLOWS[0] * unit) / ((HAIR_FOLLOWS[1] - HAIR_FOLLOWS[0]) * unit)
+    weight = 1 - smoothstep(far, 0.0, 1.0)
+    if not obj.data.shape_keys:
+        obj.shape_key_add(name="Basis", from_mix=False)
+    for name in names:
+        delta = shapes[name][nearest] * weight[:, None]
+        if np.abs(delta).max() < 1e-7:
+            continue
+        block = obj.shape_key_add(name=name, from_mix=False)
+        block.data.foreach_set("co", (co + delta).ravel())
+        block.value = 0.0
+
+
+def ict_shapes(key, mesh, points, *face):
+    """The face's ICT shapes: the face dumped, ICT's expressions carried onto it by tools/ict_face.py in the project's
+    venv (it needs scipy, which Blender's Python has not)."""
+    import subprocess
+
+    python = os.path.join(ROOT, ".venv-linux", "bin", "python")
+    work = os.path.join(ROOT, "data", "work", "ict", f"build-{key}")
+    os.makedirs(work, exist_ok=True)
+    dumped, carried = os.path.join(work, "face.npz"), os.path.join(work, "shapes.npz")
+    dump_face(dumped, mesh, points, *face)
+    subprocess.run([python, "-I", os.path.join(ROOT, "tools", "ict_face.py"), "transfer", dumped, carried], check=True)
+    shapes = np.load(carried)
+    return {name: shapes[f"shape_{name}"].astype(float) for name in ict_face.CARRIED}
+
+
+def dump_face(path, mesh, points, landmarks, lower, upper, inner, hang, on_ball, eyes, height, head_bone, neck_z, shapes):
+    """The face as the shapes are made for it, in plain arrays (a .npz any numpy reads; tools/ict_face.py)."""
+    tris = [(p.vertices[0], p.vertices[k], p.vertices[k + 1]) for p in mesh.polygons for k in range(1, len(p.vertices) - 1)]
+    data = {"points": points, "tris": np.array(tris), "landmarks": landmarks, "lower": np.array(sorted(lower)),
+            "upper": np.array(sorted(upper)), "inner": np.array(list(inner.items())).reshape(-1, 2),
+            "eye_hang": np.array(list(hang.items())).reshape(-1, 2), "height": height, "head_bone": head_bone, "neck_z": neck_z}
+    for side in ("L", "R"):
+        ball, margin = on_ball[side]
+        data[f"eye_{side}_ball"], data[f"eye_{side}_margin"] = np.array(sorted(ball)), np.array(sorted(margin))
+        for name, value in eyes[side].items():
+            if not isinstance(value, bpy.types.Object):  # the eyeball itself
+                data[f"eye_{side}_{name}"] = np.asarray(value)
+    for name, delta in shapes.items():
+        data[f"shape_{name}"] = delta.astype(np.float32)
+    np.savez_compressed(path, **data)
+
+
 # Tripo sculpts some hair locks into thin horns. Their tips are sharp: the faces around the tip vertex turn far from its
 # normal. Every tip this sharp, and the rings of vertices around it that make up the horn, are smoothed flat into the
 # surrounding hair; the rest of the hair keeps its shape.
@@ -1403,6 +1477,8 @@ def build(key, spec, args, landmarks_all):
     height = raw[:, 2].max() - raw[:, 2].min()
     floor = raw[:, 2].min() + np.where(raw[:, 0] > 0, HAIRLINE_FRONT, HAIRLINE_SIDE) * height
     print("hairline smoothed", smooth_hairline(mesh, hair, floor))
+    if args.sleeves == "slim":
+        print("sleeve vertices drawn in", tripo_sleeves.slim_sleeves(body, rig))
 
     points = np.array([v.co[:] for v in mesh.vertices])
 
@@ -1722,6 +1798,11 @@ def build(key, spec, args, landmarks_all):
     model_shapes.update(tripo_mouth.lip_raise_shapes(points, lips, lower_lip_verts, upper_lip_verts))
     model_shapes.update(tripo_face.brow_shapes(points, face_projection, all_pts, ref_h, eye_info))
     tripo_mouth.smooth_offsets(model_shapes, mesh, lips, float(target["chin"][2]), apart=set(inner_lip.values()))
+    if args.face == "ict":
+        # The brows', lids', cheeks' and nose's shapes carried over from ICT-FaceKit's scans (tools/ict_face.py).
+        landmarks_here = face_landmarks(tree, face_projection, all_pts, ref_h)
+        model_shapes.update(ict_shapes(key, mesh, points, landmarks_here, lower_lip_verts, upper_lip_verts,
+                                       inner_lip, eye_hang, eye_on_ball, eye_info, h, head_bone, neck_z / h, model_shapes))
     # The lips' inner side goes with the edge it hangs from.
     hanging = np.array(list(inner_lip.keys()), dtype=int)
     edge = np.array(list(inner_lip.values()), dtype=int)
@@ -1733,6 +1814,11 @@ def build(key, spec, args, landmarks_all):
     for delta in model_shapes.values():
         delta[hanging] = delta[edge]
     tripo_eyes.keep_on_balls(model_shapes, points, eye_on_ball, eye_info)
+    if os.environ.get("TM_DUMP_FACE"):
+        # For fitting other face shapes to this face without a whole build (tools/ict_face.py).
+        dump_face(os.environ["TM_DUMP_FACE"] + f"-{key}.npz", mesh, points, face_landmarks(tree, face_projection, all_pts, ref_h),
+                  lower_lip_verts, upper_lip_verts, inner_lip, eye_hang, eye_on_ball, eye_info, h, head_bone, neck_z / h,
+                  model_shapes)
     if not mesh.shape_keys:
         body.shape_key_add(name="Basis", from_mix=False)
     for name in sorted(mpfb.arkit_names()):
@@ -1754,6 +1840,10 @@ def build(key, spec, args, landmarks_all):
         attach(ball, "LeftEye" if side == "L" else "RightEye")
     for part in haircut or []:
         attach(part, "mixamorig:Head")
+        if args.face == "ict":
+            # ICT's brows move the forehead up to the hairline; the fringe goes with the skin under it (held still, the
+            # skin came through it in light flecks).
+            follow_skin_shapes(part, points, model_shapes, ict_face.CARRIED, unit)
     rim = sorted(set(inner_lip.values()))
     mid_y = float(np.mean(lip_line[:, 0]))
     middle = [i for i in rim if abs(points[i, 1] - mid_y) < 0.1 * np.ptp(lip_line[:, 0])]
@@ -1821,6 +1911,10 @@ def main():
     parser.add_argument("--out", default=os.path.join(ROOT, "frontend", "public", "models"))
     parser.add_argument("--only", choices=sorted(CHARACTERS))
     parser.add_argument("--blend", action="store_true")
+    parser.add_argument("--face", choices=("built", "ict"), default="built",
+                        help="the brows', lids', cheeks' and nose's shapes: made here, or carried over from ICT-FaceKit")
+    parser.add_argument("--sleeves", choices=("tripo", "slim"), default="tripo",
+                        help="the hoodie's sleeves as Tripo made them (oversized) or drawn in (tools/tripo_sleeves.py)")
     args = parser.parse_args(argv)
     landmarks = json.load(open(os.path.join(TRIPO, "ref_landmarks.json")))
     for key in [args.only] if args.only else list(CHARACTERS):
