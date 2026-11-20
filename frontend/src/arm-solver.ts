@@ -23,6 +23,12 @@ const MIN_VISIBILITY = 0.3;
 const FULL_VISIBILITY = 0.7;
 /** Pose landmarks the hand model has vouched for are trusted from this visibility up; elbows are often blurred or cropped. */
 const MIN_ELBOW_VISIBILITY = 0.1;
+/**
+ * Up to this an elbow is a guess (cropped at the frame's edge, swinging in a blur), often on the wrong side of the arm:
+ * the forearm then stood out sideways («лиса», elbows seen at 0.12-0.26). Between MIN_ELBOW_VISIBILITY and this the
+ * elbow eases toward hanging below the shoulder; the wrist stays where it was seen. 7% of arm-frames, in 139 signs.
+ */
+const TRUSTED_ELBOW_VISIBILITY = 0.5;
 
 /**
  * The share of the distance from the neck to the eyes that the chin hangs below the eyes, for an avatar whose head
@@ -318,6 +324,8 @@ export function solveArm(rig: ArmRig, body: BodyFrame, landmarks: Landmark[] | u
   // The elbow is nearer the camera than the shoulder too, about half as much as the wrist.
   const seenElbow = options.wristDepth && options.camera ? { ...elbow, x: uncrossed(elbow.x, options.wristDepth.z / 2, options.camera, options.wristDepth.read ?? options.wristDepth.weight) } : elbow;
   const elbowHint = vector(seenElbow).sub(vector(shoulder)).multiplyScalar(body.shoulderWidth);
+  const elbowTrust = THREE.MathUtils.smoothstep(elbow.visibility ?? 1, MIN_ELBOW_VISIBILITY, TRUSTED_ELBOW_VISIBILITY);
+  if (elbowTrust < 1) elbowHint.lerp(restPlan(rig).hint, 1 - elbowTrust);
 
   // A wrist the pose model is unsure of eases toward the arm hanging at the side. Blending the plan rather than the
   // finished directions keeps what is recorded for easing a lost stretch the same as what was actually posed.

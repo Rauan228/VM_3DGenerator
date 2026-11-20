@@ -6,6 +6,8 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom/client";
 import { fetchGesture } from "./api";
 import { AvatarRig } from "./components/AvatarRig";
+import { StudioLight } from "./components/StudioLight";
+import type { HandShape } from "./finger-contact";
 import type { GestureJson } from "./types";
 
 /**
@@ -43,6 +45,8 @@ type RenderWindow = Window & {
   handFrames?: () => Record<string, { wrist: number[]; normal: number[]; along: number[] }>;
   /** For checking a pose: where the named bones are, in the scene. */
   bonePositions?: (names: string[]) => Record<string, number[]>;
+  /** For checking contacts: the hands' capsules (finger-contact.ts) as they are now, in the scene. */
+  handCapsules?: () => { side: string; finger?: string; joint?: number; a: number[]; b: number[]; radius: number }[];
   /**
    * For checking the mouth: draws the face shapes given (by name, Left/Right named apart) in place of the animation's
    * mouth, the mouth's other shapes (mouth*, jaw*, tongue*) at 0; `undefined` gives the animation back.
@@ -122,6 +126,21 @@ function Driver({ time }: { time: React.MutableRefObject<number> }) {
         const bone = scene.getObjectByName(name);
         return bone ? [[name, bone.getWorldPosition(new THREE.Vector3()).toArray()]] : [];
       }));
+    target.handCapsules = () => {
+      let shape: HandShape | undefined;
+      scene.traverse((object) => (shape ??= object.userData.handShape as HandShape | undefined));
+      if (!shape) return [];
+      return (["Left", "Right"] as const).flatMap((side) =>
+        shape![side].map((c) => ({
+          side,
+          finger: c.finger,
+          joint: c.joint,
+          a: c.from.clone().applyMatrix4(c.bone.matrixWorld).toArray(),
+          b: c.to.clone().applyMatrix4(c.bone.matrixWorld).toArray(),
+          radius: c.radius * c.bone.getWorldScale(new THREE.Vector3()).x,
+        })),
+      );
+    };
     // Mounted after the avatar inside the same Suspense boundary, so the model is loaded by now.
     requestAnimationFrame(() => requestAnimationFrame(() => (target.renderReady = true)));
   }, [invalidate, gl, time]);
@@ -155,7 +174,7 @@ function Render() {
   if (!gesture) return null;
   const aspect = gesture.normalization?.aspect_corrected ? 1 : (gesture.metadata?.video_height ?? 1) / (gesture.metadata?.video_width ?? 1);
   return (
-    <Canvas frameloop="demand" dpr={1} gl={{ preserveDrawingBuffer: true, antialias: true }}>
+    <Canvas frameloop="demand" dpr={1} gl={{ preserveDrawingBuffer: true, antialias: true }} shadows="soft">
       {/* `bg=<hex>` another background (the site's previews are on its lavender). */}
       <color attach="background" args={[`#${params.get("bg") ?? "15112b"}`]} />
       <PerspectiveCamera
@@ -192,11 +211,10 @@ function Render() {
             : self.lookAt(0, view === "side" || view === "close" ? 0.12 : view === "face" ? FACE_Y[avatar] : view === "head" ? 0.42 : view === "mid" ? 0.3 : FRAMING[avatar].lookAt, 0)
         }
       />
-      <ambientLight intensity={0.8} />
-      <directionalLight position={[2.4, 3.2, 2.2]} intensity={2.2} />
-      <directionalLight position={[-2.2, 1.4, -1.2]} intensity={0.6} />
+      {/* `light=real` the viewer's living light (shadows, ambient occlusion; components/StudioLight.tsx). */}
+      <StudioLight light={params.get("light") === "real" ? "real" : "flat"} />
       <Suspense fallback={null}>
-        <AvatarRig url={model ? `/models/${model}` : MODELS[avatar]} position={[0, FLOOR_Y, 0]} gesture={gesture} time={0} timeSource={() => time.current} aspect={aspect} />
+        <AvatarRig url={model ? `/models/${model}` : MODELS[avatar]} position={[0, FLOOR_Y, 0]} gesture={gesture} time={0} timeSource={() => time.current} aspect={aspect} fingerContact={params.get("fingers") !== "through"} />
         <Driver time={time} />
       </Suspense>
     </Canvas>

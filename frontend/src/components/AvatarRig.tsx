@@ -8,6 +8,7 @@ import { bakeAnimation } from "../animation-bake";
 import { bakeFace, buildFaceRig } from "../face-expression";
 import { buildArmRig, measureBody, type ArmRig, type ArmSide } from "../arm-solver";
 import { buildHandRig, type HandRig } from "../hand-solver";
+import { measureHands } from "../finger-contact";
 import type { GestureJson } from "../types";
 
 /** Uniform scale of the avatar group; the skeleton overlay is sized against it. */
@@ -21,6 +22,7 @@ export function AvatarRig({
   time,
   timeSource,
   aspect = 1,
+  fingerContact = true,
 }: {
   url: string;
   position?: [number, number, number];
@@ -34,6 +36,8 @@ export function AvatarRig({
   timeSource?: () => number;
   /** videoHeight / videoWidth of the source clip; only gestures stored without aspect correction need it. */
   aspect?: number;
+  /** Keep the fingers from going through each other (finger-contact.ts). */
+  fingerContact?: boolean;
 }) {
   const gltf = useGLTF(url);
   const scene = useMemo(() => cloneSkinned(gltf.scene) as THREE.Group, [gltf.scene]);
@@ -49,6 +53,11 @@ export function AvatarRig({
     () => ({ Left: buildHandRig(scene, "Left"), Right: buildHandRig(scene, "Right") }),
     [scene],
   );
+  const handShape = useMemo(() => {
+    const shape = measureHands(scene);
+    scene.userData.handShape = shape; // for checks (render.html)
+    return shape;
+  }, [scene]);
 
   // The solvers are told how the avatar's parent is turned, which makes the local rotations they produce independent of
   // where it stands: one bake serves the avatar wherever it stands or faces.
@@ -56,8 +65,8 @@ export function AvatarRig({
     if (!gesture) return undefined;
     const toWorld = new THREE.Quaternion();
     scene.parent?.getWorldQuaternion(toWorld);
-    return bakeAnimation({ gesture, aspect, arms, hands, body, root: scene, toWorld });
-  }, [gesture, aspect, arms, hands, body, scene]);
+    return bakeAnimation({ gesture, aspect, arms, hands, body, root: scene, toWorld, handShape: fingerContact ? handShape : undefined });
+  }, [gesture, aspect, arms, hands, body, scene, handShape, fingerContact]);
   // The face and head, after the arms: the head holds still while a hand touches the face.
   const face = useMemo(() => (gesture ? bakeFace(gesture, faceRig, animation?.faceTouch) : undefined), [gesture, faceRig, animation]);
   useEffect(() => () => face?.reset(), [face]);
@@ -72,8 +81,11 @@ export function AvatarRig({
         return;
       }
       if ((object as THREE.Mesh).isMesh) {
-        object.castShadow = true;
-        object.receiveShadow = true;
+        // The mouth's inside is shaded by how open the mouth is (face-expression.ts); in the lips' shadow on top it was
+        // a black hole.
+        const inside = /^TM_(mouth|teeth|tongue|gums)/.test(object.name);
+        object.castShadow = !inside;
+        object.receiveShadow = !inside;
       }
     });
   }, [scene]);

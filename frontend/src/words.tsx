@@ -1,10 +1,11 @@
-import { SIGNER_MODELS } from "./signer-models";
+import { NEXT_SIGNER_MODELS, SIGNER_MODELS } from "./signer-models";
 import { OrbitControls } from "@react-three/drei";
 import { Canvas, useThree } from "@react-three/fiber";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ReactDOM from "react-dom/client";
 import { fetchGesture, sourceVideoUrl } from "./api";
 import { AvatarRig } from "./components/AvatarRig";
+import { StudioLight, type Light } from "./components/StudioLight";
 import { formatNumber } from "./format";
 import { copyText, fetchEntries, loadNotes, saveNotes, SET_NAMES, SETS, type Entry, type SetName } from "./sign-sets";
 import type { GestureJson } from "./types";
@@ -25,9 +26,11 @@ type Angle = "front" | "side" | "face";
 type After = "repeat" | "next" | "stop";
 /** The video cropped to the signer like the avatar's frame, or whole (a hand lying on the lap is seen only whole). */
 type Fit = "cover" | "contain";
-type Prefs = { avatar: Avatar; rate: number; after: After; fit: Fit };
+/** Which build of the avatars: the one in use, or the next one (ICT face shapes, slimmer sleeves). */
+type Face = "built" | "next";
+type Prefs = { avatar: Avatar; rate: number; after: After; fit: Fit; face: Face; light: Light };
 
-const MODELS = SIGNER_MODELS;
+const MODELS: Record<Face, Record<Avatar, string>> = { built: SIGNER_MODELS, next: NEXT_SIGNER_MODELS };
 const FLOOR_Y = -1.12;
 // Framed like the gallery's cards: head to waist, with room for hands raised above the head.
 const LOOK_AT_Y = 0.27;
@@ -35,7 +38,7 @@ const DISTANCE = 1.6;
 const RATES = [1, 0.5, 0.25];
 const FRAME = 1 / 30;
 const PREFS_KEY = "words-prefs-v1";
-const DEFAULT_PREFS: Prefs = { avatar: "female", rate: 1, after: "repeat", fit: "cover" };
+const DEFAULT_PREFS: Prefs = { avatar: "female", rate: 1, after: "repeat", fit: "cover", face: "next", light: "real" };
 const AVATAR_NAMES: Record<Avatar, string> = { female: "Девушка", male: "Парень" };
 const ANGLE_NAMES: Record<Angle, string> = { front: "Спереди", side: "Сбоку", face: "Лицо" };
 /** The face close up, to read the lips (the man is 10 cm taller: his face is higher). */
@@ -43,10 +46,14 @@ const FACE_Y: Record<Avatar, number> = { female: 0.42, male: 0.51 };
 const FACE_DISTANCE = 0.62;
 const AFTER_NAMES: Record<After, string> = { repeat: "Повтор", next: "Следующее", stop: "Стоп" };
 const FIT_NAMES: Record<Fit, string> = { cover: "Крупно", contain: "Целиком" };
+const FACE_NAMES: Record<Face, string> = { built: "Прежний", next: "Новый" };
+const LIGHT_NAMES: Record<Light, string> = { flat: "Ровный", real: "Живой" };
 
 function loadPrefs(): Prefs {
   try {
-    return { ...DEFAULT_PREFS, ...JSON.parse(localStorage.getItem(PREFS_KEY) ?? "{}") };
+    const stored = { ...DEFAULT_PREFS, ...JSON.parse(localStorage.getItem(PREFS_KEY) ?? "{}") };
+    if (!(stored.face in MODELS)) stored.face = "next";
+    return stored;
   } catch {
     return DEFAULT_PREFS;
   }
@@ -372,16 +379,14 @@ function Words() {
             {!playing && gesture && <span className="play-hint" aria-hidden>▶</span>}
           </div>
           <div className="box">
-            <Canvas dpr={[1, 2]} camera={{ position: [0, LOOK_AT_Y + 0.05, DISTANCE], fov: 38 }}>
+            <Canvas dpr={[1, 2]} camera={{ position: [0, LOOK_AT_Y + 0.05, DISTANCE], fov: 38 }} shadows="soft">
               <color attach="background" args={["#15112b"]} />
               <OrbitControls makeDefault enablePan={false} minDistance={0.3} maxDistance={4} target={[0, LOOK_AT_Y, 0]} />
               <View angle={view.angle} reset={view.reset} avatar={prefs.avatar} />
-              <ambientLight intensity={0.8} />
-              <directionalLight position={[2.4, 3.2, 2.2]} intensity={2.2} />
-              <directionalLight position={[-2.2, 1.4, -1.2]} intensity={0.6} />
+              <StudioLight light={prefs.light} />
               <AvatarRig
-                key={prefs.avatar}
-                url={MODELS[prefs.avatar]}
+                key={`${prefs.avatar}-${prefs.face}`}
+                url={MODELS[prefs.face][prefs.avatar]}
                 position={[0, FLOOR_Y, 0]}
                 gesture={gesture}
                 time={0}
@@ -416,6 +421,14 @@ function Words() {
             names={Object.entries(ANGLE_NAMES) as [Angle, string][]}
             onChange={(angle) => setView((previous) => ({ angle, reset: previous.reset + 1 }))}
           />
+          <span className="option">
+            Свет
+            <Segmented value={prefs.light} names={Object.entries(LIGHT_NAMES) as [Light, string][]} onChange={(light) => setPref("light", light)} />
+          </span>
+          <span className="option">
+            Аватар
+            <Segmented value={prefs.face} names={Object.entries(FACE_NAMES) as [Face, string][]} onChange={(face) => setPref("face", face)} />
+          </span>
           <span className="option">
             Видео
             <Segmented value={prefs.fit} names={Object.entries(FIT_NAMES) as [Fit, string][]} onChange={(fit) => setPref("fit", fit)} />

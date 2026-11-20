@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { armCapsule, fingerRadius, handIntoFace, keepFingersApart, palmHalf, type HandShape } from "./finger-contact";
 import { aimArm, relaxArm, restPlan, solveArm, type ArmPlan, type ArmRig, type ArmSide, type BodyFrame } from "./arm-solver";
 import { armTorsoPush, buildContactRig, faceTouchPull, MAX_TOUCH_SLIDE, type ContactRig, type FaceTouch } from "./body-contact";
 import { frontAt, ontoHead } from "./body-shape";
@@ -141,6 +142,8 @@ export type BakeInput = {
   toWorld?: THREE.Quaternion;
   /** Clean the curves of glitches and jitter. Only switched off to see what the raw tracking would look like. */
   smooth?: boolean;
+  /** The hands' capsules (finger-contact.ts): given, fingers are kept from going through each other. */
+  handShape?: HandShape;
 };
 
 export type BakedTrack = { bone: THREE.Bone; values: Float32Array };
@@ -777,7 +780,7 @@ const MAX_BACK_MOVE = 0.1;
 type HandBall = { from: THREE.Object3D; to?: THREE.Object3D; radius: number };
 
 /**
- * The palm and the fingers' first bones only: the hands are not to go through each other's palms, but fingers do lace and
+ * The palm (with the thumb's first bone) and the fingers' first bones only: the hands are not to go through each other's palms, but fingers do lace and
  * thumbs hook round each other ("бабочка", "соты"), and kept apart whole they stood a third of a shoulder width apart.
  */
 function handBalls(root: THREE.Object3D, side: Side): HandBall[] | undefined {
@@ -785,6 +788,10 @@ function handBalls(root: THREE.Object3D, side: Side): HandBall[] | undefined {
   const wrist = bone("Hand");
   if (!wrist) return undefined;
   const balls: HandBall[] = [{ from: wrist, radius: HAND_BALL_PALM }];
+  // The thumb's first bone is the ball of the palm under it (it went deep into the other palm in "бабочка").
+  const thumb = bone("HandThumb1");
+  const thumbNext = bone("HandThumb2");
+  if (thumb && thumbNext) balls.push({ from: thumb, to: thumbNext, radius: HAND_BALL_KNUCKLE });
   for (const finger of ["Index", "Middle", "Ring", "Pinky"]) {
     const knuckle = bone(`Hand${finger}1`);
     const middle = bone(`Hand${finger}2`);
@@ -922,6 +929,388 @@ function separateHands({ root, body, count, arms, handLimbs, plans, handWorld, t
   root.updateMatrixWorld(true);
 }
 
+/**
+ * A hand whose fingers would go into the face is moved forward until they only touch it: the avatar's head is bigger than
+ * the signer's (and its cheeks rounder), so fingers held just before the signer's cheeks went into the avatar's («вой»).
+ * Only forward, at most `MAX_FACE_MOVE` (shoulder widths); held either side of where it is needed and smoothed, like
+ * `separateHands`. Fingers still in it are bent out of it afterwards (finger-contact.ts).
+ */
+const MAX_FACE_MOVE = 0.15;
+const FACE_MARGIN = 0.005;
+const FACE_HOLD = 8;
+const FACE_SIGMA = 3;
+
+function clearFace({ root, body, count, arms, handLimbs, plans, handWorld, toWorld, handShape }: {
+  root: THREE.Object3D;
+  body: BodyFrame;
+  count: number;
+  arms: Partial<Record<Side, ArmRig>>;
+  handLimbs: Map<Side, Limb>;
+  plans: Record<Side, (ArmPlan | undefined)[]>;
+  handWorld: Record<Side, (THREE.Quaternion | undefined)[]>;
+  toWorld?: THREE.Quaternion;
+  handShape: HandShape;
+}) {
+  if (!handShape.head) return;
+  const bones = [...handLimbs.values()].flatMap((limb) => limb.bones.map(({ bone }) => bone));
+  const armBones = (["Left", "Right"] as const).flatMap((side) => (arms[side] ? [arms[side]!.upper.bone, arms[side]!.fore.bone] : []));
+  const saved = [...bones, ...armBones].map((bone) => bone.quaternion.clone());
+  const rootWorld = root.getWorldQuaternion(new THREE.Quaternion());
+  const need: Record<Side, number[]> = { Left: new Array(count).fill(0), Right: new Array(count).fill(0) };
+  for (let k = 0; k < count; k += 1) {
+    for (const side of ["Left", "Right"] as const) {
+      const arm = arms[side];
+      const plan = plans[side][k];
+      if (arm && plan) aimArm(arm, plan, { toWorld });
+    }
+    for (const [side, limb] of handLimbs) {
+      for (const { bone, values } of limb.bones) readQuaternion(values, k, bone.quaternion);
+      const palm = handWorld[side][k];
+      const wrist = limb.bones[0].bone;
+      if (palm && wrist.parent && limb.tracked[k]) {
+        wrist.parent.updateWorldMatrix(true, false);
+        wrist.quaternion.copy(wrist.parent.getWorldQuaternion(new THREE.Quaternion()).invert().multiply(rootWorld).multiply(palm));
+      }
+    }
+    root.updateMatrixWorld(true);
+    for (const side of ["Left", "Right"] as const) {
+      if (!plans[side][k]) continue;
+      const depth = handIntoFace(root, handShape, side);
+      if (depth > 0) need[side][k] = Math.min(depth / body.shoulderWidth + FACE_MARGIN, MAX_FACE_MOVE);
+    }
+  }
+  const reach = Math.ceil(FACE_SIGMA * 3);
+  for (const side of ["Left", "Right"] as const) {
+    if (need[side].every((v) => v === 0)) continue;
+    const held = need[side].map((_, k) => {
+      let most = 0;
+      for (let j = Math.max(0, k - FACE_HOLD); j <= Math.min(count - 1, k + FACE_HOLD); j += 1) most = Math.max(most, need[side][j]);
+      return most;
+    });
+    for (let k = 0; k < count; k += 1) {
+      const plan = plans[side][k];
+      if (!plan) continue;
+      let sum = 0;
+      let weight = 0;
+      for (let j = Math.max(0, k - reach); j <= Math.min(count - 1, k + reach); j += 1) {
+        const w = Math.exp(-0.5 * ((j - k) / FACE_SIGMA) ** 2);
+        sum += w * held[j];
+        weight += w;
+      }
+      const forward = (sum / weight) * body.shoulderWidth;
+      plan.target.z += forward;
+      plan.hint.z += forward;
+    }
+  }
+  [...bones, ...armBones].forEach((bone, i) => bone.quaternion.copy(saved[i]));
+  root.updateMatrixWorld(true);
+}
+
+/**
+ * A hand laid on the other arm (holding the elbow in «динозавр») is put on the avatar's other arm, at the same place along
+ * it, on its side toward the viewer: each arm is placed from the picture on its own, and the avatar's elbow stands
+ * elsewhere than the signer's (its shoulders are wider, the hand's depth comes from its size), so the hand ended up behind
+ * the arm by the armpit. In the picture the hand's middle is within `ARM_TOUCH_NEAR`..`ARM_TOUCH_FAR` palm lengths of
+ * the other arm's upper arm or forearm, between `ARM_TOUCH_SPAN` along it (0 the shoulder, 1 the elbow, 2 the wrist):
+ * nearer the wrist is the two hands meeting, nearer the shoulder the hand on the chest.
+ */
+const ARM_TOUCH_NEAR = 0.45;
+const ARM_TOUCH_FAR = 0.8;
+const ARM_TOUCH_SPAN: [number, number] = [0.35, 1.75];
+/** The other arm's elbow and wrist must be seen at least this well for the touch to be read. */
+const ARM_TOUCH_VISIBILITY = 0.5;
+const ARM_TOUCH_SIGMA = 3;
+/** A fingertip touches nearer than a palm (palm lengths, in the picture). */
+const ARM_TIP_NEAR = 0.2;
+const ARM_TIP_FAR = 0.45;
+const FINGERTIPS = [4, 8, 12, 16, 20];
+const TIP_FINGER: Record<number, string> = { 4: "Thumb", 8: "Index", 12: "Middle", 16: "Ring", 20: "Pinky" };
+/** A part of the arm whose direction is this much along the camera's axis is seen end-on (eased in over ±0.1 round it). */
+const END_ON = 0.7;
+/** How far past the joint (a share of the next part) a hand by an end-on part's far end is put. */
+const ARM_TOUCH_PAST_JOINT = 0.2;
+const MIN_ARM_TOUCH_SAMPLES = Math.round(0.15 * BAKE_FPS);
+/** Where along the other arm the hand is: the median of this many samples either side. */
+const ARM_ALONG_REACH = 6;
+/** How far the held arm comes in, smoothed in time over this many samples. */
+const HELD_MOVE_SIGMA = 6;
+/** The holding arm reaches at most this share of its length (its elbow well bent); the held arm comes the rest of the way, */
+const HELD_REACH = 0.75;
+/** ... up to this share of the holding arm's length. */
+const MAX_HELD_MOVE = 0.25;
+
+function holdOtherArm({ gesture, aspect, root, count, arms, handLimbs, plans, handWorld, toWorld, handShape, palmLength }: {
+  gesture: GestureJson;
+  aspect: number;
+  root: THREE.Object3D;
+  count: number;
+  arms: Partial<Record<Side, ArmRig>>;
+  handLimbs: Map<Side, Limb>;
+  plans: Record<Side, (ArmPlan | undefined)[]>;
+  handWorld: Record<Side, (THREE.Quaternion | undefined)[]>;
+  toWorld?: THREE.Quaternion;
+  handShape: HandShape;
+  palmLength: Record<Side, number | undefined>;
+}): Record<Side, number[]> {
+  const sides = ["Left", "Right"] as const;
+  const indices = { Left: [11, 13, 15], Right: [12, 14, 16] } as const;
+  // How much each hand lies on the other arm, and where along it, sample by sample (from the picture).
+  const weight: Record<Side, number[]> = { Left: new Array(count).fill(0), Right: new Array(count).fill(0) };
+  const along: Record<Side, number[]> = { Left: new Array(count).fill(0), Right: new Array(count).fill(0) };
+  // What of the hand touches: the palm (-1) or a fingertip (its landmark: the woodpecker's index in «дятел»).
+  const toucher: Record<Side, number[]> = { Left: new Array(count).fill(-1), Right: new Array(count).fill(-1) };
+  for (const side of sides) {
+    const other = side === "Left" ? "Right" : "Left";
+    const palm = palmLength[side] ?? palmLength[other];
+    if (!palm || !arms[other] || !plans[side].some(Boolean)) continue;
+    for (let k = 0; k < count; k += 1) {
+      const time = k / BAKE_FPS;
+      const landmarks = handAt(gesture, side === "Left" ? "left_hand" : "right_hand", time, aspect)?.landmarks;
+      const centre = handCenterOf(landmarks);
+      const pose = interpolateFrame(gesture.tracks.pose, time);
+      if (!centre || !landmarks || !pose) continue;
+      const [shoulder, elbow, wrist] = indices[other].map((i) => pose.landmarks[i]);
+      if (!shoulder || !elbow || !wrist || (elbow.visibility ?? 1) < ARM_TOUCH_VISIBILITY || (wrist.visibility ?? 1) < ARM_TOUCH_VISIBILITY) continue;
+      const joints = [shoulder, elbow, wrist].map((p) => ({ x: p.x, y: p.y * aspect }));
+      const candidates: [number, { x: number; y: number }][] = [[-1, centre], ...FINGERTIPS.map((i): [number, { x: number; y: number }] => [i, landmarks[i]])];
+      let bestScore = -Infinity;
+      for (const [who, point] of candidates) {
+        if (!point || !Number.isFinite(point.x + point.y)) continue;
+        let best = Infinity;
+        let at = 0;
+        for (let part = 0; part < 2; part += 1) {
+          const a = joints[part];
+          const b = joints[part + 1];
+          const dx = b.x - a.x;
+          const dy = b.y - a.y;
+          const t = THREE.MathUtils.clamp(((point.x - a.x) * dx + (point.y - a.y) * dy) / Math.max(dx * dx + dy * dy, 1e-9), 0, 1);
+          const d = Math.hypot(point.x - (a.x + t * dx), point.y - (a.y + t * dy));
+          if (d < best) {
+            best = d;
+            at = part + t;
+          }
+        }
+        if (at < ARM_TOUCH_SPAN[0] || at > ARM_TOUCH_SPAN[1]) continue;
+        const [near, far] = who < 0 ? [ARM_TOUCH_NEAR, ARM_TOUCH_FAR] : [ARM_TIP_NEAR, ARM_TIP_FAR];
+        const w = 1 - smoothstep(THREE.MathUtils.clamp((best / palm - near) / (far - near), 0, 1));
+        // The part that touches is the one furthest inside its own reach (both read as touching: a palm whose finger
+        // is on the arm is near it too).
+        const score = near - best / palm;
+        if (w > 0 && score > bestScore) {
+          bestScore = score;
+          weight[side][k] = w;
+          along[side][k] = at;
+          toucher[side][k] = who;
+        }
+      }
+    }
+    // A touch is by one part of the hand all along: the one most of its samples say (and so its eased edges).
+    for (const [start, end] of touchRuns(weight[side].map((w) => (w > 0.5 ? 1 : 0)))) {
+      const votes = new Map<number, number>();
+      for (let k = start; k < end; k += 1) votes.set(toucher[side][k], (votes.get(toucher[side][k]) ?? 0) + 1);
+      const who = [...votes].sort((a, b) => b[1] - a[1])[0][0];
+      const reach = Math.ceil(ARM_TOUCH_SIGMA * 3);
+      for (let k = Math.max(0, start - reach); k < Math.min(count, end + reach); k += 1) toucher[side][k] = who;
+    }
+    // Only held touches; smoothed in time.
+    for (const [start, end] of touchRuns(weight[side].map((w) => (w > 0.5 ? 1 : 0)))) {
+      if (end - start < MIN_ARM_TOUCH_SAMPLES) for (let k = start; k < end; k += 1) weight[side][k] = 0;
+    }
+    // Where along the arm, too: read sample by sample it hopped between the upper arm and the forearm for a few samples
+    // («динозавр» 1.35 s). A median drops such hops and keeps a hand that slides along the arm with its slide, which an
+    // average drags behind.
+    const seen = weight[side];
+    along[side] = along[side].map((at, k) => {
+      const near: number[] = [];
+      for (let j = Math.max(0, k - ARM_ALONG_REACH); j <= Math.min(count - 1, k + ARM_ALONG_REACH); j += 1) if (seen[j] > 0) near.push(along[side][j]);
+      near.sort((a, b) => a - b);
+      return near.length ? near[Math.floor(near.length / 2)] : at;
+    });
+    const reach = Math.ceil(ARM_TOUCH_SIGMA * 3);
+    weight[side] = weight[side].map((_, k) => {
+      let sum = 0;
+      let total = 0;
+      for (let j = Math.max(0, k - reach); j <= Math.min(count - 1, k + reach); j += 1) {
+        const w = Math.exp(-0.5 * ((j - k) / ARM_TOUCH_SIGMA) ** 2);
+        sum += w * weight[side][j];
+        total += w;
+      }
+      return sum / total;
+    });
+  }
+  if (!sides.some((side) => weight[side].some((w) => w > 0.01))) return { Left: new Array(count).fill(0), Right: new Array(count).fill(0) };
+
+  const bones = [...handLimbs.values()].flatMap((limb) => limb.bones.map(({ bone }) => bone));
+  const armBones = sides.flatMap((side) => (arms[side] ? [arms[side]!.upper.bone, arms[side]!.fore.bone] : []));
+  const saved = [...bones, ...armBones].map((bone) => bone.quaternion.clone());
+  const rootWorld = root.getWorldQuaternion(new THREE.Quaternion());
+  const rootScale = root.getWorldScale(new THREE.Vector3()).x;
+  const forward = new THREE.Vector3(0, 0, 1);
+  // Poses both arms and hands as sample `k` stands.
+  const pose = (k: number) => {
+    for (const side of sides) {
+      const arm = arms[side];
+      const plan = plans[side][k];
+      if (arm && plan) aimArm(arm, plan, { toWorld });
+    }
+    for (const [side, limb] of handLimbs) {
+      for (const { bone, values } of limb.bones) readQuaternion(values, k, bone.quaternion);
+      const palm = handWorld[side][k];
+      const wrist = limb.bones[0].bone;
+      if (palm && wrist.parent && limb.tracked[k]) {
+        wrist.parent.updateWorldMatrix(true, false);
+        wrist.quaternion.copy(wrist.parent.getWorldQuaternion(new THREE.Quaternion()).invert().multiply(rootWorld).multiply(palm));
+      }
+    }
+    root.updateMatrixWorld(true);
+  };
+  // How far `side`'s hand has to move to lie on the other arm as it is posed now (the avatar's units).
+  const handOnArm = (side: Side, k: number): THREE.Vector3 | undefined => {
+    const other = side === "Left" ? "Right" : "Left";
+    let at = along[side][k];
+    const upper = armCapsule(handShape, other, "upper");
+    const fore = armCapsule(handShape, other, "fore");
+    if (!upper || !fore) return undefined;
+    const ends = (capsule: { a: THREE.Vector3; b: THREE.Vector3 }) => [root.worldToLocal(capsule.a.clone()), root.worldToLocal(capsule.b.clone())];
+    const [ua, ub] = ends(upper);
+    const [fa, fb] = ends(fore);
+    // A part of the arm pointing at the camera is seen end-on: the picture cannot tell where along it the hand is, and
+    // the hand by its far end (the elbow of an upper arm raised forward, «динозавр») is on the next part, past the joint.
+    // Eased in, both how end-on the part is and how near its far end the hand is: switched at once, the hand jumped.
+    const endOn = (from: THREE.Vector3, to: THREE.Vector3) =>
+      THREE.MathUtils.smoothstep(Math.abs(to.clone().sub(from).normalize().z), END_ON - 0.1, END_ON + 0.1);
+    const upperEndOn = endOn(ua, ub);
+    const foreEndOn = endOn(fa, fb);
+    if (at < 1) at = THREE.MathUtils.lerp(at, 1 + ARM_TOUCH_PAST_JOINT, upperEndOn * (1 - foreEndOn) * THREE.MathUtils.smoothstep(at, 0.5, 0.7));
+    else at = THREE.MathUtils.lerp(at, 1 - ARM_TOUCH_PAST_JOINT, foreEndOn * (1 - upperEndOn) * (1 - THREE.MathUtils.smoothstep(at, 1.3, 1.5)));
+    const [a, b] = at < 1 ? [ua, ub] : [fa, fb];
+    const radius = (at < 1 ? upper : fore).radius;
+    const place = a.clone().lerp(b, at < 1 ? at : at - 1);
+    const direction = b.clone().sub(a).normalize();
+    // The hand lies on the arm with its palm: on the side of the arm the palm's back faces (the signer's hand round
+    // the forearm shows its back to the camera); with the palm edge-on to the arm, toward the viewer.
+    const bone = (name: string) => root.worldToLocal(root.getObjectByName(`${side}${name}`)!.getWorldPosition(new THREE.Vector3()));
+    const wrist = bone("Hand");
+    const middle = bone("HandMiddle1");
+    const facing = middle.clone().sub(wrist).cross(bone("HandPinky1").sub(bone("HandIndex1"))).normalize().multiplyScalar(side === "Right" ? 1 : -1);
+    const away = facing.negate();
+    const out = away.clone().addScaledVector(direction, -away.dot(direction));
+    if (out.lengthSq() < 0.25) out.lerp(forward.clone().addScaledVector(direction, -forward.dot(direction)), 1 - out.length() * 2);
+    if (out.lengthSq() < 1e-6) return undefined;
+    out.normalize();
+    const who = toucher[side][k];
+    let now: THREE.Vector3;
+    let reachOut: number;
+    if (who < 0) {
+      // The palm's middle, between the wrist and the middle finger's knuckle.
+      now = wrist.clone().lerp(middle, 0.5);
+      reachOut = (radius + palmHalf(handShape, side)) / rootScale;
+    } else {
+      // A fingertip goes onto the arm from the side the hand is on.
+      const finger = TIP_FINGER[who];
+      now = bone(`Hand${finger}4`);
+      reachOut = (radius + fingerRadius(handShape, side, finger)) / rootScale;
+      const from = now.clone().sub(place);
+      out.copy(from.addScaledVector(direction, -from.dot(direction)));
+      if (out.lengthSq() < 1e-8) out.copy(forward).addScaledVector(direction, -forward.dot(direction));
+      out.normalize();
+    }
+    return place.addScaledVector(out, reachOut).sub(now);
+  };
+  const smoothInTime = (values: THREE.Vector3[], sigma: number) => {
+    const reach = Math.ceil(sigma * 3);
+    return values.map((_, k) => {
+      const sum = new THREE.Vector3();
+      let total = 0;
+      for (let j = Math.max(0, k - reach); j <= Math.min(count - 1, k + reach); j += 1) {
+        const w = Math.exp(-0.5 * ((j - k) / sigma) ** 2);
+        sum.addScaledVector(values[j], w);
+        total += w;
+      }
+      return sum.divideScalar(total);
+    });
+  };
+  // The held arm is smoothed first, as the arms' paths are at the end (`smoothPath`): the hand is put on the arm as it
+  // will be seen. Placed on the arm before its path was smoothed, the hand stayed where a jump of the arm's depth had
+  // taken it, inside the arm («динозавр» 1.3-1.5 s).
+  const shoulderWidth = arms.Left && arms.Right ? arms.Left.shoulder.distanceTo(arms.Right.shoulder) : 1;
+  for (const side of sides) {
+    const held = plans[side === "Left" ? "Right" : "Left"];
+    const w = weight[side];
+    for (let start = 0; start < count; ) {
+      if (!held[start]) {
+        start += 1;
+        continue;
+      }
+      let end = start;
+      while (end < count && held[end]) end += 1;
+      if (w.slice(start, end).some((x) => x > 0.01)) {
+        const targets = smoothPath(held.slice(start, end).map((plan) => plan!.target), PATH_MIN_JUMP * shoulderWidth);
+        const hints = smoothPath(held.slice(start, end).map((plan) => plan!.hint), PATH_MIN_JUMP * shoulderWidth);
+        for (let k = start; k < end; k += 1) {
+          held[k]!.target.lerp(targets[k - start], Math.min(1, w[k] * 2));
+          held[k]!.hint.lerp(hints[k - start], Math.min(1, w[k] * 2));
+        }
+      }
+      start = end;
+    }
+  }
+  // The held arm comes toward the hand holding it, so that arm stays bent. Each arm is placed from the picture on its own,
+  // and the avatar's forearm is shorter against its shoulders than the signer's: reaching the other elbow where it
+  // stood, the arm went straight and its elbow stood before the middle of the chest, the upper arm pointing at the
+  // camera and lost against the hoodie («динозавр»). Moved sideways only, so the held hand keeps its height and the arm
+  // is not pushed into the chest; only as the hand arrives (coming in sooner, it met the hand on its way); smoothed in time.
+  const moves: Record<Side, THREE.Vector3[]> = {
+    Left: Array.from({ length: count }, () => new THREE.Vector3()),
+    Right: Array.from({ length: count }, () => new THREE.Vector3()),
+  };
+  for (let k = 0; k < count; k += 1) {
+    if (!sides.some((side) => weight[side][k] > 0.01)) continue;
+    pose(k);
+    for (const side of sides) {
+      const w = weight[side][k];
+      const arm = arms[side];
+      const plan = plans[side][k];
+      const other = side === "Left" ? "Right" : "Left";
+      if (w <= 0.01 || !arm || !plan || !plans[other][k]) continue;
+      const shift = handOnArm(side, k);
+      if (!shift) continue;
+      const wrist = plan.target.clone().add(shift);
+      const length = arm.upperLength + arm.foreLength;
+      const excess = wrist.distanceTo(arm.shoulder) - HELD_REACH * length;
+      const toward = new THREE.Vector3(arm.shoulder.x - wrist.x, 0, 0);
+      if (excess <= 0 || toward.lengthSq() < 1e-8) continue;
+      // An arm that holds this one in turn (arms folded, «адаптивное поведение») stays: moved, its own hand left the arm it held.
+      moves[other][k].add(toward.normalize().multiplyScalar(Math.min(excess, MAX_HELD_MOVE * length) * w * w * (1 - weight[other][k])));
+    }
+  }
+  for (const side of sides) {
+    if (!moves[side].some((move) => move.lengthSq() > 0)) continue;
+    smoothInTime(moves[side], HELD_MOVE_SIGMA).forEach((move, k) => {
+      plans[side][k]?.target.add(move);
+      plans[side][k]?.hint.add(move);
+    });
+  }
+  for (let k = 0; k < count; k += 1) {
+    if (!sides.some((side) => weight[side][k] > 0.01)) continue;
+    pose(k);
+    for (const side of sides) {
+      const w = weight[side][k];
+      const plan = plans[side][k];
+      if (w <= 0.01 || !plan) continue;
+      const shift = handOnArm(side, k);
+      if (!shift) continue;
+      shift.multiplyScalar(w);
+      plan.target.add(shift);
+      plan.hint.add(shift);
+    }
+  }
+  [...bones, ...armBones].forEach((bone, i) => bone.quaternion.copy(saved[i]));
+  root.updateMatrixWorld(true);
+  // Only a palm laid on the arm closes round it.
+  return { Left: weight.Left.map((w, k) => (toucher.Left[k] < 0 ? w : 0)), Right: weight.Right.map((w, k) => (toucher.Right[k] < 0 ? w : 0)) };
+}
+
 function bringHandsTogether({ gesture, aspect, root, count, armLimbs, handLimbs, plans, palmLength }: {
   gesture: GestureJson;
   aspect: number;
@@ -1049,7 +1438,7 @@ function bringHandsTogether({ gesture, aspect, root, count, armLimbs, handLimbs,
   root.updateMatrixWorld(true);
 }
 
-export function bakeAnimation({ gesture: source, aspect, arms, hands, body, root, toWorld, smooth = true }: BakeInput): BakedAnimation {
+export function bakeAnimation({ gesture: source, aspect, arms, hands, body, root, toWorld, smooth = true, handShape }: BakeInput): BakedAnimation {
   const gesture = withoutRestingGlimpses(source, aspect);
   const count =Math.max(2, Math.ceil(gesture.duration * BAKE_FPS) + 1);
   const sides: Side[] = ["Left", "Right"];
@@ -1493,6 +1882,8 @@ export function bakeAnimation({ gesture: source, aspect, arms, hands, body, root
 
   if (root) bringHandsTogether({ gesture, aspect, root, count, armLimbs, handLimbs, plans, palmLength });
   if (root && body) separateHands({ root, body, count, arms, handLimbs, plans, handWorld, toWorld, bodyAhead });
+  if (root && body && handShape) clearFace({ root, body, count, arms, handLimbs, plans, handWorld, toWorld, handShape });
+  const grips = root && handShape ? holdOtherArm({ gesture, aspect, root, count, arms, handLimbs, plans, handWorld, toWorld, handShape, palmLength }) : undefined;
 
   // Last, with every hand finished, each arm is checked against the torso once more. An arm that was not tracked is eased
   // in target space: its wrist travels from where it was to where it goes next, with the torso checked at every step.
@@ -1584,6 +1975,7 @@ export function bakeAnimation({ gesture: source, aspect, arms, hands, body, root
   for (const limb of [...armLimbs.values(), ...handLimbs.values()]) {
     for (const { bone, filter, values } of limb.bones) tracks.push({ bone, values: smooth ? smoothCurve(values, filter) : values });
   }
+  if (root && handShape) keepFingersApart(root, handShape, tracks, count, BAKE_FPS, grips);
 
   const from = new THREE.Quaternion();
   const to = new THREE.Quaternion();
